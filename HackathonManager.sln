@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{16B39AAB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackathonManager.Tests", "tests\HackathonManager.Tests\HackathonManager.Tests.csproj", "{9C35DF05-25D0-4B2A-93FB-08AFD6F39970}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackathonManager.Migrator", "src\HackathonManager.Migrator\HackathonManager.Migrator.csproj", "{9977B6C9-1F25-4DB5-A677-A138F96EAB26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0EB2362D-C2AD-4FD8-9D63-06747D189FCA} = {65DA1274-5BC3-4AFB-A77C-52C0C77DAB4B}
 		{9C35DF05-25D0-4B2A-93FB-08AFD6F39970} = {16B39AAB-1991-4D5B-B209-F26D22023503}
+		{9977B6C9-1F25-4DB5-A677-A138F96EAB26} = {65DA1274-5BC3-4AFB-A77C-52C0C77DAB4B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0EB2362D-C2AD-4FD8-9D63-06747D189FCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -39,5 +42,9 @@ Global
 		{9C35DF05-25D0-4B2A-93FB-08AFD6F39970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C35DF05-25D0-4B2A-93FB-08AFD6F39970}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C35DF05-25D0-4B2A-93FB-08AFD6F39970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9977B6C9-1F25-4DB5-A677-A138F96EAB26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9977B6C9-1F25-4DB5-A677-A138F96EAB26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9977B6C9-1F25-4DB5-A677-A138F96EAB26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9977B6C9-1F25-4DB5-A677-A138F96EAB26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

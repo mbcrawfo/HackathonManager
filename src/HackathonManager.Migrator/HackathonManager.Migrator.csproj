@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="dbup-postgresql" />
+        <PackageReference Include="Npgsql" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Migrations\*.sql" />
+        <EmbeddedResource Include="Migrations\*.sql" />
+    </ItemGroup>
+</Project>
