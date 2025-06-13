@@ -1,1 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk.Web" />
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\HackathonManager.Migrator\HackathonManager.Migrator.csproj" />
+  </ItemGroup>
+</Project>
