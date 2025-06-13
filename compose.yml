@@ -1,11 +1,25 @@
 services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: src/HackathonManager/Dockerfile
+    environment:
+      CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
+      MIGRATEONSTART: "true"
+    ports:
+      - ${WEB_PORT:-5000}:8080
+    depends_on:
+      database:
+        condition: service_healthy
+
   database:
     container_name: database
     image: postgres:18beta1
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hackathon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hackathon
     ports:
       - ${DATABASE_PORT:-5432}:5432
     volumes:
