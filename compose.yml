@@ -1,0 +1,22 @@
+services:
+  database:
+    container_name: database
+    image: postgres:18beta1
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=hackathon
+    ports:
+      - ${DATABASE_PORT:-5432}:5432
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "PGUSER=postgres", "pg_isready"]
+      start_period: 2s
+      start_interval: 1s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  database:
+    driver: local
