@@ -1,0 +1,15 @@
+name: "Setup Node App"
+runs:
+  using: "composite"
+  steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: 'npm'
+
+    - name: Restore dependencies
+      run: npm ci
