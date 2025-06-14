@@ -20,7 +20,7 @@ jobs:
       with:
         artifact: dotnet-test-results
         name: .Net Unit Tests
-        path: "*.trx"
+        path: "test-results/*.trx"
         reporter: dotnet-trx
 
     - name: SPA Test Results
