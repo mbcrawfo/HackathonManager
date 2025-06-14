@@ -12,5 +12,5 @@ artifacts
 Dockerfile
 LICENSE
 README.md
-testresults
+test-results
 tests

@@ -1,25 +1,27 @@
 name: "Hackathon App Task"
 description: "Run a specified npm script in the hackathon app directory"
+
 inputs:
   task:
     description: 'npm script to run'
     required: true
+
 runs:
   using: "composite"
   steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: 'npm'
-        cache-dependency-path: ./src/hackathon-app/package-lock.json
+  - name: Set up Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 22
+      cache: 'npm'
+      cache-dependency-path: ./src/hackathon-app/package-lock.json
 
-    - name: Restore dependencies
-      run: npm ci
-      shell: bash
-      working-directory: ./src/hackathon-app
+  - name: Restore dependencies
+    run: npm ci
+    shell: bash
+    working-directory: ./src/hackathon-app
 
-    - name: Run npm script ${{ inputs.task }}
-      run: npm run ${{ inputs.task }}
-      shell: bash
-      working-directory: ./src/hackathon-app
+  - name: Run npm script ${{ inputs.task }}
+    run: npm run ${{ inputs.task }}
+    shell: bash
+    working-directory: ./src/hackathon-app

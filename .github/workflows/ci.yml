@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI
 
 on: [push, pull_request]
 
@@ -6,61 +6,62 @@ jobs:
   backend-build-and-test:
     runs-on: "ubuntu-latest"
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-          cache: true
-          cache-dependency-path: "**/package-lock.json"
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+        cache: true
+        cache-dependency-path: "**/package-lock.json"
 
-      - name: Restore NuGet packages
-        run: dotnet restore --locked-mode
+    - name: Restore NuGet packages
+      run: dotnet restore --locked-mode
 
-      - name: Build
-        run: dotnet build --configuration Release
+    - name: Build
+      run: dotnet build --configuration Release
 
-      - name: Test
-        run: >-
-          dotnet test
-          --no-build
-          --configuration Release
-          --logger "console;verbosity=normal"
-          --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
-          --blame
-          --blame-hang-timeout 7m
-          --blame-crash
-          --results-directory testresults
-          --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
+    - name: Test
+      run: >-
+        dotnet test
+        --no-build
+        --configuration Release
+        --logger "console;verbosity=normal"
+        --logger "trx;LogFileName=test-results/results.trx"
+        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+        --blame
+        --blame-hang-timeout 7m
+        --blame-crash
+        --results-directory test-results
+        --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
 
-      - name: Upload test results artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: testresults/**
+    - name: Upload test results artifact
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-test-results
+        path: test-results/**
 
   backend-check-formatting:
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-          cache: true
-          cache-dependency-path: "**/package-lock.json"
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+        cache: true
+        cache-dependency-path: "**/package-lock.json"
 
-      - name: Restore tools
-        run: dotnet tool restore
+    - name: Restore tools
+      run: dotnet tool restore
 
-      - name: Run CSharpier
-        run: dotnet csharpier check .
+    - name: Run CSharpier
+      run: dotnet csharpier check .
 
   frontend-check-formatting:
     runs-on: "ubuntu-latest"
@@ -68,44 +69,50 @@ jobs:
       run:
         working-directory: ./src/hackathon-app
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Run prettier
-        uses: ./.github/actions/hackathon-app-task
-        with:
-          task: format:check
+    - name: Run prettier
+      uses: ./.github/actions/hackathon-app-task
+      with:
+        task: format:check
 
   frontend-lint:
     runs-on: "ubuntu-latest"
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Run ESLint
-        uses: ./.github/actions/hackathon-app-task
-        with:
-            task: lint:check
+    - name: Run ESLint
+      uses: ./.github/actions/hackathon-app-task
+      with:
+          task: lint:check
 
   frontend-type-check:
     runs-on: "ubuntu-latest"
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Run type checking
-        uses: ./.github/actions/hackathon-app-task
-        with:
-          task: type-check
+    - name: Run type checking
+      uses: ./.github/actions/hackathon-app-task
+      with:
+        task: type-check
 
   frontend-unit-tests:
     needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
     runs-on: "ubuntu-latest"
     steps:
-      - name: Clone the repo
-        uses: actions/checkout@v4
+    - name: Clone the repo
+      uses: actions/checkout@v4
 
-      - name: Run unit tests
-        uses: ./.github/actions/hackathon-app-task
-        with:
-            task: test:unit
+    - name: Run unit tests
+      uses: ./.github/actions/hackathon-app-task
+      with:
+          task: test:unit
+
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: spa-test-results
+        path: ./src/hackathon-app/test-results/*.xml

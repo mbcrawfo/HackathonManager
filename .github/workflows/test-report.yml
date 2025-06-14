@@ -1,0 +1,32 @@
+name: Test Report
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - name: .Net Test Results
+      uses: dorny/test-reporter@v2
+      with:
+        artifact: dotnet-test-results
+        name: .Net Unit Tests
+        path: "*.trx"
+        reporter: dotnet-trx
+
+    - name: SPA Test Results
+      uses: dorny/test-reporter@v2
+      with:
+        artifact: spa-test-results
+        name: SPA Unit Tests
+        path: "*.xml"
+        reporter: jest-junit
