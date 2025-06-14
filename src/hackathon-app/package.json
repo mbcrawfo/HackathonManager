@@ -13,8 +13,9 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "format": "prettier --write src/",
-    "format:check": "prettier --check src/"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "gtg": "run-p format:check lint:check type-check"
   },
   "dependencies": {
     "pinia": "3.0.3",
