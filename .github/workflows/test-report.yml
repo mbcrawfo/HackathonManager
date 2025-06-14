@@ -20,6 +20,8 @@ jobs:
       with:
         artifact: dotnet-test-results
         name: .Net Unit Tests
+        report-title: .Net Unit Tests
+        badge-title: .Net Unit Tests
         path: "test-results/*.trx"
         reporter: dotnet-trx
 
@@ -28,5 +30,7 @@ jobs:
       with:
         artifact: spa-test-results
         name: SPA Unit Tests
+        report-title: SPA Unit Tests
+        badge-title: SPA Unit Tests
         path: "*.xml"
         reporter: jest-junit
