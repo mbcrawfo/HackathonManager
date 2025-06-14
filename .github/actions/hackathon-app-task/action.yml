@@ -12,6 +12,7 @@ runs:
       with:
         node-version: 22
         cache: 'npm'
+        cache-dependency-path: ./src/hackathon-app/package-lock.json
 
     - name: Restore dependencies
       run: npm ci
