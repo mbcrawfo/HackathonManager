@@ -1,11 +1,10 @@
-name: Build and Test .NET Projects
+name: Build and Test
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  backend-build-and-test:
     runs-on: "ubuntu-latest"
-
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
@@ -41,7 +40,7 @@ jobs:
           name: test-results
           path: testresults/**
 
-  check-formatting:
+  backend-check-formatting:
     runs-on: "ubuntu-latest"
 
     steps:
@@ -58,3 +57,43 @@ jobs:
 
       - name: Run CSharpier
         run: dotnet csharpier check .
+
+  frontend-check-formatting:
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        working-directory: ./src/hackathon-app
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/hackathon-app-task
+        with:
+          task: format:check
+
+  frontend-lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-app
+        with:
+            task: lint:check
+
+  frontend-type-check:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-app
+        with:
+          task: type-check
+
+  frontend-unit-tests:
+    needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-app
+        with:
+            task: test:unit
