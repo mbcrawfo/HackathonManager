@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-app
+      - uses: ./.github/actions/hackathon-app-task
         with:
             task: lint:check
 
@@ -84,7 +84,7 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-app
+      - uses: ./.github/actions/hackathon-app-task
         with:
           task: type-check
 
@@ -94,6 +94,6 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-app
+      - uses: ./.github/actions/hackathon-app-task
         with:
             task: test:unit
