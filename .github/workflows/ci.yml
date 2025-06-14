@@ -13,9 +13,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+          cache: true
+          cache-dependency-path: "**/package-lock.json"
 
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore --locked-mode
 
       - name: Build
         run: dotnet build --configuration Release
@@ -51,9 +53,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+          cache: true
+          cache-dependency-path: "**/package-lock.json"
 
       - name: Restore tools
-        run: dotnet tool restore
+        run: dotnet tool restore --locked-mode
 
       - name: Run CSharpier
         run: dotnet csharpier check .
@@ -66,7 +70,9 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/hackathon-app-task
+
+      - name: Run prettier
+        uses: ./.github/actions/hackathon-app-task
         with:
           task: format:check
 
@@ -75,7 +81,9 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/hackathon-app-task
+
+      - name: Run ESLint
+        uses: ./.github/actions/hackathon-app-task
         with:
             task: lint:check
 
@@ -84,7 +92,9 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/hackathon-app-task
+
+      - name: Run type checking
+        uses: ./.github/actions/hackathon-app-task
         with:
           task: type-check
 
@@ -94,6 +104,8 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
-      - uses: ./.github/actions/hackathon-app-task
+
+      - name: Run unit tests
+        uses: ./.github/actions/hackathon-app-task
         with:
             task: test:unit
