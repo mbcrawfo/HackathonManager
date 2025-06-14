@@ -12,12 +12,13 @@ runs:
       with:
         node-version: 22
         cache: 'npm'
-      working-directory: ./src/hackathon-app
 
     - name: Restore dependencies
       run: npm ci
+      shell: bash
       working-directory: ./src/hackathon-app
 
     - name: Run npm script ${{ inputs.task }}
       run: npm run ${{ inputs.task }}
+      shell: bash
       working-directory: ./src/hackathon-app
