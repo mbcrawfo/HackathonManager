@@ -57,7 +57,7 @@ jobs:
           cache-dependency-path: "**/package-lock.json"
 
       - name: Restore tools
-        run: dotnet tool restore --locked-mode
+        run: dotnet tool restore
 
       - name: Run CSharpier
         run: dotnet csharpier check .
