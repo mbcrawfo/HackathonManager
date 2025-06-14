@@ -21,9 +21,6 @@ indent_size = 2
 [*.sql]
 indent_size = 4
 
-[*.{js,ts,vue}]
-indent_size = 4
-
 [*.cs]
 indent_size = 4
 
