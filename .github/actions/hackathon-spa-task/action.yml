@@ -14,14 +14,14 @@ runs:
     with:
       node-version: 24
       cache: 'npm'
-      cache-dependency-path: ./src/hackathon-app/package-lock.json
+      cache-dependency-path: ./src/hackathon-spa/package-lock.json
 
   - name: Restore dependencies
     run: npm ci
     shell: bash
-    working-directory: ./src/hackathon-app
+    working-directory: ./src/hackathon-spa
 
   - name: Run npm script ${{ inputs.task }}
     run: npm run ${{ inputs.task }}
     shell: bash
-    working-directory: ./src/hackathon-app
+    working-directory: ./src/hackathon-spa

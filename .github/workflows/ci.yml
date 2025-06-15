@@ -83,13 +83,13 @@ jobs:
     runs-on: "ubuntu-latest"
     defaults:
       run:
-        working-directory: ./src/hackathon-app
+        working-directory: ./src/hackathon-spa
     steps:
     - name: Clone the repo
       uses: actions/checkout@v4
 
     - name: Run prettier
-      uses: ./.github/actions/hackathon-app-task
+      uses: ./.github/actions/hackathon-spa-task
       with:
         task: format:check
 
@@ -100,7 +100,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run ESLint
-      uses: ./.github/actions/hackathon-app-task
+      uses: ./.github/actions/hackathon-spa-task
       with:
           task: lint:check
 
@@ -111,7 +111,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run type checking
-      uses: ./.github/actions/hackathon-app-task
+      uses: ./.github/actions/hackathon-spa-task
       with:
         task: type-check
 
@@ -123,9 +123,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build the frontend
-      uses: ./.github/actions/hackathon-app-task
+      uses: ./.github/actions/hackathon-spa-task
       with:
-          task: build -- --outDir="${{ github.workspace }}/artifacts/hackathon-app"
+          task: build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run unit tests
-      uses: ./.github/actions/hackathon-app-task
+      uses: ./.github/actions/hackathon-spa-task
       with:
           task: test:unit -- --coverage
 
@@ -151,5 +151,5 @@ jobs:
       with:
         name: spa-test-results
         path: |
-          ./src/hackathon-app/test-results/
-          ./src/hackathon-app/coverage/
+          ./src/hackathon-spa/test-results/
+          ./src/hackathon-spa/coverage/

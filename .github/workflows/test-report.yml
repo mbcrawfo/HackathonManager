@@ -83,7 +83,7 @@ jobs:
       uses: davelosert/vitest-coverage-report-action@v2
       with:
         name: "SPA Coverage"
-        vite-config-path: src/hackathon-app/vite.config.ts
+        vite-config-path: src/hackathon-spa/vite.config.ts
         json-summary-path: spa-test-results/coverage/coverage-summary.json
         json-final-path: spa-test-results/coverage/coverage-final.json
         pr-number: ${{ github.event.workflow_run.event.pull_request.number }}
