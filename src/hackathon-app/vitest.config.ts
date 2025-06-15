@@ -4,6 +4,12 @@ import { configDefaults, ConfigEnv, defineConfig, mergeConfig } from "vitest/con
 import viteConfig from "./vite.config";
 
 export default (env: ConfigEnv) => {
+    const reporters = ["default", "junit"];
+
+    if (process.env.GITHUB_ACTIONS) {
+        reporters.push("github-actions");
+    }
+
     return mergeConfig(
         viteConfig(env),
         defineConfig({
@@ -11,7 +17,7 @@ export default (env: ConfigEnv) => {
                 environment: "jsdom",
                 exclude: [...configDefaults.exclude, "e2e/**"],
                 root: fileURLToPath(new URL("./", import.meta.url)),
-                reporters: ["default", "junit"],
+                reporters,
                 outputFile: "test-results/unit-tests.xml",
             },
         }),
