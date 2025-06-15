@@ -3,29 +3,65 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  backend-build-and-test:
+  backend-check-formatting:
     runs-on: "ubuntu-latest"
     steps:
     - name: Clone the repo
       uses: actions/checkout@v4
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.x
-        cache: true
-        cache-dependency-path: "**/package-lock.json"
+    - uses: ./.github/actions/dotnet-setup
 
-    - name: Restore NuGet packages
-      run: dotnet restore --locked-mode
+    - name: Restore tools
+      run: dotnet tool restore
+
+    - name: Run CSharpier
+      run: dotnet csharpier check .
+
+  backend-build:
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
+    - uses: ./.github/actions/dotnet-setup
 
     - name: Build
       run: dotnet build --configuration Release
 
+    - name: Publish Migrator
+      run: >-
+        dotnet publish
+        ./src/HackathonManager.Migrator/HackathonManager.Migrator.csproj
+        --no-build
+        --configuration Release
+        --output ./artifacts/HackathonManager.Migrator
+
+    - name: Publish App
+      run: >-
+        dotnet publish
+        ./src/HackathonManager/HackathonManager.csproj
+        --no-build
+        --configuration Release
+        --output ./artifacts/HackathonManager
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-build-artifacts
+        path: ./artifacts/**
+
+  backend-test:
+    needs: [backend-check-formatting, backend-build]
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
+    - uses: ./.github/actions/dotnet-setup
+
     - name: Test
       run: >-
         dotnet test
-        --no-build
         --configuration Release
         --logger "console;verbosity=normal"
         --logger "trx;LogFileName=test-results/results.trx"
@@ -42,26 +78,6 @@ jobs:
       with:
         name: dotnet-test-results
         path: test-results/**
-
-  backend-check-formatting:
-    runs-on: "ubuntu-latest"
-
-    steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
-
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-        cache: true
-        cache-dependency-path: "**/package-lock.json"
-
-    - name: Restore tools
-      run: dotnet tool restore
-
-    - name: Run CSharpier
-      run: dotnet csharpier check .
 
   frontend-check-formatting:
     runs-on: "ubuntu-latest"
@@ -98,6 +114,24 @@ jobs:
       uses: ./.github/actions/hackathon-app-task
       with:
         task: type-check
+
+  frontend-build:
+    needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
+    - name: Build the frontend
+      uses: ./.github/actions/hackathon-app-task
+      with:
+          task: build -- --outDir="${{ github.workspace }}/artifacts/hackathon-app"
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: spa-build-artifacts
+        path: ./artifacts/**
 
   frontend-unit-tests:
     needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
