@@ -13,8 +13,12 @@ permissions:
 
 jobs:
   report:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
     - name: .Net Test Results
       uses: dorny/test-reporter@v2
       with:
@@ -53,4 +57,6 @@ jobs:
       uses: davelosert/vitest-coverage-report-action@v2
       with:
         name: "SPA Coverage"
-        working-directory: spa-test-results/coverage
+        vite-config-path: src/hackathon-app/vite.config.ts
+        json-summary-path: spa-test-results/coverage/coverage-summary.json
+        json-final-path: spa-test-results/coverage/coverage-final.json
