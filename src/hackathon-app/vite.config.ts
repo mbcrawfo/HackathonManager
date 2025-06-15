@@ -1,9 +1,8 @@
-import { fileURLToPath, URL } from "node:url";
-
-import { defineConfig, loadEnv, ServerOptions } from "vite";
-import vue from "@vitejs/plugin-vue";
-import vueDevTools from "vite-plugin-vue-devtools";
 import { readFileSync } from "fs";
+import { fileURLToPath, URL } from "node:url";
+import vue from "@vitejs/plugin-vue";
+import { defineConfig, loadEnv, ServerOptions } from "vite";
+import vueDevTools from "vite-plugin-vue-devtools";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
