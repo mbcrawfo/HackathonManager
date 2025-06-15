@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Local environment files
+.env
+*.local
+
 # Mac specific files
 .DS_Store
 

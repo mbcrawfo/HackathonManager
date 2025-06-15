@@ -1,0 +1,20 @@
+# All dotfiles and directories
+./.*
+
+# All Docker-related files
+*.dockerignore
+*.Dockerfile
+*compose.yml
+
+# All markdown files
+**/*.md
+
+# .Net build artifacts
+**/bin
+**/obj
+
+node_modules
+src/hackathon-spa
+tests
+HackathonManager.sln*
+LICENSE

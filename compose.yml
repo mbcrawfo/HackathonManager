@@ -1,20 +1,24 @@
 services:
   web:
-    container_name: web
+    container_name: hackathon-web
     build:
       context: .
-      dockerfile: src/HackathonManager/Dockerfile
+      dockerfile: integrated.Dockerfile
     environment:
       CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
-      MIGRATEONSTART: "true"
+      ENABLEDSTARTUPMIGRATION: "true"
+      KESTREL__CERTIFICATES__DEFAULT__PATH: /certificates/${CERT_FILE}
+      KESTREL__CERTIFICATES__DEFAULT__KEYPATH: /certificates/${KEY_FILE}
     ports:
-      - ${WEB_PORT:-5000}:8080
+      - ${WEB_PORT:-44300}:443
+    volumes:
+      - ${CERTIFICATES_PATH}:/certificates:ro
     depends_on:
       database:
         condition: service_healthy
 
   database:
-    container_name: database
+    container_name: hackathon-database
     image: postgres:18beta1
     environment:
       POSTGRES_USER: postgres
