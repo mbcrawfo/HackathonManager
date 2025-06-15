@@ -32,5 +32,25 @@ jobs:
         name: SPA Unit Tests
         report-title: SPA Unit Tests
         badge-title: SPA Unit Tests
-        path: "*.xml"
+        path: "test-results/*.xml"
         reporter: jest-junit
+
+    - name: Download Coverage Reports
+      uses: actions/download-artifact@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.workflow_run.id }}
+        pattern: "*-test-results"
+
+    - name: Report .Net Coverage
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: dotnet-test-results/**/*.cobertura.xml
+        format: markdown
+        output: both
+
+    - name: Report SPA Coverage
+      uses: davelosert/vitest-coverage-report-action@v2
+      with:
+        name: "SPA Coverage"
+        working-directory: spa-test-results/coverage

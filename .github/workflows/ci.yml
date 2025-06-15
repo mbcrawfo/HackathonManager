@@ -109,10 +109,12 @@ jobs:
     - name: Run unit tests
       uses: ./.github/actions/hackathon-app-task
       with:
-          task: test:unit
+          task: test:unit -- --coverage
 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: spa-test-results
-        path: ./src/hackathon-app/test-results/*.xml
+        path: |
+          ./src/hackathon-app/test-results/
+          ./src/hackathon-app/coverage/
