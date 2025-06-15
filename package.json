@@ -1,0 +1,4 @@
+{
+  "name": "hackathon-app",
+  "workspaces": ["src/hackathon-spa"]
+}
