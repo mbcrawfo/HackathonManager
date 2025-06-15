@@ -10,7 +10,7 @@ const defaultApiPort = "44301";
 const isValidPort = (port: number) => !isNaN(port) && port > 0 && port <= 65535;
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     const baseConfig: UserConfig = {
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
         },
     };
 
-    if (mode === "test") {
+    if (mode === "test" || command !== "serve") {
         return baseConfig;
     }
 

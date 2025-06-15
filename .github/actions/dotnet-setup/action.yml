@@ -13,3 +13,4 @@ runs:
 
     - name: Restore NuGet packages
       run: dotnet restore --locked-mode
+      shell: bash
