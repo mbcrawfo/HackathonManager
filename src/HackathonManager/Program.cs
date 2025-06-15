@@ -13,7 +13,19 @@ var connectionString =
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+var enableIntegratedSpa = builder.Configuration.GetValue<bool>("EnableIntegratedSpa");
+
+if (enableIntegratedSpa)
+{
+    app.UseStaticFiles();
+}
+
+app.MapGet("/api/hello", () => "Hello World!");
+
+if (enableIntegratedSpa)
+{
+    app.MapFallbackToFile("index.html");
+}
 
 if (app.Configuration.GetValue<bool>("MigrateOnStart"))
 {
