@@ -12,7 +12,7 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 9.x
         cache: true
         cache-dependency-path: "**/package-lock.json"
 
@@ -36,7 +36,7 @@ jobs:
         --results-directory test-results
         --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
 
-    - name: Upload test results artifact
+    - name: Upload test results
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
@@ -111,7 +111,8 @@ jobs:
       with:
           task: test:unit -- --coverage
 
-    - uses: actions/upload-artifact@v4
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: spa-test-results

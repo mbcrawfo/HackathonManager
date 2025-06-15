@@ -19,6 +19,11 @@ jobs:
     - name: Clone the repo
       uses: actions/checkout@v4
 
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
     - name: .Net Test Results
       uses: dorny/test-reporter@v2
       with:
@@ -39,19 +44,40 @@ jobs:
         path: "test-results/*.xml"
         reporter: jest-junit
 
-    - name: Download Coverage Reports
+    - name: Download Coverage Artifacts
       uses: actions/download-artifact@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         run-id: ${{ github.event.workflow_run.id }}
         pattern: "*-test-results"
 
+    - name: .Net Coverage Report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.7
+      with:
+        reports: "dotnet-test-results/**/*.cobertura.xml"
+        targetdir: dotnet-report
+        reporttypes: "HtmlSummary;Cobertura;MarkdownSummary;MarkdownSummaryGithub"
+        verbosity: "Info"
+        title: "Code Coverage"
+        tag: "${{ github.run_number }}_${{ github.run_id }}"
+
     - name: Report .Net Coverage
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: dotnet-test-results/**/*.cobertura.xml
+        filename: "dotnet-test-results/**/*.cobertura.xml"
         format: markdown
         output: both
+
+    - name: .Net Coverage in Step Summary
+      run: cat dotnet-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      shell: bash
+
+    - name: Add comment to PR
+      if: github.event.workflow_run.event.name == 'pull_request'
+      run: gh pr comment $PR_NUMBER --body-file dotnet-report/SummaryGithub.md
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.workflow_run.event.pull_request.number }}
 
     - name: Report SPA Coverage
       uses: davelosert/vitest-coverage-report-action@v2
@@ -60,3 +86,4 @@ jobs:
         vite-config-path: src/hackathon-app/vite.config.ts
         json-summary-path: spa-test-results/coverage/coverage-summary.json
         json-final-path: spa-test-results/coverage/coverage-final.json
+        pr-number: ${{ github.event.workflow_run.event.pull_request.number }}
