@@ -24,6 +24,13 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
+    - name: Download Coverage Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.workflow_run.id }}
+        pattern: "*-test-results"
+
     - name: .Net Test Results
       uses: dorny/test-reporter@v2
       with:
@@ -33,23 +40,6 @@ jobs:
         badge-title: .Net Unit Tests
         path: "test-results/*.trx"
         reporter: dotnet-trx
-
-    - name: SPA Test Results
-      uses: dorny/test-reporter@v2
-      with:
-        artifact: spa-test-results
-        name: SPA Unit Tests
-        report-title: SPA Unit Tests
-        badge-title: SPA Unit Tests
-        path: "test-results/*.xml"
-        reporter: jest-junit
-
-    - name: Download Coverage Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        run-id: ${{ github.event.workflow_run.id }}
-        pattern: "*-test-results"
 
     - name: .Net Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.7
@@ -78,6 +68,16 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.workflow_run.event.pull_request.number }}
+
+    - name: SPA Test Results
+      uses: dorny/test-reporter@v2
+      with:
+        artifact: spa-test-results
+        name: SPA Unit Tests
+        report-title: SPA Unit Tests
+        badge-title: SPA Unit Tests
+        path: "test-results/*.xml"
+        reporter: jest-junit
 
     - name: Report SPA Coverage
       uses: davelosert/vitest-coverage-report-action@v2
