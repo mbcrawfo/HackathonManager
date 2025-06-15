@@ -27,7 +27,7 @@ if (enableIntegratedSpa)
     app.MapFallbackToFile("index.html");
 }
 
-if (app.Configuration.GetValue<bool>("EnabledStartupMigration"))
+if (app.Configuration.GetValue<bool>("EnableStartupMigration"))
 {
     using var scope = app.Services.CreateScope();
     var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();

@@ -6,7 +6,7 @@ services:
       dockerfile: integrated.Dockerfile
     environment:
       CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
-      ENABLEDSTARTUPMIGRATION: "true"
+      ENABLESTARTUPMIGRATION: "true"
       KESTREL__CERTIFICATES__DEFAULT__PATH: /certificates/${CERT_FILE}
       KESTREL__CERTIFICATES__DEFAULT__KEYPATH: /certificates/${KEY_FILE}
     ports:
