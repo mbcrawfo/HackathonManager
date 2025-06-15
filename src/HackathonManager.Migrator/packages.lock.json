@@ -158,7 +158,6 @@
         "resolved": "9.0.6",
         "contentHash": "BHniU24QV67qp1pJknqYSofAPYGmijGI8D+ci9yfw33iuFdyOeB9lWTg78ThyYLyQwZw3s0vZ36VMb0MqbUuLw=="
       }
-    },
-    "net9.0/osx-arm64": {}
+    }
   }
 }
