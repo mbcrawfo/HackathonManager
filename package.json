@@ -1,4 +1,7 @@
 {
   "name": "hackathon-app",
-  "workspaces": ["src/hackathon-spa"]
+  "workspaces": ["src/hackathon-spa"],
+  "scripts": {
+    "spa": "node scripts/spa.js"
+  }
 }

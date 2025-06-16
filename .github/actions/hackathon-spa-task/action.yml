@@ -9,23 +9,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-  # Hack: Cache restore doesn't like the default workspace
-  - run: mv .npmrc .npmrc.bak
-    shell: bash
-
   - name: Set up Node.js
     uses: actions/setup-node@v4
     with:
       node-version: 24
       cache: 'npm'
 
-  - run: mv .npmrc.bak .npmrc
-    shell: bash
-
   - name: Restore dependencies
     run: npm ci
     shell: bash
 
   - name: Run npm script ${{ inputs.task }}
-    run: npm run ${{ inputs.task }}
+    run: npm run spa ${{ inputs.task }}
     shell: bash
