@@ -6,6 +6,11 @@ if (!command) {
   process.exit(1);
 }
 
-spawn("npm", ["run", "--workspace", "src/hackathon-spa", command ], {
+let args = [];
+if (process.argv.length > 3) {
+  args = process.argv.slice(3);
+}
+
+spawn("npm", ["run", "--workspace", "src/hackathon-spa", command, "--", ...args], {
   stdio: "inherit",
 });
