@@ -16,12 +16,21 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      seq:
+        condition: service_healthy
 
   database:
     extends:
       file: dependencies.yml
       service: database
 
+  seq:
+    extends:
+      file: dependencies.yml
+      service: seq
+
 volumes:
   database:
+    driver: local
+  seq:
     driver: local
