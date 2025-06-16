@@ -21,7 +21,7 @@ WORKDIR /build
 
 COPY package.json package-lock.json ./
 COPY src/hackathon-spa/package.json ./src/hackathon-spa/
-RUN npm ci --workspace=src/hackathon-spa
+RUN npm ci
 
 COPY src/hackathon-spa ./src/hackathon-spa
 RUN npm run build --workspace=src/hackathon-spa -- --outDir /app/publish
@@ -35,8 +35,11 @@ COPY --from=build-spa /app/publish ./wwwroot
 RUN mkdir /certificates
 
 ENV ENABLEINTEGRATEDSPA=true
-ENV HTTP_PORTS=
+ENV HTTP_PORTS=8080
 ENV HTTPS_PORTS=443
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=2s --start-interval=1s --retries=30 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 VOLUME /certificates
 EXPOSE 443

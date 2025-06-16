@@ -1,5 +1,5 @@
 # All dotfiles and directories
-./.*
+**/.*
 
 # All Docker-related files
 *.dockerignore
@@ -9,11 +9,14 @@
 # All markdown files
 **/*.md
 
-# .Net build artifacts
 **/bin
+**/coverage
+**/dist
+**/node_modules
 **/obj
+**/test-results
 
-node_modules
+scripts
 tests
 HackathonManager.sln*
 LICENSE
