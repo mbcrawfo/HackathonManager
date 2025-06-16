@@ -1,0 +1,55 @@
+services:
+  proxy:
+    container_name: hackathon-proxy
+    build:
+      context: docker
+      dockerfile: reverse-proxy.Dockerfile
+    environment:
+      CERT_PATH: /certificates/${CERT_FILE}
+      KEY_PATH: /certificates/${KEY_FILE}
+    ports:
+      - ${WEB_PORT:-44300}:443
+    volumes:
+      - ${CERTIFICATES_PATH}:/certificates:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  spa:
+    container_name: hackathon-spa
+    build:
+      context: .
+      dockerfile: docker/spa.Dockerfile
+    environment:
+      CERT_PATH: /certificates/${CERT_FILE}
+      KEY_PATH: /certificates/${KEY_FILE}
+    volumes:
+      - ${CERTIFICATES_PATH}:/certificates:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    container_name: hackathon-api
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    environment:
+      CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
+      ENABLESTARTUPMIGRATION: "true"
+      KESTREL__CERTIFICATES__DEFAULT__PATH: /certificates/${CERT_FILE}
+      KESTREL__CERTIFICATES__DEFAULT__KEYPATH: /certificates/${KEY_FILE}
+    volumes:
+      - ${CERTIFICATES_PATH}:/certificates:ro
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    extends:
+      file: dependencies.yml
+      service: database
+
+volumes:
+  database:
+    driver: local

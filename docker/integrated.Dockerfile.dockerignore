@@ -1,14 +1,16 @@
 # All dotfiles and directories
 **/.*
 
-# All Docker-related files
-*.dockerignore
-*.Dockerfile
-*compose.yml
+# Docker files
+docker
+compose-standalone.yml
+compose.yml
+dependencies.yml
 
 # All markdown files
 **/*.md
 
+# Output and intermediate files
 **/bin
 **/coverage
 **/dist
@@ -16,6 +18,7 @@
 **/obj
 **/test-results
 
+# Top level directories
 scripts
 tests
 HackathonManager.sln*

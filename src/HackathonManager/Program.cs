@@ -11,6 +11,8 @@ var connectionString =
     builder.Configuration.GetConnectionString("HackathonDb")
     ?? throw new InvalidOperationException("Connection string 'HackathonDb' is not configured.");
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 var enableIntegratedSpa = builder.Configuration.GetValue<bool>("EnableIntegratedSpa");
@@ -19,6 +21,8 @@ if (enableIntegratedSpa)
 {
     app.UseStaticFiles();
 }
+
+app.UseHealthChecks("/health");
 
 app.MapGet("/api/hello", () => "Hello World!");
 

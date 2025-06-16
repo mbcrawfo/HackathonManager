@@ -1,4 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+# Builds a standalone HackathonManager API image.
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-dotnet
 WORKDIR /build
 
 # See https://github.com/NuGet/Home/issues/13062
@@ -17,7 +19,19 @@ COPY src/HackathonManager ./HackathonManager
 RUN dotnet publish ./HackathonManager/HackathonManager.csproj --no-restore --configuration Release --output /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
-ENV ENABLEINTEGRATEDSPA=false
+
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=build-dotnet /app/publish .
+
+RUN mkdir /certificates
+VOLUME /certificates
+
+ENV ENABLEINTEGRATEDSPA=false
+ENV HTTP_PORTS=8080
+ENV HTTPS_PORTS=443
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=2s --start-interval=1s --retries=30 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+EXPOSE 443
 ENTRYPOINT ["dotnet", "HackathonManager.dll"]

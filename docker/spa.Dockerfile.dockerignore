@@ -1,0 +1,32 @@
+# All dotfiles and directories
+**/.*
+
+# Docker files
+**/*.Dockerfile
+**/*.dockerignore
+compose-standalone.yml
+compose.yml
+dependencies.yml
+
+# .Net projects
+src/HackathonManager
+src/HackathonManager.Migrator
+
+# All markdown files
+**/*.md
+
+# Output and intermediate files
+**/bin
+**/coverage
+**/dist
+**/node_modules
+**/obj
+**/test-results
+
+# Top level directories
+scripts
+tests
+Directory.*
+global.json
+HackathonManager.sln*
+LICENSE

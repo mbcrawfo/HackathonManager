@@ -5,4 +5,7 @@
     <ItemGroup>
         <ProjectReference Include="..\HackathonManager.Migrator\HackathonManager.Migrator.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    </ItemGroup>
 </Project>

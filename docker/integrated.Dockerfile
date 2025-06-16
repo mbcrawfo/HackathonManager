@@ -1,4 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-dotnet
+# Builds an integrated HackathonManager image with the SPA built into the .NET app.
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-dotnet
 WORKDIR /build
 
 # See https://github.com/NuGet/Home/issues/13062
@@ -16,7 +18,7 @@ COPY src/HackathonManager.Migrator ./HackathonManager.Migrator
 COPY src/HackathonManager ./HackathonManager
 RUN dotnet publish ./HackathonManager/HackathonManager.csproj --no-restore --configuration Release --output /app/publish /p:UseAppHost=false
 
-FROM node:24-alpine AS build-spa
+FROM node:24 AS build-spa
 WORKDIR /build
 
 COPY package.json package-lock.json ./
@@ -33,6 +35,7 @@ COPY --from=build-dotnet /app/publish .
 COPY --from=build-spa /app/publish ./wwwroot
 
 RUN mkdir /certificates
+VOLUME /certificates
 
 ENV ENABLEINTEGRATEDSPA=true
 ENV HTTP_PORTS=8080
@@ -41,6 +44,5 @@ ENV HTTPS_PORTS=443
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2s --start-interval=1s --retries=30 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
-VOLUME /certificates
 EXPOSE 443
 ENTRYPOINT ["dotnet", "HackathonManager.dll"]

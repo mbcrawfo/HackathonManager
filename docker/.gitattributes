@@ -1,0 +1,3 @@
+# Files used in containers need unix line endings
+*.conf text=auto eol=lf
+*.sh text=auto eol=lf

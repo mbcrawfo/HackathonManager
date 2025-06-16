@@ -1,0 +1,30 @@
+# All dotfiles and directories
+**/.*
+
+# Docker files
+docker
+compose-standalone.yml
+compose.yml
+dependencies.yml
+
+# SPA related files
+src/hackathon-spa
+**/package-lock.json
+**/package.json
+
+# All markdown files
+**/*.md
+
+# Output and intermediate files
+**/bin
+**/coverage
+**/dist
+**/node_modules
+**/obj
+**/test-results
+
+# Top level directories
+scripts
+tests
+HackathonManager.sln*
+LICENSE
