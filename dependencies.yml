@@ -24,7 +24,7 @@ services:
       ACCEPT_EULA: Y
       SEQ_API_CANONICALURI: https://localhost:${SEQ_PORT:-44301}
     ports:
-      - ${SEQ_PORT:-44301}:443
+      - ${SEQ_PORT:-44302}:443
     volumes:
       - seq:/data
       - ${CERTIFICATES_PATH}/${CERT_FILE}:/data/Certificates/443.pem:ro

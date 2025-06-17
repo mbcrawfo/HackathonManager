@@ -7,6 +7,10 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <!--
+            S1135: "Complete TODO tasks": C'mon, the compiler doesn't need to tell us about these.
+        -->
+        <NoWarn>$(NoWarn);S1135</NoWarn>
+        <!--
             CS0618: "Type or member is obsolete": Just because something is obsolete doesn't mean we can stop using it
                 immediately.
             NU190x: "NuGet audit warnings": Need to know about them, but they should not block the build.

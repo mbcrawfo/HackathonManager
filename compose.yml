@@ -9,6 +9,11 @@ services:
       ENABLESTARTUPMIGRATION: "true"
       KESTREL__CERTIFICATES__DEFAULT__PATH: /certificates/${CERT_FILE}
       KESTREL__CERTIFICATES__DEFAULT__KEYPATH: /certificates/${KEY_FILE}
+      LOG__ENABLECONSOLETEXTLOGGING: "true"
+      LOG__ENABLEOPENTELEMETRYLOGGING: "true"
+      LOG__OPENTELEMETRYLOGLEVEL: Verbose
+      LOG__OPENTELEMETRYENDPOINT: http://seq:80/ingest/otlp/v1/logs
+      LOG__OPENTELEMETRYPROTOCOL: HttpProtobuf
     ports:
       - ${WEB_PORT:-44300}:443
     volumes:
