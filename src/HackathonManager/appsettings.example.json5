@@ -1,0 +1,50 @@
+// Documents all of the settings available for the Hackathon Manager application.
+{
+  "ConnectionStrings": {
+    "HackathonDb": "See Npgsql documentation for PostgreSQL connection string format."
+  },
+
+  // When true, serve the SPA using this app's Kestrel server.  SPA files must be in the ./wwwroot directory.
+  "EnableIntegratedSpa": false,
+
+  // When true, apply migrations to the database after the app completes startup.
+  "EnableStartupMigration": false,
+
+  // Logging output settings.
+  "Log": {
+    // Enables text logging using the format specified in ConsoleOutputTemplate.
+    "EnableConsoleTextLogging": false,
+    "ConsoleOutputTemplate": "See Serilog documentation for template format.",
+
+    // Enables structured logging of json objects to the console.
+    "EnableConsoleJsonLogging": false,
+    "ConsoleLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
+
+    // Enables logging to rotating files in ./logs.
+    "EnableFileLogging": false,
+    "FileLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
+
+    // Enables logging to an OpenTelemetry collector.
+    "EnableOpenTelemetryLogging": false,
+    "OpenTelemetryLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
+    "OpenTelemetryEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
+    "OpenTelemetryProtocol": "HttpProtobuf|Grpc",
+    // Dictionary of headers to send with OpenTelemetry requests.
+    "OpenTelemetryHeaders": {
+      "X-Api-Key": "super-secret-api-key"
+    }
+  },
+
+  "Serilog": {
+    // Minimum log level for the entire app.  Can overriden for specific sinks.
+    "MinimumLevel": {
+      "Default": "Verbose|Debug|Information|Warning|Error|Fatal",
+
+      // Override the minimum log level for specific namespaces or classes.
+      "Override": {
+        "Microsoft.Hosting.Lifetime": "Debug",
+        "System": "Error"
+      }
+    },
+  }
+}
