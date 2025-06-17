@@ -7,6 +7,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Destructurama.Attributed" />
+        <PackageReference Include="DotNetEnv" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />

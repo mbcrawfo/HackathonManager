@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
+DotNetEnv.Env.LoadMulti([".env", ".env.local"]);
+
 Log.Logger = SerilogConfiguration.CreateBootstrapLogger(args);
 var logger = Log.Logger.ForContext<Program>();
 var assembly = typeof(Program).Assembly;
@@ -50,7 +52,7 @@ try
 
     app.UseHealthChecks("/health");
 
-    app.MapGet("/api/hello", () => "Hello World!");
+    app.MapGet("/api/hello", () => "Hello World!!");
 
     if (enableIntegratedSpa)
     {
