@@ -41,6 +41,7 @@ try
     var app = builder.Build();
 
     var enableIntegratedSpa = builder.Configuration.GetValue<bool>("EnableIntegratedSpa");
+    logger.Information("EnableIntegratedSpa={Value}", enableIntegratedSpa);
 
     if (enableIntegratedSpa)
     {
@@ -56,7 +57,9 @@ try
         app.MapFallbackToFile("index.html");
     }
 
-    if (app.Configuration.GetValue<bool>("EnableStartupMigration"))
+    var enableStartupMigration = app.Configuration.GetValue<bool>("EnableStartupMigration");
+    logger.Information("EnableStartupMigration={Value}", enableStartupMigration);
+    if (enableStartupMigration)
     {
         using var scope = app.Services.CreateScope();
         var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();

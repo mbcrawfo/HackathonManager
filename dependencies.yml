@@ -19,16 +19,15 @@ services:
 
   seq:
     container_name: hackathon-seq
-    image: datalust/seq:latest
+    image: datalust/seq
     environment:
       ACCEPT_EULA: Y
-      SEQ_API_CANONICALURI: https://localhost:${SEQ_PORT:-44301}
+      SEQ_API_CANONICALURI: http://localhost:${SEQ_PORT:-5341}
+      SEQ_DIAGNOSTICS_INTERNALLOGGINGLEVEL: Warning
     ports:
-      - ${SEQ_PORT:-44302}:443
+      - ${SEQ_PORT:-5341}:80
     volumes:
       - seq:/data
-      - ${CERTIFICATES_PATH}/${CERT_FILE}:/data/Certificates/443.pem:ro
-      - ${CERTIFICATES_PATH}/${KEY_FILE}:/data/Certificates/443-key.pem:ro
     healthcheck:
         test: "/seqsvr/Client/seqcli node health -s http://localhost"
         start_period: 5s

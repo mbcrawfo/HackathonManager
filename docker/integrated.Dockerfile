@@ -34,15 +34,9 @@ WORKDIR /app
 COPY --from=build-dotnet /app/publish .
 COPY --from=build-spa /app/publish ./wwwroot
 
-RUN mkdir /certificates
-VOLUME /certificates
-
 ENV ENABLEINTEGRATEDSPA=true
-ENV HTTP_PORTS=8080
-ENV HTTPS_PORTS=443
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2s --start-interval=1s --retries=30 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
-EXPOSE 443
 ENTRYPOINT ["dotnet", "HackathonManager.dll"]

@@ -1,11 +1,10 @@
-import { readFileSync } from "fs";
 import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig, loadEnv, ServerOptions, UserConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
-const defaultPort = "44300";
-const defaultApiPort = "44301";
+const defaultPort = "5000";
+const defaultApiPort = "5001";
 
 const isValidPort = (port: number) => !isNaN(port) && port > 0 && port <= 65535;
 
@@ -26,10 +25,6 @@ export default defineConfig(({ command, mode }) => {
         return baseConfig;
     }
 
-    if (!process.env.VITE_CERT_PATH || !process.env.VITE_KEY_PATH) {
-        throw new Error("VITE_CERT_PATH and VITE_KEY_PATH must be set.");
-    }
-
     const port = parseInt(process.env.VITE_PORT ?? defaultPort, 10);
     if (!isValidPort(port)) {
         throw new Error(`Invalid VITE_PORT: ${process.env.VITE_PORT}`);
@@ -42,12 +37,8 @@ export default defineConfig(({ command, mode }) => {
 
     const commonOptions: Pick<ServerOptions, "port" | "https" | "proxy"> = {
         port,
-        https: {
-            cert: readFileSync(process.env.VITE_CERT_PATH),
-            key: readFileSync(process.env.VITE_KEY_PATH),
-        },
         proxy: {
-            "/api": `https://localhost:${apiPort}`,
+            "/api": `http://localhost:${apiPort}`,
         },
     };
 

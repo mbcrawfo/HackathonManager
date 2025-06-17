@@ -1,16 +1,11 @@
 services:
   proxy:
     container_name: hackathon-proxy
-    build:
-      context: docker
-      dockerfile: reverse-proxy.Dockerfile
-    environment:
-      CERT_PATH: /certificates/${CERT_FILE}
-      KEY_PATH: /certificates/${KEY_FILE}
+    image: nginx:1.28-alpine
     ports:
-      - ${WEB_PORT:-44300}:443
+      - ${WEB_PORT:-5000}:80
     volumes:
-      - ${CERTIFICATES_PATH}:/certificates:ro
+      - ./docker/reverse-proxy.nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       api:
         condition: service_healthy
@@ -20,11 +15,6 @@ services:
     build:
       context: .
       dockerfile: docker/spa.Dockerfile
-    environment:
-      CERT_PATH: /certificates/${CERT_FILE}
-      KEY_PATH: /certificates/${KEY_FILE}
-    volumes:
-      - ${CERTIFICATES_PATH}:/certificates:ro
     depends_on:
       api:
         condition: service_healthy
@@ -37,15 +27,11 @@ services:
     environment:
       CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
       ENABLESTARTUPMIGRATION: "true"
-      KESTREL__CERTIFICATES__DEFAULT__PATH: /certificates/${CERT_FILE}
-      KESTREL__CERTIFICATES__DEFAULT__KEYPATH: /certificates/${KEY_FILE}
       LOG__ENABLECONSOLETEXTLOGGING: "true"
       LOG__ENABLEOPENTELEMETRYLOGGING: "true"
       LOG__OPENTELEMETRYLOGLEVEL: Verbose
-      LOG__OPENTELEMETRYENDPOINT: http://seq:80/ingest/otlp/v1/logs
+      LOG__OPENTELEMETRYENDPOINT: http://seq:5341/ingest/otlp/v1/logs
       LOG__OPENTELEMETRYPROTOCOL: HttpProtobuf
-    volumes:
-      - ${CERTIFICATES_PATH}:/certificates:ro
     depends_on:
       database:
         condition: service_healthy

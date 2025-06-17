@@ -13,13 +13,4 @@ RUN npm run build --workspace=src/hackathon-spa -- --outDir /app/publish
 FROM nginx:1.28-alpine AS final
 
 COPY --from=build-spa /app/publish /www/html
-
-COPY docker/nginx-entrypoint.sh /
-COPY docker/spa.nginx.conf /nginx.conf
-RUN chmod +x /nginx-entrypoint.sh
-
-RUN mkdir /certificates
-VOLUME /certificates
-
-EXPOSE 443
-ENTRYPOINT [ "/nginx-entrypoint.sh" ]
+COPY docker/spa.nginx.conf /etc/nginx/conf.d/default.conf
