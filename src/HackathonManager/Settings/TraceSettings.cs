@@ -5,7 +5,7 @@ using OpenTelemetry.Exporter;
 
 namespace HackathonManager.Settings;
 
-public class TraceSettings
+public sealed class TraceSettings
 {
     public const string ConfigurationSection = "Trace";
 
@@ -20,7 +20,6 @@ public class TraceSettings
     public bool EnableUrlQueryRedaction { get; init; }
 }
 
-[UsedImplicitly]
 public sealed class TraceSettingsValidator : AbstractValidator<TraceSettings>
 {
     public TraceSettingsValidator()

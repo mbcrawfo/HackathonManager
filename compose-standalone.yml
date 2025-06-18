@@ -24,17 +24,7 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-    environment:
-      CONNECTIONSTRINGS__HACKATHONDB: Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon
-      ENABLESTARTUPMIGRATION: "true"
-      LOG__ENABLECONSOLETEXTLOGGING: "true"
-      LOG__ENABLEOPENTELEMETRYLOGGING: "true"
-      LOG__OPENTELEMETRYLOGLEVEL: Verbose
-      LOG__OPENTELEMETRYENDPOINT: http://seq:5341/ingest/otlp/v1/logs
-      LOG__OPENTELEMETRYPROTOCOL: HttpProtobuf
-      TRACE__ENABLED: "true"
-      TRACE__OTLPENDPOINT: http://seq:5341/ingest/otlp/v1/traces
-      TRACE__OTLPPROTOCOL: HttpProtobuf
+    env_file: dotnet-app.env
     depends_on:
       database:
         condition: service_healthy

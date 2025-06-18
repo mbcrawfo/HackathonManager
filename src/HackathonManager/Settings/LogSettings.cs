@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FluentValidation;
+using JetBrains.Annotations;
 using Serilog.Events;
 using Serilog.Sinks.OpenTelemetry;
 
@@ -16,7 +17,7 @@ public sealed class LogSettings
 
     public bool EnableConsoleJsonLogging { get; init; }
 
-    public LogEventLevel ConsoleLogLevel { get; init; } = LogEventLevel.Information;
+    public LogEventLevel ConsoleLogLevel { get; init; } = LogEventLevel.Verbose;
 
     public bool EnableFileLogging { get; init; }
 
