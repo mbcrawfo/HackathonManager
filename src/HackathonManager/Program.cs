@@ -102,6 +102,26 @@ finally
 void AddOpenTelemetry(WebApplicationBuilder builder)
 {
     var serviceName = builder.Configuration.GetValue<string>("ServiceName") ?? AppInfo.Name;
+    var traceSettings =
+        builder.Configuration.GetSection(TraceSettings.ConfigurationSection).Get<TraceSettings>()
+        ?? new TraceSettings();
+    if (new TraceSettingsValidator().Validate(traceSettings) is { IsValid: false } validationResult)
+    {
+        throw new OptionsValidationException(
+            nameof(TraceSettings),
+            typeof(TraceSettings),
+            FluentValidateOptions<TraceSettings>.FormatValidationErrors(validationResult)
+        );
+    }
+
+    if (!traceSettings.EnableUrlQueryRedaction)
+    {
+        // Redaction is enabled by default and can only be disabled via environment variables.
+        // See https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/1954
+        Environment.SetEnvironmentVariable("OTEL_DOTNET_EXPERIMENTAL_ASPNETCORE_DISABLE_URL_QUERY_REDACTION", "true");
+        Environment.SetEnvironmentVariable("OTEL_DOTNET_EXPERIMENTAL_HTTPCLIENT_DISABLE_URL_QUERY_REDACTION", "true");
+    }
+
     builder
         .Services.AddOpenTelemetry()
         .WithTracing(tracerBuilder =>
@@ -128,25 +148,13 @@ void AddOpenTelemetry(WebApplicationBuilder builder)
                 })
                 .AddHttpClientInstrumentation();
 
-            var settings =
-                builder.Configuration.GetSection(TraceSettings.ConfigurationSection).Get<TraceSettings>()
-                ?? new TraceSettings();
-            if (new TraceSettingsValidator().Validate(settings) is { IsValid: false } validationResult)
-            {
-                throw new OptionsValidationException(
-                    nameof(TraceSettings),
-                    typeof(TraceSettings),
-                    FluentValidateOptions<TraceSettings>.FormatValidationErrors(validationResult)
-                );
-            }
-
-            if (settings.Enabled)
+            if (traceSettings.Enabled)
             {
                 tracerBuilder.AddOtlpExporter(options =>
                 {
-                    options.Endpoint = new Uri(settings.OtlpEndpoint!);
-                    options.Protocol = settings.OtlpProtocol!.Value;
-                    options.Headers = settings.OtlpHeaders;
+                    options.Endpoint = new Uri(traceSettings.OtlpEndpoint!);
+                    options.Protocol = traceSettings.OtlpProtocol!.Value;
+                    options.Headers = traceSettings.OtlpHeaders;
                 });
             }
         });

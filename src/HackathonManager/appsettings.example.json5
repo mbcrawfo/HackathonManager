@@ -58,5 +58,7 @@
     "OtlpProtocol": "HttpProtobuf|Grpc",
     // Optional comma separated list of key value pairs to send as headers with trace requests.
     "OtlpHeaders": "X-Api-Key=super-secret-api-key,Another-Header=header-value",
+    // Enable OpenTelemetry to redact query string parameters in traces.
+    "EnableUrlQueryRedaction": false
   }
 }

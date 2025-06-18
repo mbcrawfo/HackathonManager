@@ -16,6 +16,8 @@ public class TraceSettings
     public OtlpExportProtocol? OtlpProtocol { get; init; }
 
     public string? OtlpHeaders { get; init; }
+
+    public bool EnableUrlQueryRedaction { get; init; }
 }
 
 [UsedImplicitly]
