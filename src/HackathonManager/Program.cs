@@ -1,31 +1,36 @@
 using System;
+using DotNetEnv;
 using FluentValidation;
 using HackathonManager;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Settings;
+using HackathonManager.Utilities;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 
-DotNetEnv.Env.LoadMulti([".env", ".env.local"]);
+Env.LoadMulti([".env", ".env.local"]);
 
 Log.Logger = SerilogConfiguration.CreateBootstrapLogger(args);
 var logger = Log.Logger.ForContext<Program>();
-var assembly = typeof(Program).Assembly;
-logger.Information(
-    "{Application} version {Version} starting up...",
-    assembly.GetName().Name,
-    assembly.GetName().Version?.ToString() ?? "(unknown)"
-);
+logger.Information("{Application} version {Version} starting up...", AppInfo.Name, AppInfo.Version);
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddSerilog((_, config) => config.ConfigureAppLogger(builder.Configuration));
+    builder.Services.AddSerilog(
+        (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>())
+    );
+
+    AddOpenTelemetry(builder);
 
     var connectionString =
         builder.Configuration.GetConnectionString("HackathonDb")
@@ -36,7 +41,12 @@ try
         .BindConfiguration(LogSettings.ConfigurationSection)
         .UseFluentValidation();
 
-    builder.Services.AddValidatorsFromAssembly(assembly);
+    builder
+        .Services.AddOptionsWithValidateOnStart<TraceSettings>()
+        .BindConfiguration(TraceSettings.ConfigurationSection)
+        .UseFluentValidation();
+
+    builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
 
     builder.Services.AddHealthChecks();
 
@@ -52,7 +62,14 @@ try
 
     app.UseHealthChecks("/health");
 
-    app.MapGet("/api/hello", () => "Hello World!!");
+    app.MapGet(
+        "/api/hello",
+        ([FromServices] ILogger<Program> l) =>
+        {
+            l.LogInformation("Hello endpoint called");
+            return "Hello World!!";
+        }
+    );
 
     if (enableIntegratedSpa)
     {
@@ -78,6 +95,59 @@ catch (Exception ex)
 }
 finally
 {
-    logger.Information("{Application} shut down", assembly.GetName().Name!);
+    logger.Information("{Application} shut down", AppInfo.Name);
     await Log.CloseAndFlushAsync();
+}
+
+void AddOpenTelemetry(WebApplicationBuilder builder)
+{
+    var serviceName = builder.Configuration.GetValue<string>("ServiceName") ?? AppInfo.Name;
+    builder
+        .Services.AddOpenTelemetry()
+        .WithTracing(tracerBuilder =>
+        {
+            tracerBuilder
+                .AddSource(serviceName)
+                .SetResourceBuilder(
+                    ResourceBuilder
+                        .CreateDefault()
+                        .AddService(
+                            serviceName,
+                            serviceVersion: AppInfo.Version,
+                            serviceInstanceId: Environment.MachineName
+                        )
+                )
+                .AddAspNetCoreInstrumentation(config =>
+                {
+                    config.EnrichWithHttpRequest = (activity, request) =>
+                    {
+                        // Matches the properties Asp.Net adds to the request's logging scope.
+                        activity.SetTag("ConnectionId", request.HttpContext.Connection.Id);
+                        activity.SetTag("RequestId", request.HttpContext.TraceIdentifier);
+                    };
+                })
+                .AddHttpClientInstrumentation();
+
+            var settings =
+                builder.Configuration.GetSection(TraceSettings.ConfigurationSection).Get<TraceSettings>()
+                ?? new TraceSettings();
+            if (new TraceSettingsValidator().Validate(settings) is { IsValid: false } validationResult)
+            {
+                throw new OptionsValidationException(
+                    nameof(TraceSettings),
+                    typeof(TraceSettings),
+                    FluentValidateOptions<TraceSettings>.FormatValidationErrors(validationResult)
+                );
+            }
+
+            if (settings.Enabled)
+            {
+                tracerBuilder.AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri(settings.OtlpEndpoint!);
+                    options.Protocol = settings.OtlpProtocol!.Value;
+                    options.Headers = settings.OtlpHeaders;
+                });
+            }
+        });
 }

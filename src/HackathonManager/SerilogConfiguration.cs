@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Destructurama;
 using HackathonManager.Settings;
 using HackathonManager.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
@@ -27,7 +27,7 @@ public static class SerilogConfiguration
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile($"appsettings.{environment}.json", optional: true)
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true)
+            .AddUserSecrets(AppInfo.Assembly, optional: true)
             .AddEnvironmentVariables()
             .AddCommandLine(args)
             .Build();
@@ -40,9 +40,11 @@ public static class SerilogConfiguration
         IConfiguration appConfiguration
     )
     {
+        var serviceName = appConfiguration.GetValue<string>("ServiceName") ?? AppInfo.Name;
+
         var settings =
             appConfiguration.GetSection(LogSettings.ConfigurationSection).Get<LogSettings>() ?? new LogSettings();
-        if (new LogSettings.Validator().Validate(settings) is { IsValid: false } validationResult)
+        if (new LogSettingsValidator().Validate(settings) is { IsValid: false } validationResult)
         {
             throw new OptionsValidationException(
                 nameof(LogSettings),
@@ -82,13 +84,17 @@ public static class SerilogConfiguration
             loggerConfiguration.WriteTo.OpenTelemetry(options =>
             {
                 options.RestrictedToMinimumLevel = settings.OpenTelemetryLogLevel;
-                options.Endpoint = settings.OpenTelemetryEndpoint;
-                options.Protocol = settings.OpenTelemetryProtocol!.Value; // Validation ensures this is not null
-                options.Headers = settings.OpenTelemetryHeaders ?? new Dictionary<string, string>();
-                // TODO: Enable after adding tracing to the project
-                //options.OnBeginSuppressInstrumentation =
-
-                options.ResourceAttributes = new Dictionary<string, object> { { "service.name", "HackathonManager" } };
+                options.Endpoint = settings.OtlpEndpoint;
+                options.Protocol = settings.OtlpProtocol!.Value; // Validation ensures this is not null
+                options.Headers = settings.OtlpHeaders ?? new Dictionary<string, string>();
+                options.OnBeginSuppressInstrumentation = SuppressInstrumentationScope.Begin;
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    // Matches the OpenTelemetry tracing setup.
+                    { "service.name", serviceName },
+                    { "service.version", AppInfo.Version },
+                    { "service.instance.id", Environment.MachineName },
+                };
             });
         }
 

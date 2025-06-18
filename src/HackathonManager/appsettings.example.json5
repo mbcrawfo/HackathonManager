@@ -1,5 +1,8 @@
 // Documents all of the settings available for the Hackathon Manager application.
 {
+  // Name used for OpenTelemetry logs and traces.
+  "ServiceName": "service-name",
+
   "ConnectionStrings": {
     "HackathonDb": "See Npgsql documentation for PostgreSQL connection string format."
   },
@@ -27,10 +30,10 @@
     // Enables logging to an OpenTelemetry collector.
     "EnableOpenTelemetryLogging": false,
     "OpenTelemetryLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
-    "OpenTelemetryEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
-    "OpenTelemetryProtocol": "HttpProtobuf|Grpc",
-    // Dictionary of headers to send with OpenTelemetry requests.
-    "OpenTelemetryHeaders": {
+    "OtlpEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
+    "OtlpProtocol": "HttpProtobuf|Grpc",
+    // Optional dictionary of headers to send with OTLP log requests.
+    "OtlpHeaders": {
       "X-Api-Key": "super-secret-api-key"
     }
   },
@@ -46,5 +49,14 @@
         "System": "Error"
       }
     },
+  },
+
+  // OpenTelemetry tracing settings.
+  "Trace": {
+    "Enabled": false,
+    "OtlpEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
+    "OtlpProtocol": "HttpProtobuf|Grpc",
+    // Optional comma separated list of key value pairs to send as headers with trace requests.
+    "OtlpHeaders": "X-Api-Key=super-secret-api-key,Another-Header=header-value",
   }
 }

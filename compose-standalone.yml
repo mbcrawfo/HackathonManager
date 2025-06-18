@@ -32,6 +32,9 @@ services:
       LOG__OPENTELEMETRYLOGLEVEL: Verbose
       LOG__OPENTELEMETRYENDPOINT: http://seq:5341/ingest/otlp/v1/logs
       LOG__OPENTELEMETRYPROTOCOL: HttpProtobuf
+      TRACE__ENABLED: "true"
+      TRACE__OTLPENDPOINT: http://seq:5341/ingest/otlp/v1/traces
+      TRACE__OTLPPROTOCOL: HttpProtobuf
     depends_on:
       database:
         condition: service_healthy

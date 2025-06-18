@@ -26,39 +26,39 @@ public sealed class LogSettings
 
     public LogEventLevel OpenTelemetryLogLevel { get; init; } = LogEventLevel.Information;
 
-    public string? OpenTelemetryEndpoint { get; init; }
+    public string? OtlpEndpoint { get; init; }
 
-    public OtlpProtocol? OpenTelemetryProtocol { get; init; }
+    public OtlpProtocol? OtlpProtocol { get; init; }
 
-    public Dictionary<string, string>? OpenTelemetryHeaders { get; init; }
+    public Dictionary<string, string>? OtlpHeaders { get; init; }
+}
 
-    public sealed class Validator : AbstractValidator<LogSettings>
+public sealed class LogSettingsValidator : AbstractValidator<LogSettings>
+{
+    public LogSettingsValidator()
     {
-        public Validator()
-        {
-            When(
-                x => x.EnableConsoleTextLogging,
-                () =>
-                {
-                    RuleFor(x => x.ConsoleOutputTemplate).NotEmpty();
+        When(
+            x => x.EnableConsoleTextLogging,
+            () =>
+            {
+                RuleFor(x => x.ConsoleOutputTemplate).NotEmpty();
 
-                    RuleFor(x => x.EnableConsoleJsonLogging)
-                        .Must(x => !x)
-                        .WithMessage(
-                            $"{nameof(EnableConsoleJsonLogging)} can not be enabled when {nameof(EnableConsoleTextLogging)} is enabled."
-                        );
-                }
-            );
+                RuleFor(x => x.EnableConsoleJsonLogging)
+                    .Must(x => !x)
+                    .WithMessage(
+                        $"{nameof(LogSettings.EnableConsoleJsonLogging)} can not be enabled when {nameof(LogSettings.EnableConsoleTextLogging)} is enabled."
+                    );
+            }
+        );
 
-            When(
-                x => x.EnableOpenTelemetryLogging,
-                () =>
-                {
-                    RuleFor(x => x.OpenTelemetryEndpoint).NotEmpty();
+        When(
+            x => x.EnableOpenTelemetryLogging,
+            () =>
+            {
+                RuleFor(x => x.OtlpEndpoint).NotEmpty();
 
-                    RuleFor(x => x.OpenTelemetryProtocol).NotNull().IsInEnum();
-                }
-            );
-        }
+                RuleFor(x => x.OtlpProtocol).NotNull().IsInEnum();
+            }
+        );
     }
 }
