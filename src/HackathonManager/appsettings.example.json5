@@ -21,16 +21,21 @@
 
     // Enables structured logging of json objects to the console.
     "EnableConsoleJsonLogging": false,
+
+    // Minimum log level for console text and json logging.
     "ConsoleLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
 
     // Enables logging to rotating files in ./logs.
     "EnableFileLogging": false,
+    // Minimum log level for file logging.
     "FileLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
 
     // Enables logging to an OpenTelemetry collector.
     "EnableOpenTelemetryLogging": false,
+    // Minimum log level for OpenTelemetry logging.
     "OpenTelemetryLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
-    "OtlpEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
+    // OTLP endpoint URL including protocol and port.
+    "OtlpEndpoint": "http://server:80/path/to/collector",
     "OtlpProtocol": "HttpProtobuf|Grpc",
     // Optional dictionary of headers to send with OTLP log requests.
     "OtlpHeaders": {
@@ -39,7 +44,7 @@
   },
 
   "Serilog": {
-    // Minimum log level for the entire app.  Can overriden for specific sinks.
+    // Minimum log level for the entire app.  Can be overriden for specific sinks.
     "MinimumLevel": {
       "Default": "Verbose|Debug|Information|Warning|Error|Fatal",
 
@@ -54,10 +59,13 @@
   // OpenTelemetry tracing settings.
   "Trace": {
     "Enabled": false,
-    "OtlpEndpoint": "Endpoint URL including protocol and port, e.g. http://server:80/path/to/collector",
+    // OTLP trace endpoint URL including protocol and port.
+    "OtlpEndpoint": "http://server:80/path/to/collector",
     "OtlpProtocol": "HttpProtobuf|Grpc",
-    // Optional comma separated list of key value pairs to send as headers with trace requests.
-    "OtlpHeaders": "X-Api-Key=super-secret-api-key,Another-Header=header-value",
+    // Optional dictionary of headers to send with OTLP trace requests.
+    "OtlpHeaders": {
+      "X-Api-Key": "super-secret-api-key"
+    },
     // Enable OpenTelemetry to redact query string parameters in traces.
     "EnableUrlQueryRedaction": false
   }

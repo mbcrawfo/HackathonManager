@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DotNetEnv;
 using FluentValidation;
 using HackathonManager;
@@ -150,11 +151,15 @@ void AddOpenTelemetry(WebApplicationBuilder builder)
 
             if (traceSettings.Enabled)
             {
+                var headers = traceSettings.OtlpHeaders is { Count: > 0 }
+                    ? string.Join(",", traceSettings.OtlpHeaders.Select(kvp => $"{kvp.Key}={kvp.Value}"))
+                    : null;
+
                 tracerBuilder.AddOtlpExporter(options =>
                 {
                     options.Endpoint = new Uri(traceSettings.OtlpEndpoint!);
                     options.Protocol = traceSettings.OtlpProtocol!.Value;
-                    options.Headers = traceSettings.OtlpHeaders;
+                    options.Headers = headers;
                 });
             }
         });

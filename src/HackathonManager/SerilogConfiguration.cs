@@ -74,6 +74,7 @@ public static class SerilogConfiguration
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "log.txt");
             loggerConfiguration.WriteTo.File(
                 filePath,
+                settings.FileLogLevel,
                 outputTemplate: "{Timestamp:HH:mm:ss.fff} | {Level:u3} | {RequestMethod} {RequestPath} | {RequestId} | {SourceContext} | {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day
             );

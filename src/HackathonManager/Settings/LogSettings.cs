@@ -20,11 +20,11 @@ public sealed class LogSettings
 
     public bool EnableFileLogging { get; init; }
 
-    public LogEventLevel FileLogLevel { get; init; } = LogEventLevel.Information;
+    public LogEventLevel FileLogLevel { get; init; } = LogEventLevel.Verbose;
 
     public bool EnableOpenTelemetryLogging { get; init; }
 
-    public LogEventLevel OpenTelemetryLogLevel { get; init; } = LogEventLevel.Information;
+    public LogEventLevel OpenTelemetryLogLevel { get; init; } = LogEventLevel.Verbose;
 
     public string? OtlpEndpoint { get; init; }
 
@@ -56,8 +56,11 @@ public sealed class LogSettingsValidator : AbstractValidator<LogSettings>
             () =>
             {
                 RuleFor(x => x.OtlpEndpoint).NotEmpty();
-
                 RuleFor(x => x.OtlpProtocol).NotNull().IsInEnum();
+                RuleForEach(x => x.OtlpHeaders)
+                    .Must(kvp => !string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
+                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.")
+                    .When(x => x.OtlpHeaders is { Count: > 0 });
             }
         );
     }

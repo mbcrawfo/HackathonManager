@@ -15,7 +15,7 @@ public class TraceSettings
 
     public OtlpExportProtocol? OtlpProtocol { get; init; }
 
-    public string? OtlpHeaders { get; init; }
+    public Dictionary<string, string>? OtlpHeaders { get; init; }
 
     public bool EnableUrlQueryRedaction { get; init; }
 }
@@ -31,6 +31,10 @@ public sealed class TraceSettingsValidator : AbstractValidator<TraceSettings>
             {
                 RuleFor(x => x.OtlpEndpoint).NotEmpty();
                 RuleFor(x => x.OtlpProtocol).NotNull().IsInEnum();
+                RuleForEach(x => x.OtlpHeaders)
+                    .Must(kvp => !string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
+                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.")
+                    .When(x => x.OtlpHeaders is { Count: > 0 });
             }
         );
     }
