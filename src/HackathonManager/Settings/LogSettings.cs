@@ -1,15 +1,15 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
-using JetBrains.Annotations;
 using Serilog.Events;
 using Serilog.Sinks.OpenTelemetry;
 
 namespace HackathonManager.Settings;
 
-public sealed class LogSettings
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+public sealed class LogSettings : IConfigurationSettings
 {
-    public const string ConfigurationSection = "Log";
-
     public bool EnableConsoleTextLogging { get; init; }
 
     public string ConsoleOutputTemplate { get; init; } =
@@ -31,7 +31,9 @@ public sealed class LogSettings
 
     public OtlpProtocol? OtlpProtocol { get; init; }
 
-    public Dictionary<string, string>? OtlpHeaders { get; init; }
+    public Dictionary<string, string> OtlpHeaders { get; init; } = new();
+
+    public static string ConfigurationSection => "Log";
 }
 
 public sealed class LogSettingsValidator : AbstractValidator<LogSettings>
@@ -60,8 +62,7 @@ public sealed class LogSettingsValidator : AbstractValidator<LogSettings>
                 RuleFor(x => x.OtlpProtocol).NotNull().IsInEnum();
                 RuleForEach(x => x.OtlpHeaders)
                     .Must(kvp => !string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
-                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.")
-                    .When(x => x.OtlpHeaders is { Count: > 0 });
+                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.");
             }
         );
     }

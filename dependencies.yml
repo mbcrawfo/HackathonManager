@@ -22,6 +22,8 @@ services:
     image: datalust/seq
     environment:
       ACCEPT_EULA: Y
+      # password: admin
+      SEQ_FIRSTRUN_ADMINPASSWORDHASH: QNwxcXb5uVV9ZJma8mOK/ZbQzRTEDIrvupQHFnCkEYFzktF1UYWwa1DfjG7tyy4ceGbq3yrfqd2aUrli0EC/Izlyoh/AfJyuYZFD9WE/zAOw
       SEQ_API_CANONICALURI: http://localhost:${SEQ_PORT:-5341}
       SEQ_DIAGNOSTICS_INTERNALLOGGINGLEVEL: Warning
     ports:

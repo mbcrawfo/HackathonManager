@@ -6,13 +6,12 @@ using HackathonManager;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Settings;
-using HackathonManager.Utilities;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -26,56 +25,10 @@ logger.Information("{Application} version {Version} starting up...", AppInfo.Nam
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-
-    builder.Services.AddSerilog(
-        (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>())
-    );
-
-    AddOpenTelemetry(builder);
-
-    var connectionString =
-        builder.Configuration.GetConnectionString("HackathonDb")
-        ?? throw new InvalidOperationException("Connection string 'HackathonDb' is not configured.");
-
-    builder
-        .Services.AddOptionsWithValidateOnStart<LogSettings>()
-        .BindConfiguration(LogSettings.ConfigurationSection)
-        .UseFluentValidation();
-
-    builder
-        .Services.AddOptionsWithValidateOnStart<TraceSettings>()
-        .BindConfiguration(TraceSettings.ConfigurationSection)
-        .UseFluentValidation();
-
-    builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
-
-    builder.Services.AddHealthChecks();
+    ConfigureServices(builder);
 
     var app = builder.Build();
-
-    var enableIntegratedSpa = builder.Configuration.GetValue<bool>("EnableIntegratedSpa");
-    logger.Information("EnableIntegratedSpa={Value}", enableIntegratedSpa);
-
-    if (enableIntegratedSpa)
-    {
-        app.UseStaticFiles();
-    }
-
-    app.UseHealthChecks("/health");
-
-    app.MapGet(
-        "/api/hello",
-        ([FromServices] ILogger<Program> l) =>
-        {
-            l.LogInformation("Hello endpoint called");
-            return "Hello World!!";
-        }
-    );
-
-    if (enableIntegratedSpa)
-    {
-        app.MapFallbackToFile("index.html");
-    }
+    ConfigurePipeline(app);
 
     var enableStartupMigration = app.Configuration.GetValue<bool>("EnableStartupMigration");
     logger.Information("EnableStartupMigration={Value}", enableStartupMigration);
@@ -83,7 +36,10 @@ try
     {
         using var scope = app.Services.CreateScope();
         var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
-        MigrationRunner.UpdateDatabase(connectionString, loggerFactory);
+        MigrationRunner.UpdateDatabase(
+            app.Configuration.GetRequiredValue<string>("ConnectionStrings:HackathonDb"),
+            loggerFactory
+        );
     }
 
     await app.RunAsync();
@@ -100,20 +56,27 @@ finally
     await Log.CloseAndFlushAsync();
 }
 
-void AddOpenTelemetry(WebApplicationBuilder builder)
+void ConfigureServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddSerilog(
+        (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>())
+    );
+
+    AddOpenTelemetryServices(builder);
+
+    builder.Services.AddConfigurationSettings<LogSettings>();
+    builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
+    builder.Services.AddConfigurationSettings<TraceSettings>();
+
+    builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
+
+    builder.Services.AddHealthChecks();
+}
+
+void AddOpenTelemetryServices(WebApplicationBuilder builder)
 {
     var serviceName = builder.Configuration.GetValue<string>("ServiceName") ?? AppInfo.Name;
-    var traceSettings =
-        builder.Configuration.GetSection(TraceSettings.ConfigurationSection).Get<TraceSettings>()
-        ?? new TraceSettings();
-    if (new TraceSettingsValidator().Validate(traceSettings) is { IsValid: false } validationResult)
-    {
-        throw new OptionsValidationException(
-            nameof(TraceSettings),
-            typeof(TraceSettings),
-            FluentValidateOptions<TraceSettings>.FormatValidationErrors(validationResult)
-        );
-    }
+    var traceSettings = builder.Configuration.GetConfigurationSettings<TraceSettings, TraceSettingsValidator>();
 
     if (!traceSettings.EnableUrlQueryRedaction)
     {
@@ -142,25 +105,54 @@ void AddOpenTelemetry(WebApplicationBuilder builder)
                 {
                     config.EnrichWithHttpRequest = (activity, request) =>
                     {
-                        // Matches the properties Asp.Net adds to the request's logging scope.
-                        activity.SetTag("ConnectionId", request.HttpContext.Connection.Id);
-                        activity.SetTag("RequestId", request.HttpContext.TraceIdentifier);
+                        // Other log properties are automatically added by the instrumentation.
+                        activity.SetTag(LogProperties.RequestId, request.HttpContext.TraceIdentifier);
                     };
                 })
                 .AddHttpClientInstrumentation();
 
             if (traceSettings.Enabled)
             {
-                var headers = traceSettings.OtlpHeaders is { Count: > 0 }
-                    ? string.Join(",", traceSettings.OtlpHeaders.Select(kvp => $"{kvp.Key}={kvp.Value}"))
-                    : null;
-
                 tracerBuilder.AddOtlpExporter(options =>
                 {
                     options.Endpoint = new Uri(traceSettings.OtlpEndpoint!);
                     options.Protocol = traceSettings.OtlpProtocol!.Value;
-                    options.Headers = headers;
+                    options.Headers = string.Join(
+                        ",",
+                        traceSettings.OtlpHeaders.Select(kvp => $"{kvp.Key}={kvp.Value}")
+                    );
                 });
             }
         });
+}
+
+void ConfigurePipeline(WebApplication app)
+{
+    var enableIntegratedSpa = app.Configuration.GetValue<bool>("EnableIntegratedSpa");
+    logger.Information("EnableIntegratedSpa={Value}", enableIntegratedSpa);
+
+    if (enableIntegratedSpa)
+    {
+        app.UseStaticFiles();
+    }
+
+    app.UseHealthChecks("/health");
+
+    app.UseMiddleware<RequestLoggingMiddleware>();
+
+    app.MapGet(
+        "/api/hello",
+        ([FromServices] ILogger<Program> l) =>
+        {
+            l.LogInformation("Hello endpoint called");
+            return "Hello World!!";
+        }
+    );
+
+    app.MapPost("/api/echo", (HttpContext context) => context.Request.Body.ToString());
+
+    if (enableIntegratedSpa)
+    {
+        app.MapFallbackToFile("index.html");
+    }
 }

@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Destructurama;
+using HackathonManager.Extensions;
 using HackathonManager.Settings;
-using HackathonManager.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using Serilog;
 using Serilog.Exceptions;
@@ -42,16 +41,7 @@ public static class SerilogConfiguration
     {
         var serviceName = appConfiguration.GetValue<string>("ServiceName") ?? AppInfo.Name;
 
-        var settings =
-            appConfiguration.GetSection(LogSettings.ConfigurationSection).Get<LogSettings>() ?? new LogSettings();
-        if (new LogSettingsValidator().Validate(settings) is { IsValid: false } validationResult)
-        {
-            throw new OptionsValidationException(
-                nameof(LogSettings),
-                typeof(LogSettings),
-                FluentValidateOptions<LogSettings>.FormatValidationErrors(validationResult)
-            );
-        }
+        var settings = appConfiguration.GetConfigurationSettings<LogSettings, LogSettingsValidator>();
 
         loggerConfiguration
             .ReadFrom.Configuration(appConfiguration)
@@ -75,7 +65,7 @@ public static class SerilogConfiguration
             loggerConfiguration.WriteTo.File(
                 filePath,
                 settings.FileLogLevel,
-                outputTemplate: "{Timestamp:HH:mm:ss.fff} | {Level:u3} | {RequestMethod} {RequestPath} | {RequestId} | {SourceContext} | {Message:lj}{NewLine}{Exception}",
+                "{Timestamp:HH:mm:ss.fff} | {Level:u3} | {RequestMethod} {RequestPath} | {RequestId} | {SourceContext} | {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day
             );
         }
@@ -87,7 +77,7 @@ public static class SerilogConfiguration
                 options.RestrictedToMinimumLevel = settings.OpenTelemetryLogLevel;
                 options.Endpoint = settings.OtlpEndpoint;
                 options.Protocol = settings.OtlpProtocol!.Value; // Validation ensures this is not null
-                options.Headers = settings.OtlpHeaders ?? new Dictionary<string, string>();
+                options.Headers = settings.OtlpHeaders;
                 options.OnBeginSuppressInstrumentation = SuppressInstrumentationScope.Begin;
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
