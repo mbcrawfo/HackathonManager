@@ -7,6 +7,7 @@
     <ItemGroup>
         <PackageReference Include="Bogus" />
         <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="Dapper" />
         <PackageReference Include="GitHubActionsTestLogger">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -14,12 +15,15 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="Neovolve.Logging.Xunit.v3" />
+        <PackageReference Include="Npgsql" />
         <PackageReference Include="NSubstitute" />
         <PackageReference Include="NSubstitute.Analyzers.CSharp">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Shouldly" />
+        <PackageReference Include="Testcontainers" />
+        <PackageReference Include="Testcontainers.PostgreSql" />
         <PackageReference Include="xunit.analyzers" />
         <PackageReference Include="xunit.runner.visualstudio" />
         <PackageReference Include="xunit.v3" />

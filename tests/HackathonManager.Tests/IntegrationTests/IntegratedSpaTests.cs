@@ -8,8 +8,11 @@ namespace HackathonManager.Tests.IntegrationTests;
 
 public class IntegratedSpaTests : IntegrationTestsBase
 {
-    [Fact]
-    public async Task ShouldNotServeStaticFiles_WhenIntegratedSpaIsDisabled()
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/index.html")]
+    [InlineData("/test.js")]
+    public async Task ShouldNotServeStaticFiles_WhenIntegratedSpaIsDisabled(string url)
     {
         // arrange
         using var client = Factory
@@ -17,14 +20,10 @@ public class IntegratedSpaTests : IntegrationTestsBase
             .CreateClient();
 
         // act
-        var defaultResponse = await client.GetAsync("/", TestContext.Current.CancellationToken);
-        var indexResponse = await client.GetAsync("/index.html", TestContext.Current.CancellationToken);
-        var jsResponse = await client.GetAsync("/test.js", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(url, CancellationToken);
 
         // assert
-        defaultResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        indexResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        jsResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -32,20 +31,16 @@ public class IntegratedSpaTests : IntegrationTestsBase
     {
         // arrange
         using var client = Factory
-            .WithWebHostBuilder(builder => builder.UseSetting("EnableIntegratedSpa", "true"))
+            .WithWebHostBuilder(builder => builder.UseSetting(Constants.EnableIntegratedSpaKey, "true"))
             .CreateClient();
 
         // act
-        var indexResponse = await client.GetAsync("/index.html", TestContext.Current.CancellationToken);
-        indexResponse.EnsureSuccessStatusCode();
-        var indexContent = await indexResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        var jsResponse = await client.GetAsync("/test.js", TestContext.Current.CancellationToken);
-        jsResponse.EnsureSuccessStatusCode();
-        var jsonContent = await jsResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var indexResponse = await client.GetStringAsync("/index.html", CancellationToken);
+        var jsResponse = await client.GetStringAsync("/test.js", CancellationToken);
 
         // assert
-        indexContent.ShouldContain("Hello test world");
-        jsonContent.ShouldContain("Placeholder javascript");
+        indexResponse.ShouldContain("Hello test world");
+        jsResponse.ShouldContain("Placeholder javascript");
     }
 
     [Theory]
@@ -56,15 +51,13 @@ public class IntegratedSpaTests : IntegrationTestsBase
     {
         // arrange
         using var client = Factory
-            .WithWebHostBuilder(builder => builder.UseSetting("EnableIntegratedSpa", "true"))
+            .WithWebHostBuilder(builder => builder.UseSetting(Constants.EnableIntegratedSpaKey, "true"))
             .CreateClient();
 
         // act
-        var response = await client.GetAsync(route, TestContext.Current.CancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var response = await client.GetStringAsync(route, CancellationToken);
 
         // assert
-        content.ShouldContain("Hello test world");
+        response.ShouldContain("Hello test world");
     }
 }

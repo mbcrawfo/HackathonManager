@@ -14,6 +14,12 @@
         "resolved": "6.0.4",
         "contentHash": "lkhqpF8Pu2Y7IiN7OntbsTtdbpR1syMsm2F3IgX6ootA4ffRqWL5jF7XipHuZQTdVuWG/gVAAcf8mjk8Tz0xPg=="
       },
+      "Dapper": {
+        "type": "Direct",
+        "requested": "[2.1.66, )",
+        "resolved": "2.1.66",
+        "contentHash": "/q77jUgDOS+bzkmk3Vy9SiWMaetTw+NOoPAV0xPBsGVAyljd5S6P+4RUW7R3ZUGGr9lDRyPKgAMj2UAOwvqZYw=="
+      },
       "GitHubActionsTestLogger": {
         "type": "Direct",
         "requested": "[2.4.1, )",
@@ -61,6 +67,15 @@
           "xunit.v3.extensibility.core": "1.0.0"
         }
       },
+      "Npgsql": {
+        "type": "Direct",
+        "requested": "[9.0.3, )",
+        "resolved": "9.0.3",
+        "contentHash": "tPvY61CxOAWxNsKLEBg+oR646X4Bc8UmyQ/tJszL/7mEmIXQnnBhVJZrZEEUv0Bstu0mEsHZD5At3EO8zQRAYw==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
+        }
+      },
       "NSubstitute": {
         "type": "Direct",
         "requested": "[5.3.0, )",
@@ -98,6 +113,28 @@
         "resolved": "10.11.0.117924",
         "contentHash": "C7eK46HEeZCptfuR2kGjLnBzdzBjx1F1fb6Ga8DFOsPPaz1sw7LNWdGh42+Ch5NJW/Iq39xcDds4lvww7i4BGw=="
       },
+      "Testcontainers": {
+        "type": "Direct",
+        "requested": "[4.6.0, )",
+        "resolved": "4.6.0",
+        "contentHash": "JFGPwuEqVuY3qJiGuxR+2J+E+dGc+1TgbBooB1346zUFKJqH6zWeSCXju5Siwek3ExOVRES4AbECXoaYt9jkXA==",
+        "dependencies": {
+          "Docker.DotNet.Enhanced": "3.128.3",
+          "Docker.DotNet.Enhanced.X509": "3.128.3",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
+          "SSH.NET": "2024.2.0",
+          "SharpZipLib": "1.4.2"
+        }
+      },
+      "Testcontainers.PostgreSql": {
+        "type": "Direct",
+        "requested": "[4.6.0, )",
+        "resolved": "4.6.0",
+        "contentHash": "JAqPYOVtIE7GJ3Mv3K6jR72Na76KSwf3BLogCGZIeOJ+4tm7As91MDH3mzCIDxNoK5I+FJZTm+iaONUTu7N45w==",
+        "dependencies": {
+          "Testcontainers": "4.6.0"
+        }
+      },
       "xunit.analyzers": {
         "type": "Direct",
         "requested": "[1.22.0, )",
@@ -120,6 +157,11 @@
           "xunit.v3.assert": "[2.0.3]",
           "xunit.v3.core": "[2.0.3]"
         }
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.4.0",
+        "contentHash": "SwXsAV3sMvAU/Nn31pbjhWurYSjJ+/giI/0n6tCrYoupEK34iIHCuk3STAd9fx8yudM85KkLSVdn951vTng/vQ=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -144,6 +186,22 @@
         "dependencies": {
           "EmptyFiles": "4.4.0",
           "System.Management": "6.0.1"
+        }
+      },
+      "Docker.DotNet.Enhanced": {
+        "type": "Transitive",
+        "resolved": "3.128.3",
+        "contentHash": "yOiBJfGltxjMTPBRVPt2Yeiqy2rLNQSf5x0U57FgipbsGnCXSm1a04UHi3h2QtABJSpTSHoBw+LPqA6yN9CGFg==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3"
+        }
+      },
+      "Docker.DotNet.Enhanced.X509": {
+        "type": "Transitive",
+        "resolved": "3.128.3",
+        "contentHash": "U6G7H+vX0Htk86Fd1xS5i7iRGd0C33vx61sLH8gI9uzxqQJRfeYCbuzQOOp3J7m4zVZ2mP6x9gB9onspgP0QCg==",
+        "dependencies": {
+          "Docker.DotNet.Enhanced": "3.128.3"
         }
       },
       "EmptyFiles": {
@@ -744,6 +802,11 @@
           "Serilog": "4.0.0"
         }
       },
+      "SharpZipLib": {
+        "type": "Transitive",
+        "resolved": "1.4.2",
+        "contentHash": "yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A=="
+      },
       "Sprache": {
         "type": "Transitive",
         "resolved": "2.3.1",
@@ -754,6 +817,14 @@
           "System.Private.Uri": "4.3.2",
           "System.Runtime": "4.3.0",
           "System.Text.RegularExpressions": "4.3.0"
+        }
+      },
+      "SSH.NET": {
+        "type": "Transitive",
+        "resolved": "2024.2.0",
+        "contentHash": "9r+4UF2P51lTztpd+H7SJywk7WgmlWB//Cm2o96c6uGVZU5r58ys2/cD9pCgTk0zCdSkfflWL1WtqQ9I4IVO9Q==",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.4.0"
         }
       },
       "System.AppContext": {
@@ -1677,15 +1748,6 @@
           "Microsoft.Extensions.Logging.Abstractions": "9.0.6",
           "Microsoft.Extensions.Logging.Configuration": "9.0.6",
           "Microsoft.Extensions.Options": "9.0.6"
-        }
-      },
-      "Npgsql": {
-        "type": "CentralTransitive",
-        "requested": "[9.0.3, )",
-        "resolved": "9.0.3",
-        "contentHash": "tPvY61CxOAWxNsKLEBg+oR646X4Bc8UmyQ/tJszL/7mEmIXQnnBhVJZrZEEUv0Bstu0mEsHZD5At3EO8zQRAYw==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         }
       },
       "OpenTelemetry": {

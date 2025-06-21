@@ -31,14 +31,14 @@ try
     var app = builder.Build();
     ConfigurePipeline(app);
 
-    var enableStartupMigration = app.Configuration.GetValue<bool>("EnableStartupMigration");
-    logger.Information("EnableStartupMigration={Value}", enableStartupMigration);
+    var enableStartupMigration = app.Configuration.GetValue<bool>(Constants.EnableStartupMigrationKey);
+    logger.Information("{SettingKey}={SettingValue}", Constants.EnableStartupMigrationKey, enableStartupMigration);
     if (enableStartupMigration)
     {
         using var scope = app.Services.CreateScope();
         var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
         MigrationRunner.UpdateDatabase(
-            app.Configuration.GetRequiredValue<string>("ConnectionStrings:HackathonDb"),
+            app.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey),
             loggerFactory
         );
     }
@@ -76,7 +76,7 @@ void ConfigureServices(WebApplicationBuilder builder)
 
 void AddOpenTelemetryServices(WebApplicationBuilder builder)
 {
-    var serviceName = builder.Configuration.GetValue<string>("ServiceName") ?? AppInfo.Name;
+    var serviceName = builder.Configuration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
     var traceSettings = builder.Configuration.GetConfigurationSettings<TraceSettings, TraceSettingsValidator>();
 
     if (!traceSettings.EnableUrlQueryRedaction)
@@ -131,8 +131,8 @@ void AddOpenTelemetryServices(WebApplicationBuilder builder)
 
 void ConfigurePipeline(WebApplication app)
 {
-    var enableIntegratedSpa = app.Configuration.GetValue<bool>("EnableIntegratedSpa");
-    logger.Information("EnableIntegratedSpa={Value}", enableIntegratedSpa);
+    var enableIntegratedSpa = app.Configuration.GetValue<bool>(Constants.EnableIntegratedSpaKey);
+    logger.Information("{SettingKey}={SettingValue}", Constants.EnableIntegratedSpaKey, enableIntegratedSpa);
 
     if (enableIntegratedSpa)
     {

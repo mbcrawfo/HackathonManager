@@ -39,8 +39,7 @@ public static class SerilogConfiguration
         IConfiguration appConfiguration
     )
     {
-        var serviceName = appConfiguration.GetValue<string>("ServiceName") ?? AppInfo.Name;
-
+        var serviceName = appConfiguration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
         var settings = appConfiguration.GetConfigurationSettings<LogSettings, LogSettingsValidator>();
 
         loggerConfiguration

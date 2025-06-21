@@ -14,11 +14,9 @@ public class HealthCheckTests : IntegrationTestsBase
         using var client = Factory.CreateClient();
 
         // act
-        var response = await client.GetAsync("/health", TestContext.Current.CancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var response = await client.GetStringAsync("/health", CancellationToken);
 
         // assert
-        content.ShouldBe("Healthy");
+        response.ShouldBe("Healthy");
     }
 }
