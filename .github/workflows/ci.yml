@@ -59,7 +59,10 @@ jobs:
 
     - uses: ./.github/actions/dotnet-setup
 
-    - name: Test
+    - name: Preload docker images
+      run: docker pull postgres:18beta1
+
+    - name: Unit Test
       run: >-
         dotnet test
         --configuration Release
