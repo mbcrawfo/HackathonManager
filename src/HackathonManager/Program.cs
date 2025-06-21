@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DotNetEnv;
 using FluentValidation;
@@ -158,3 +159,7 @@ void ConfigurePipeline(WebApplication app)
         app.MapFallbackToFile("index.html");
     }
 }
+
+// Expose the Program class for integration testing.
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors")]
+public partial class Program;
