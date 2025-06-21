@@ -17,7 +17,7 @@ jobs:
     - name: Run CSharpier
       run: dotnet csharpier check .
 
-  backend-build:
+  backend-build-test:
     runs-on: "ubuntu-latest"
     steps:
     - name: Clone the repo
@@ -27,6 +27,31 @@ jobs:
 
     - name: Build
       run: dotnet build --configuration Release
+
+    - name: Preload docker images for tests
+      run: docker pull postgres:18beta1
+
+    - name: Run Tests
+      run: >-
+        dotnet test
+        --no-restore
+        --no-build
+        --configuration Release
+        --logger "console;verbosity=normal"
+        --logger "trx;LogFileName=test-results/results.trx"
+        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+        --blame
+        --blame-hang-timeout 7m
+        --blame-crash
+        --results-directory test-results
+        --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
+
+    - name: Upload test results
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-test-results
+        path: test-results/**
 
     - name: Publish Migrator
       run: >-
@@ -44,43 +69,11 @@ jobs:
         --configuration Release
         --output ./artifacts/HackathonManager
 
-    - name: Upload artifacts
+    - name: Upload publish artifacts
       uses: actions/upload-artifact@v4
       with:
         name: dotnet-build-artifacts
         path: ./artifacts/**
-
-  backend-test:
-    needs: [backend-check-formatting, backend-build]
-    runs-on: "ubuntu-latest"
-    steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
-
-    - uses: ./.github/actions/dotnet-setup
-
-    - name: Preload docker images
-      run: docker pull postgres:18beta1
-
-    - name: Unit Test
-      run: >-
-        dotnet test
-        --configuration Release
-        --logger "console;verbosity=normal"
-        --logger "trx;LogFileName=test-results/results.trx"
-        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
-        --blame
-        --blame-hang-timeout 7m
-        --blame-crash
-        --results-directory test-results
-        --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
-
-    - name: Upload test results
-      if: ${{ !cancelled() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: dotnet-test-results
-        path: test-results/**
 
   frontend-check-formatting:
     runs-on: "ubuntu-latest"
