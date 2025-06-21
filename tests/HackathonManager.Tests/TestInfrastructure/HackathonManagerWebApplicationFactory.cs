@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using HackathonManager.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,6 +16,7 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment(Environments.Development);
+        builder.UseContentRoot(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "IntegrationTests"));
 
         // Log settings are configured with environment variable so they will be picked up by the bootstrap logger.
         var logSettings = LogSettings.ConfigurationSection.ToUpperInvariant();

@@ -27,4 +27,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\HackathonManager\HackathonManager.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <Content Include="IntegrationTests\wwwroot\*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>
