@@ -137,7 +137,14 @@ public class RequestLoggingMiddlewareTests
         var body = _faker.Lorem.Sentence();
         const string contentType = "text/plain";
 
-        _logSettingsMock.Value.Returns(new RequestLoggingSettings { LogBody = true, MaxBodySize = body.Length / 2 });
+        _logSettingsMock.Value.Returns(
+            new RequestLoggingSettings
+            {
+                LogBody = true,
+                MaxBodySize = body.Length / 2,
+                ContentTypes = ["*/*"],
+            }
+        );
         var httpContextMock = MockHttpContext(body, contentType);
         var sut = new RequestLoggingMiddleware(NextMiddleware, _logger, _logSettingsMock);
 
@@ -161,7 +168,7 @@ public class RequestLoggingMiddlewareTests
         var body = _faker.Lorem.Sentence();
         const string contentType = "text/plain";
 
-        _logSettingsMock.Value.Returns(new RequestLoggingSettings { LogBody = true });
+        _logSettingsMock.Value.Returns(new RequestLoggingSettings { LogBody = true, ContentTypes = ["*/*"] });
         var httpContextMock = MockHttpContext(body, contentType);
         var sut = new RequestLoggingMiddleware(NextMiddleware, _logger, _logSettingsMock);
 
