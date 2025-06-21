@@ -60,7 +60,8 @@ finally
 void ConfigureServices(WebApplicationBuilder builder)
 {
     builder.Services.AddSerilog(
-        (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>())
+        (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>()),
+        preserveStaticLogger: true
     );
 
     AddOpenTelemetryServices(builder);
