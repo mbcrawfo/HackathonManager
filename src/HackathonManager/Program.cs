@@ -86,6 +86,8 @@ void AddOpenTelemetryServices(WebApplicationBuilder builder)
         Environment.SetEnvironmentVariable("OTEL_DOTNET_EXPERIMENTAL_HTTPCLIENT_DISABLE_URL_QUERY_REDACTION", "true");
     }
 
+    builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
     builder
         .Services.AddOpenTelemetry()
         .WithTracing(tracerBuilder =>
