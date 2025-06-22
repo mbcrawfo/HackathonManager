@@ -106,7 +106,8 @@ void AddOpenTelemetryServices()
                         activity.SetTag(LogProperties.RequestId, request.HttpContext.TraceIdentifier);
                     };
                 })
-                .AddHttpClientInstrumentation();
+                .AddHttpClientInstrumentation()
+                .AddProcessor<HttpRouteProcessor>();
 
             if (traceSettings.Enabled)
             {
