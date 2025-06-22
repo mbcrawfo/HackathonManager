@@ -74,7 +74,7 @@
   },
 
   // OpenTelemetry tracing settings.
-  "Trace": {
+  "Tracer": {
     "Enabled": false,
     // OTLP trace endpoint URL including protocol and port.
     "OtlpEndpoint": "http://server:80/path/to/collector",

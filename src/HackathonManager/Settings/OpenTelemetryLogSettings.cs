@@ -33,7 +33,7 @@ public sealed class OpenTelemetryLogSettingsValidator : AbstractValidator<OpenTe
                 RuleFor(x => x.OtlpProtocol).IsInEnum();
                 RuleForEach(x => x.OtlpHeaders)
                     .Must(kvp => !string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
-                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.");
+                    .WithMessage($"{nameof(TracerSettings.OtlpHeaders)} must contain non-empty keys and values.");
             }
         );
     }

@@ -69,7 +69,7 @@ void ConfigureServices()
 
     builder.Services.AddConfigurationSettings<OpenTelemetryLogSettings>();
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
-    builder.Services.AddConfigurationSettings<TraceSettings>();
+    builder.Services.AddConfigurationSettings<TracerSettings>();
 
     builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
 
@@ -79,15 +79,7 @@ void ConfigureServices()
 void AddOpenTelemetryServices()
 {
     var serviceName = builder.Configuration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
-    var traceSettings = builder.Configuration.GetConfigurationSettings<TraceSettings, TraceSettingsValidator>();
-
-    if (!traceSettings.EnableUrlQueryRedaction)
-    {
-        // Redaction is enabled by default and can only be disabled via environment variables.
-        // See https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/1954
-        Environment.SetEnvironmentVariable("OTEL_DOTNET_EXPERIMENTAL_ASPNETCORE_DISABLE_URL_QUERY_REDACTION", "true");
-        Environment.SetEnvironmentVariable("OTEL_DOTNET_EXPERIMENTAL_HTTPCLIENT_DISABLE_URL_QUERY_REDACTION", "true");
-    }
+    var traceSettings = builder.Configuration.GetConfigurationSettings<TracerSettings, TracerSettingsValidator>();
 
     builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 

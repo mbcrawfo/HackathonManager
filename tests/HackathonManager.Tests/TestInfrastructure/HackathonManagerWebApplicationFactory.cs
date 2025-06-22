@@ -19,6 +19,8 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
 
     public OpenTelemetryLogSettings? OpenTelemetryLogSettings { get; init; } = new() { Enabled = false };
 
+    public TracerSettings? TracerSettings { get; init; } = new() { Enabled = false };
+
     /// <inheritdoc />
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -70,14 +72,21 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
             }
         }
 
+        if (TracerSettings is not null)
+        {
+            var prefix = TracerSettings.ConfigurationSection + ":";
+            builder.UseSetting(prefix + nameof(TracerSettings.Enabled), TracerSettings.Enabled.ToString());
+            builder.UseSetting(prefix + nameof(TracerSettings.OtlpEndpoint), TracerSettings.OtlpEndpoint);
+            builder.UseSetting(prefix + nameof(TracerSettings.OtlpProtocol), TracerSettings.OtlpProtocol.ToString());
+            foreach (var header in TracerSettings.OtlpHeaders)
+            {
+                builder.UseSetting($"{prefix}{nameof(TracerSettings.OtlpHeaders)}:{header.Key}", header.Value);
+            }
+        }
+
         builder.ConfigureAppConfiguration(config =>
             config.AddInMemoryCollection(
                 [
-                    // Disable tracing.
-                    new KeyValuePair<string, string?>(
-                        $"{TraceSettings.ConfigurationSection}:{nameof(TraceSettings.Enabled)}",
-                        "false"
-                    ),
                     // Enable logging of all request bodies.
                     new KeyValuePair<string, string?>(
                         $"{RequestLoggingSettings.ConfigurationSection}:{nameof(RequestLoggingSettings.LogBody)}",

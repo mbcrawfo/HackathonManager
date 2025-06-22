@@ -5,9 +5,7 @@ using OpenTelemetry.Exporter;
 
 namespace HackathonManager.Settings;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
-public sealed class TraceSettings : IConfigurationSettings
+public sealed class TracerSettings : IConfigurationSettings
 {
     public bool Enabled { get; init; }
 
@@ -15,17 +13,14 @@ public sealed class TraceSettings : IConfigurationSettings
 
     public OtlpExportProtocol OtlpProtocol { get; init; }
 
-    // ReSharper disable once CollectionNeverUpdated.Global
     public Dictionary<string, string> OtlpHeaders { get; init; } = new();
 
-    public bool EnableUrlQueryRedaction { get; init; }
-
-    public static string ConfigurationSection => "Trace";
+    public static string ConfigurationSection => "Tracer";
 }
 
-public sealed class TraceSettingsValidator : AbstractValidator<TraceSettings>
+public sealed class TracerSettingsValidator : AbstractValidator<TracerSettings>
 {
-    public TraceSettingsValidator()
+    public TracerSettingsValidator()
     {
         When(
             x => x.Enabled,
@@ -35,7 +30,7 @@ public sealed class TraceSettingsValidator : AbstractValidator<TraceSettings>
                 RuleFor(x => x.OtlpProtocol).NotNull().IsInEnum();
                 RuleForEach(x => x.OtlpHeaders)
                     .Must(kvp => !string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
-                    .WithMessage($"{nameof(TraceSettings.OtlpHeaders)} must contain non-empty keys and values.");
+                    .WithMessage($"{nameof(TracerSettings.OtlpHeaders)} must contain non-empty keys and values.");
             }
         );
     }
