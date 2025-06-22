@@ -120,7 +120,7 @@ void AddOpenTelemetryServices(WebApplicationBuilder builder)
                 tracerBuilder.AddOtlpExporter(options =>
                 {
                     options.Endpoint = new Uri(traceSettings.OtlpEndpoint!);
-                    options.Protocol = traceSettings.OtlpProtocol!.Value;
+                    options.Protocol = traceSettings.OtlpProtocol;
                     options.Headers = string.Join(
                         ",",
                         traceSettings.OtlpHeaders.Select(kvp => $"{kvp.Key}={kvp.Value}")

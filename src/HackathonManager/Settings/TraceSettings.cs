@@ -11,9 +11,9 @@ public sealed class TraceSettings : IConfigurationSettings
 {
     public bool Enabled { get; init; }
 
-    public string? OtlpEndpoint { get; init; }
+    public string OtlpEndpoint { get; init; } = "";
 
-    public OtlpExportProtocol? OtlpProtocol { get; init; }
+    public OtlpExportProtocol OtlpProtocol { get; init; }
 
     // ReSharper disable once CollectionNeverUpdated.Global
     public Dictionary<string, string> OtlpHeaders { get; init; } = new();
