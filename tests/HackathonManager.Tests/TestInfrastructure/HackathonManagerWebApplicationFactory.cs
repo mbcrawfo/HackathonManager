@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using HackathonManager.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog.Events;
 
@@ -28,6 +26,10 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
         builder.UseContentRoot(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "IntegrationTests"));
 
         builder.UseSetting("Serilog:MinimumLevel:Default", nameof(LogEventLevel.Verbose));
+        builder.UseSetting(
+            $"{RequestLoggingSettings.ConfigurationSection}:{nameof(RequestLoggingSettings.LogBody)}",
+            "true"
+        );
 
         if (ConsoleLogSettings is not null)
         {
@@ -83,21 +85,5 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
                 builder.UseSetting($"{prefix}{nameof(TracerSettings.OtlpHeaders)}:{header.Key}", header.Value);
             }
         }
-
-        builder.ConfigureAppConfiguration(config =>
-            config.AddInMemoryCollection(
-                [
-                    // Enable logging of all request bodies.
-                    new KeyValuePair<string, string?>(
-                        $"{RequestLoggingSettings.ConfigurationSection}:{nameof(RequestLoggingSettings.LogBody)}",
-                        "true"
-                    ),
-                    new KeyValuePair<string, string?>(
-                        $"{RequestLoggingSettings.ConfigurationSection}:{nameof(RequestLoggingSettings.ContentTypes)}:0",
-                        "*/*"
-                    ),
-                ]
-            )
-        );
     }
 }

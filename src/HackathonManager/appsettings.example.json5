@@ -69,8 +69,8 @@
     // The maximum body size to log, in bytes.  Default: 4096.
     "MaxBodySize": 1234,
     // Optional list of content types used to filter requests that should be logged.  Can include wildcards.
-    // Default: [] (nothing will be logged).
-    "ContentTypes": ["application/json", "text/*"]
+    // Default: ["*/*"] (log everything).
+    "ContentTypes": []
   },
 
   // OpenTelemetry tracing settings.

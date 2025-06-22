@@ -16,7 +16,7 @@ public sealed class RequestLoggingSettings : IConfigurationSettings
 
     public int MaxBodySize { get; init; } = 1024 * 4; // 4 KB
 
-    public string[] ContentTypes { get; init; } = [];
+    public string[] ContentTypes { get; init; } = ["*/*"];
 
     public static string ConfigurationSection => "RequestLogging";
 }
