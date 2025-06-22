@@ -10,15 +10,6 @@ namespace HackathonManager.Settings;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class LogSettings : IConfigurationSettings
 {
-    public bool EnableConsoleTextLogging { get; init; }
-
-    public string ConsoleOutputTemplate { get; init; } =
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {RequestId} {Message:lj}{NewLine}{Exception}";
-
-    public bool EnableConsoleJsonLogging { get; init; }
-
-    public LogEventLevel ConsoleLogLevel { get; init; } = LogEventLevel.Verbose;
-
     public bool EnableFileLogging { get; init; }
 
     public LogEventLevel FileLogLevel { get; init; } = LogEventLevel.Verbose;
@@ -40,20 +31,6 @@ public sealed class LogSettingsValidator : AbstractValidator<LogSettings>
 {
     public LogSettingsValidator()
     {
-        When(
-            x => x.EnableConsoleTextLogging,
-            () =>
-            {
-                RuleFor(x => x.ConsoleOutputTemplate).NotEmpty();
-
-                RuleFor(x => x.EnableConsoleJsonLogging)
-                    .Must(x => !x)
-                    .WithMessage(
-                        $"{nameof(LogSettings.EnableConsoleJsonLogging)} can not be enabled when {nameof(LogSettings.EnableConsoleTextLogging)} is enabled."
-                    );
-            }
-        );
-
         When(
             x => x.EnableOpenTelemetryLogging,
             () =>

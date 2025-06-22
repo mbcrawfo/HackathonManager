@@ -5,7 +5,6 @@ using Destructurama;
 using HackathonManager.Extensions;
 using HackathonManager.Settings;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using Serilog;
 using Serilog.Exceptions;
@@ -16,23 +15,8 @@ namespace HackathonManager;
 
 public static class SerilogConfiguration
 {
-    public static ILogger CreateBootstrapLogger(string[] args)
-    {
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Production;
-
-        // Emulate the way that the host builder structures configuration so that we can use values from configuration
-        // to bootstrap the logging setup.
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile($"appsettings.{environment}.json", optional: true)
-            .AddUserSecrets(AppInfo.Assembly, optional: true)
-            .AddEnvironmentVariables()
-            .AddCommandLine(args)
-            .Build();
-
-        return new LoggerConfiguration().ConfigureAppLogger(configuration).CreateBootstrapLogger();
-    }
+    public static ILogger CreateBootstrapLogger(IConfigurationRoot configuration) =>
+        new LoggerConfiguration().ConfigureAppLogger(configuration).CreateBootstrapLogger();
 
     public static LoggerConfiguration ConfigureAppLogger(
         this LoggerConfiguration loggerConfiguration,
@@ -48,14 +32,15 @@ public static class SerilogConfiguration
             .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers())
             .Destructure.UsingAttributes();
 
-        if (settings.EnableConsoleTextLogging)
+        var console = appConfiguration.GetConfigurationSettings<ConsoleLogSettings, ConsoleLogSettingsValidator>();
+        switch (console.Type)
         {
-            loggerConfiguration.WriteTo.Console(settings.ConsoleLogLevel, settings.ConsoleOutputTemplate);
-        }
-
-        if (settings.EnableConsoleJsonLogging)
-        {
-            loggerConfiguration.WriteTo.Console(new RenderedCompactJsonFormatter(), settings.ConsoleLogLevel);
+            case ConsoleLogType.Text:
+                loggerConfiguration.WriteTo.Console(console.Level, console.TextTemplate);
+                break;
+            case ConsoleLogType.Json:
+                loggerConfiguration.WriteTo.Console(new RenderedCompactJsonFormatter(), console.Level);
+                break;
         }
 
         if (settings.EnableFileLogging)

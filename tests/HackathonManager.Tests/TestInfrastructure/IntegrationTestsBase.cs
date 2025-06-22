@@ -1,5 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
+using HackathonManager.Settings;
+using Serilog.Events;
 using Xunit;
 
 namespace HackathonManager.Tests.TestInfrastructure;

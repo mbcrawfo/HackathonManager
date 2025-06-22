@@ -12,31 +12,29 @@ namespace HackathonManager.Tests.TestInfrastructure;
 
 public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public ConsoleLogSettings? ConsoleLogSettings { get; init; } =
+        new() { Level = LogEventLevel.Verbose, Type = ConsoleLogType.Text };
+
     /// <inheritdoc />
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment(Environments.Development);
         builder.UseContentRoot(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "IntegrationTests"));
 
+        builder.UseSetting("Serilog:MinimumLevel:Default", nameof(LogEventLevel.Verbose));
+
+        if (ConsoleLogSettings is not null)
+        {
+            var prefix = ConsoleLogSettings.ConfigurationSection + ":";
+            builder.UseSetting(prefix + nameof(ConsoleLogSettings.Type), ConsoleLogSettings.Type.ToString());
+            builder.UseSetting(prefix + nameof(ConsoleLogSettings.Level), ConsoleLogSettings.Level.ToString());
+            builder.UseSetting(prefix + nameof(ConsoleLogSettings.TextTemplate), ConsoleLogSettings.TextTemplate);
+        }
+
         // Log settings are configured with environment variable so they will be picked up by the bootstrap logger.
         var logSettings = LogSettings.ConfigurationSection.ToUpperInvariant();
 
-        // Enable console logging at verbose level.
-        Environment.SetEnvironmentVariable(
-            $"{logSettings}__{nameof(LogSettings.EnableConsoleTextLogging).ToUpperInvariant()}",
-            "true"
-        );
-        Environment.SetEnvironmentVariable(
-            $"{logSettings}__{nameof(LogSettings.ConsoleLogLevel).ToUpperInvariant()}",
-            nameof(LogEventLevel.Verbose)
-        );
-        Environment.SetEnvironmentVariable("SERILOG__MINIMUMLEVEL__DEFAULT", nameof(LogEventLevel.Verbose));
-
         // Disable all other loggers.
-        Environment.SetEnvironmentVariable(
-            $"{logSettings}__{nameof(LogSettings.EnableConsoleJsonLogging).ToUpperInvariant()}",
-            "false"
-        );
         Environment.SetEnvironmentVariable(
             $"{logSettings}__{nameof(LogSettings.EnableFileLogging).ToUpperInvariant()}",
             "false"

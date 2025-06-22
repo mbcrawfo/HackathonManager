@@ -19,14 +19,15 @@ using Serilog;
 
 Env.LoadMulti([".env", ".env.local"]);
 
-Log.Logger = SerilogConfiguration.CreateBootstrapLogger(args);
+var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = SerilogConfiguration.CreateBootstrapLogger(builder.Configuration);
 var logger = Log.Logger.ForContext<Program>();
 logger.Information("{Application} version {Version} starting up...", AppInfo.Name, AppInfo.Version);
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
-    ConfigureServices(builder);
+    ConfigureServices();
 
     var app = builder.Build();
     ConfigurePipeline(app);
@@ -57,14 +58,14 @@ finally
     await Log.CloseAndFlushAsync();
 }
 
-void ConfigureServices(WebApplicationBuilder builder)
+void ConfigureServices()
 {
     builder.Services.AddSerilog(
         (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>()),
         preserveStaticLogger: true
     );
 
-    AddOpenTelemetryServices(builder);
+    AddOpenTelemetryServices();
 
     builder.Services.AddConfigurationSettings<LogSettings>();
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
@@ -75,7 +76,7 @@ void ConfigureServices(WebApplicationBuilder builder)
     builder.Services.AddHealthChecks();
 }
 
-void AddOpenTelemetryServices(WebApplicationBuilder builder)
+void AddOpenTelemetryServices()
 {
     var serviceName = builder.Configuration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
     var traceSettings = builder.Configuration.GetConfigurationSettings<TraceSettings, TraceSettingsValidator>();
@@ -119,7 +120,7 @@ void AddOpenTelemetryServices(WebApplicationBuilder builder)
             {
                 tracerBuilder.AddOtlpExporter(options =>
                 {
-                    options.Endpoint = new Uri(traceSettings.OtlpEndpoint!);
+                    options.Endpoint = new Uri(traceSettings.OtlpEndpoint);
                     options.Protocol = traceSettings.OtlpProtocol;
                     options.Headers = string.Join(
                         ",",
