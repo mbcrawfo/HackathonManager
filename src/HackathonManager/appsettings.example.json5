@@ -31,12 +31,11 @@
     "Path": ""
   },
 
-  // Logging output settings.
-  "Log": {
-    // Enables logging to an OpenTelemetry collector.
-    "EnableOpenTelemetryLogging": false,
-    // Minimum log level for OpenTelemetry logging.  Default: Verbose.
-    "OpenTelemetryLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
+  // Optional settings controlling OpenTelemetry logging.
+  "OpenTelemetryLog": {
+    "Enabled": false,
+    // Minimum log level for this sink.  Default: Verbose.
+    "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
     // OTLP endpoint URL including protocol and port.
     "OtlpEndpoint": "http://server:80/path/to/collector",
     "OtlpProtocol": "HttpProtobuf|Grpc",

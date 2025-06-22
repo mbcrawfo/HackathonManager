@@ -67,7 +67,7 @@ void ConfigureServices()
 
     AddOpenTelemetryServices();
 
-    builder.Services.AddConfigurationSettings<LogSettings>();
+    builder.Services.AddConfigurationSettings<OpenTelemetryLogSettings>();
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
     builder.Services.AddConfigurationSettings<TraceSettings>();
 

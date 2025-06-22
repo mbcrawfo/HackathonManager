@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using Destructurama;
 using HackathonManager.Extensions;
 using HackathonManager.Settings;
@@ -24,9 +23,6 @@ public static class SerilogConfiguration
         IConfiguration appConfiguration
     )
     {
-        var serviceName = appConfiguration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
-        var settings = appConfiguration.GetConfigurationSettings<LogSettings, LogSettingsValidator>();
-
         loggerConfiguration
             .ReadFrom.Configuration(appConfiguration)
             .Enrich.FromLogContext()
@@ -64,19 +60,23 @@ public static class SerilogConfiguration
             );
         }
 
-        if (settings.EnableOpenTelemetryLogging)
+        var openTelemetrySettings = appConfiguration.GetConfigurationSettings<
+            OpenTelemetryLogSettings,
+            OpenTelemetryLogSettingsValidator
+        >();
+        if (openTelemetrySettings.Enabled)
         {
             loggerConfiguration.WriteTo.OpenTelemetry(options =>
             {
-                options.RestrictedToMinimumLevel = settings.OpenTelemetryLogLevel;
-                options.Endpoint = settings.OtlpEndpoint;
-                options.Protocol = settings.OtlpProtocol!.Value; // Validation ensures this is not null
-                options.Headers = settings.OtlpHeaders;
+                options.RestrictedToMinimumLevel = openTelemetrySettings.Level;
+                options.Endpoint = openTelemetrySettings.OtlpEndpoint;
+                options.Protocol = openTelemetrySettings.OtlpProtocol;
+                options.Headers = openTelemetrySettings.OtlpHeaders;
                 options.OnBeginSuppressInstrumentation = SuppressInstrumentationScope.Begin;
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     // Matches the OpenTelemetry tracing setup.
-                    { "service.name", serviceName },
+                    { "service.name", appConfiguration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name },
                     { "service.version", AppInfo.Version },
                     { "service.instance.id", Environment.MachineName },
                 };

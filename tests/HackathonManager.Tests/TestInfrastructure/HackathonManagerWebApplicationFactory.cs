@@ -17,6 +17,8 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
 
     public FileLogSettings? FileLogSettings { get; init; } = new() { Enabled = false };
 
+    public OpenTelemetryLogSettings? OpenTelemetryLogSettings { get; init; } = new() { Enabled = false };
+
     /// <inheritdoc />
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -40,14 +42,33 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
             builder.UseSetting(prefix + nameof(FileLogSettings.Path), FileLogSettings.Path);
         }
 
-        // Log settings are configured with environment variable so they will be picked up by the bootstrap logger.
-        var logSettings = LogSettings.ConfigurationSection.ToUpperInvariant();
-
-        // Disable all other loggers.
-        Environment.SetEnvironmentVariable(
-            $"{logSettings}__{nameof(LogSettings.EnableOpenTelemetryLogging).ToUpperInvariant()}",
-            "false"
-        );
+        if (OpenTelemetryLogSettings is not null)
+        {
+            var prefix = OpenTelemetryLogSettings.ConfigurationSection + ":";
+            builder.UseSetting(
+                prefix + nameof(OpenTelemetryLogSettings.Enabled),
+                OpenTelemetryLogSettings.Enabled.ToString()
+            );
+            builder.UseSetting(
+                prefix + nameof(OpenTelemetryLogSettings.Level),
+                OpenTelemetryLogSettings.Level.ToString()
+            );
+            builder.UseSetting(
+                prefix + nameof(OpenTelemetryLogSettings.OtlpEndpoint),
+                OpenTelemetryLogSettings.OtlpEndpoint
+            );
+            builder.UseSetting(
+                prefix + nameof(OpenTelemetryLogSettings.OtlpProtocol),
+                OpenTelemetryLogSettings.OtlpProtocol.ToString()
+            );
+            foreach (var header in OpenTelemetryLogSettings.OtlpHeaders)
+            {
+                builder.UseSetting(
+                    $"{prefix}{nameof(OpenTelemetryLogSettings.OtlpHeaders)}:{header.Key}",
+                    header.Value
+                );
+            }
+        }
 
         builder.ConfigureAppConfiguration(config =>
             config.AddInMemoryCollection(
