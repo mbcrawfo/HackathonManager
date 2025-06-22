@@ -15,6 +15,8 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
     public ConsoleLogSettings? ConsoleLogSettings { get; init; } =
         new() { Level = LogEventLevel.Verbose, Type = ConsoleLogType.Text };
 
+    public FileLogSettings? FileLogSettings { get; init; } = new() { Enabled = false };
+
     /// <inheritdoc />
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -28,17 +30,20 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
             var prefix = ConsoleLogSettings.ConfigurationSection + ":";
             builder.UseSetting(prefix + nameof(ConsoleLogSettings.Type), ConsoleLogSettings.Type.ToString());
             builder.UseSetting(prefix + nameof(ConsoleLogSettings.Level), ConsoleLogSettings.Level.ToString());
-            builder.UseSetting(prefix + nameof(ConsoleLogSettings.TextTemplate), ConsoleLogSettings.TextTemplate);
+        }
+
+        if (FileLogSettings is not null)
+        {
+            var prefix = FileLogSettings.ConfigurationSection + ":";
+            builder.UseSetting(prefix + nameof(FileLogSettings.Enabled), FileLogSettings.Enabled.ToString());
+            builder.UseSetting(prefix + nameof(FileLogSettings.Level), FileLogSettings.Level.ToString());
+            builder.UseSetting(prefix + nameof(FileLogSettings.Path), FileLogSettings.Path);
         }
 
         // Log settings are configured with environment variable so they will be picked up by the bootstrap logger.
         var logSettings = LogSettings.ConfigurationSection.ToUpperInvariant();
 
         // Disable all other loggers.
-        Environment.SetEnvironmentVariable(
-            $"{logSettings}__{nameof(LogSettings.EnableFileLogging).ToUpperInvariant()}",
-            "false"
-        );
         Environment.SetEnvironmentVariable(
             $"{logSettings}__{nameof(LogSettings.EnableOpenTelemetryLogging).ToUpperInvariant()}",
             "false"

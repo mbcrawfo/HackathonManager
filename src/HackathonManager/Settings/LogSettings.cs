@@ -10,10 +10,6 @@ namespace HackathonManager.Settings;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class LogSettings : IConfigurationSettings
 {
-    public bool EnableFileLogging { get; init; }
-
-    public LogEventLevel FileLogLevel { get; init; } = LogEventLevel.Verbose;
-
     public bool EnableOpenTelemetryLogging { get; init; }
 
     public LogEventLevel OpenTelemetryLogLevel { get; init; } = LogEventLevel.Verbose;

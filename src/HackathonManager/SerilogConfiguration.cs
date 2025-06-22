@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using Destructurama;
 using HackathonManager.Extensions;
 using HackathonManager.Settings;
@@ -36,19 +37,28 @@ public static class SerilogConfiguration
         switch (console.Type)
         {
             case ConsoleLogType.Text:
-                loggerConfiguration.WriteTo.Console(console.Level, console.TextTemplate);
+                loggerConfiguration.WriteTo.Console(
+                    console.Level,
+                    "[{Timestamp:HH:mm:ss} {Level:u3}] {RequestId} {Message:lj}{NewLine}{Exception}"
+                );
                 break;
             case ConsoleLogType.Json:
                 loggerConfiguration.WriteTo.Console(new RenderedCompactJsonFormatter(), console.Level);
                 break;
         }
 
-        if (settings.EnableFileLogging)
+        var file = appConfiguration.GetConfigurationSettings<FileLogSettings, FileLogSettingsValidator>();
+        if (file.Enabled)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "log.txt");
+            var path = file.Path;
+            if (path.StartsWith('.') && !path.StartsWith(".."))
+            {
+                path = Path.Combine(Directory.GetCurrentDirectory(), path[1..]);
+            }
+
             loggerConfiguration.WriteTo.File(
-                filePath,
-                settings.FileLogLevel,
+                path,
+                file.Level,
                 "{Timestamp:HH:mm:ss.fff} | {Level:u3} | {RequestMethod} {RequestPath} | {RequestId} | {SourceContext} | {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day
             );

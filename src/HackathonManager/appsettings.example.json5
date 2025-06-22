@@ -16,18 +16,23 @@
   // Optional settings controlling console logging.
   "ConsoleLog": {
     "Type": "Disabled|Text|Json",
+    // Minimum log level for this sink.  Default: Verbose.
     "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
     // The template use for formatting text output.  See Serilog docs for details.
     "TextTemplate": ""
   },
 
+  // Optional settings controlling logging to a file (rotated daily).
+  "FileLog": {
+    "Enabled": false,
+    // Minimum log level for this sink.  Default: Verbose.
+    "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
+    // Path to the log file, including file name.  Default: ./logs/log.txt
+    "Path": ""
+  },
+
   // Logging output settings.
   "Log": {
-    // Enables logging to rotating files in ./logs.
-    "EnableFileLogging": false,
-    // Minimum log level for file logging.  Default: Verbose.
-    "FileLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
-
     // Enables logging to an OpenTelemetry collector.
     "EnableOpenTelemetryLogging": false,
     // Minimum log level for OpenTelemetry logging.  Default: Verbose.

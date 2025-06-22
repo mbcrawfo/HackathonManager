@@ -9,9 +9,6 @@ public sealed class ConsoleLogSettings : IConfigurationSettings
 
     public LogEventLevel Level { get; init; } = LogEventLevel.Verbose;
 
-    public string TextTemplate { get; init; } =
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {RequestId} {Message:lj}{NewLine}{Exception}";
-
     /// <inheritdoc />
     public static string ConfigurationSection => "ConsoleLog";
 }
@@ -32,8 +29,6 @@ public sealed class ConsoleLogSettingsValidator : AbstractValidator<ConsoleLogSe
             () =>
             {
                 RuleFor(x => x.Type).IsInEnum();
-
-                RuleFor(x => x.TextTemplate).NotEmpty().When(x => x.Type == ConsoleLogType.Text);
             }
         );
     }
