@@ -15,12 +15,15 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="Neovolve.Logging.Xunit.v3" />
+        <PackageReference Include="NodaTime.Bogus" />
+        <PackageReference Include="NodaTime.Testing" />
         <PackageReference Include="Npgsql" />
         <PackageReference Include="NSubstitute" />
         <PackageReference Include="NSubstitute.Analyzers.CSharp">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Respawn" />
         <PackageReference Include="Shouldly" />
         <PackageReference Include="Testcontainers" />
         <PackageReference Include="Testcontainers.PostgreSql" />

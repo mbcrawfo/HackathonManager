@@ -8,13 +8,26 @@
     <ItemGroup>
         <PackageReference Include="Destructurama.Attributed" />
         <PackageReference Include="DotNetEnv" />
+        <PackageReference Include="EFCore.NamingConventions" />
+        <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+        <PackageReference Include="NodaTime" />
+        <PackageReference Include="NodaTime.Serialization.SystemTextJson" />
+        <PackageReference Include="Npgsql" />
+        <PackageReference Include="Npgsql.DependencyInjection" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" />
+        <PackageReference Include="Npgsql.NodaTime" />
+        <PackageReference Include="Npgsql.OpenTelemetry" />
         <PackageReference Include="OpenTelemetry" />
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
         <PackageReference Include="Serilog" />
         <PackageReference Include="Serilog.AspNetCore" />

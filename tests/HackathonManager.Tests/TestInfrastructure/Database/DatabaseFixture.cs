@@ -1,34 +1,35 @@
 using System;
-using System.Data.Common;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers;
 using Npgsql;
 using Testcontainers.PostgreSql;
-using Xunit;
 
-namespace HackathonManager.Tests.TestInfrastructure;
+namespace HackathonManager.Tests.TestInfrastructure.Database;
 
-public sealed class PostgresDatabaseFixture : IAsyncLifetime
+/// <summary>
+///     Base fixture that manages a database container.
+/// </summary>
+public sealed class DatabaseFixture : IDatabaseFixture
 {
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
         .WithImage("postgres:18beta1")
         .WithDatabase("hackathon")
         .Build();
 
-    private DbDataSource? _dataSource;
+    private NpgsqlDataSource? _dataSource;
 
     public string ConnectionString =>
         _container.State switch
         {
             TestcontainersStates.Running => _container.GetConnectionString(),
-            _ => throw new InvalidOperationException($"{nameof(PostgresDatabaseFixture)} is not initialized"),
+            _ => throw new InvalidOperationException($"{nameof(DatabaseFixture)} is not initialized"),
         };
 
-    public DbDataSource DataSource =>
+    public NpgsqlDataSource DataSource =>
         _dataSource switch
         {
             not null => _dataSource,
-            null => throw new InvalidOperationException($"{nameof(PostgresDatabaseFixture)} is not initialized"),
+            null => throw new InvalidOperationException($"{nameof(DatabaseFixture)} is not initialized"),
         };
 
     /// <inheritdoc />
@@ -47,7 +48,7 @@ public sealed class PostgresDatabaseFixture : IAsyncLifetime
     {
         if (_container.State is not TestcontainersStates.Undefined)
         {
-            throw new InvalidOperationException($"{nameof(PostgresDatabaseFixture)} is already initialized");
+            throw new InvalidOperationException($"{nameof(DatabaseFixture)} is already initialized");
         }
 
         await _container.StartAsync();

@@ -5,6 +5,7 @@ using Dapper;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Tests.TestInfrastructure;
+using HackathonManager.Tests.TestInfrastructure.Database;
 using Shouldly;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace HackathonManager.Tests.IntegrationTests;
 // Does not use the normal integration test base class because it needs an uninitialized database.
 public class StartupMigrationTests : IAsyncLifetime
 {
-    private readonly PostgresDatabaseFixture _databaseFixture = new();
+    private readonly DatabaseFixture _databaseFixture = new();
     private readonly HackathonManagerWebApplicationFactory _factory = new();
 
     /// <inheritdoc />
@@ -27,6 +28,7 @@ public class StartupMigrationTests : IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         await _databaseFixture.InitializeAsync();
+        _factory.DataSource = _databaseFixture.DataSource;
     }
 
     [Fact]

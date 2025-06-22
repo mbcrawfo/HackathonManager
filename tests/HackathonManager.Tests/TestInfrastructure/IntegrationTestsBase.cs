@@ -1,20 +1,37 @@
+using System;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using HackathonManager.Settings;
-using Serilog.Events;
 using Xunit;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
+[Collection("IntegrationTests")]
 public abstract class IntegrationTestsBase : IAsyncLifetime
 {
-    protected HackathonManagerWebApplicationFactory Factory { get; } = new();
+    private readonly IntegrationTestsFixture _fixture;
 
-    public static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
+    protected IntegrationTestsBase(IntegrationTestsFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    protected static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
+
+    protected DbDataSource DataSource => _fixture.DataSource;
+
+    protected HackathonManagerWebApplicationFactory Factory => _fixture.Factory;
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync() => await Factory.DisposeAsync();
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
 
     /// <inheritdoc />
-    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+    public async ValueTask InitializeAsync() => await _fixture.ResetData();
 }
+
+[CollectionDefinition("IntegrationTests")]
+public sealed class IntegrationTestsCollection : ICollectionFixture<IntegrationTestsFixture>;

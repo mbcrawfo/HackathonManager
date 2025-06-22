@@ -8,6 +8,10 @@ namespace HackathonManager.Tests.IntegrationTests;
 
 public class IntegratedSpaTests : IntegrationTestsBase
 {
+    /// <inheritdoc />
+    public IntegratedSpaTests(IntegrationTestsFixture fixture)
+        : base(fixture) { }
+
     [Theory]
     [InlineData("/")]
     [InlineData("/index.html")]

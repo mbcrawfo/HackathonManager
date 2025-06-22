@@ -1,17 +1,8 @@
 // Documents all of the settings available for the Hackathon Manager application.
 {
-  // Name used for OpenTelemetry logs and traces.
-  "ServiceName": "service-name",
-
   "ConnectionStrings": {
     "HackathonDb": "See Npgsql documentation for PostgreSQL connection string format."
   },
-
-  // When true, serve the SPA using this app's Kestrel server.  SPA files must be in the ./wwwroot directory.
-  "EnableIntegratedSpa": false,
-
-  // When true, apply migrations to the database after the app completes startup.
-  "EnableStartupMigration": false,
 
   // Optional settings controlling console logging.
   "ConsoleLog": {
@@ -20,6 +11,18 @@
     "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
     // The template use for formatting text output.  See Serilog docs for details.
     "TextTemplate": ""
+  },
+
+  // When true, serve the SPA using this app's Kestrel server.  SPA files must be in the ./wwwroot directory.
+  "EnableIntegratedSpa": false,
+
+  // When true, apply migrations to the database after the app completes startup.
+  "EnableStartupMigration": false,
+
+  // Optional settings related to EF.
+  "EntityFramework": {
+    "EnableDetailedErrors": false,
+    "EnableSensitiveDataLogging": false
   },
 
   // Optional settings controlling logging to a file (rotated daily).
@@ -57,6 +60,9 @@
       }
     },
   },
+
+  // Name used for OpenTelemetry logs and traces.
+  "ServiceName": "service-name",
 
   // Settings for the RequestLogging middleware.
   "RequestLogging":  {

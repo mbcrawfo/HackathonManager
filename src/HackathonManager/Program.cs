@@ -1,18 +1,20 @@
 using System;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DotNetEnv;
 using FluentValidation;
 using HackathonManager;
+using HackathonManager.Database;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -67,9 +69,16 @@ void ConfigureServices()
 
     AddOpenTelemetryServices();
 
-    builder.Services.AddConfigurationSettings<OpenTelemetryLogSettings>();
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
-    builder.Services.AddConfigurationSettings<TracerSettings>();
+
+    var connectionString = builder.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
+    var dataSource = NpgsqlDataSource.Create(connectionString);
+    var efSettings = builder.Configuration.GetConfigurationSettings<
+        EntityFrameworkSettings,
+        EntityFrameworkSettingsValidator
+    >();
+    builder.Services.AddSingleton<DbDataSource>(dataSource);
+    builder.Services.AddDbContext<HackathonDbContext>(ob => ob.ConfigureHackathonDbContext(dataSource, efSettings));
 
     builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
 
@@ -107,6 +116,8 @@ void AddOpenTelemetryServices()
                     };
                 })
                 .AddHttpClientInstrumentation()
+                .AddNpgsql()
+                .AddEntityFrameworkCoreInstrumentation()
                 .AddProcessor<HttpRouteProcessor>();
 
             if (traceSettings.Enabled)
@@ -140,7 +151,7 @@ void ConfigurePipeline(WebApplication app)
 
     app.MapGet(
         "/api/hello",
-        ([FromServices] ILogger<Program> l) =>
+        (ILogger<Program> l) =>
         {
             l.LogInformation("Hello endpoint called");
             return "Hello World!!";

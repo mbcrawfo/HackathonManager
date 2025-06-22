@@ -1,15 +1,34 @@
 using System;
+using System.Data.Common;
 using System.IO;
+using HackathonManager.Database;
+using HackathonManager.Extensions;
 using HackathonManager.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using Serilog.Events;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
 public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public string? ConnectionString { get; set; }
+
+    public NpgsqlDataSource? DataSource
+    {
+        get;
+        set
+        {
+            field = value;
+            ConnectionString = value?.ConnectionString;
+        }
+    }
+
     public ConsoleLogSettings? ConsoleLogSettings { get; init; } =
         new() { Level = LogEventLevel.Verbose, Type = ConsoleLogType.Text };
 
@@ -24,6 +43,11 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
     {
         builder.UseEnvironment(Environments.Development);
         builder.UseContentRoot(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "IntegrationTests"));
+
+        if (ConnectionString is not null)
+        {
+            builder.UseSetting(Constants.ConnectionStringKey, ConnectionString);
+        }
 
         builder.UseSetting("Serilog:MinimumLevel:Default", nameof(LogEventLevel.Verbose));
         builder.UseSetting(
@@ -85,5 +109,24 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
                 builder.UseSetting($"{prefix}{nameof(TracerSettings.OtlpHeaders)}:{header.Key}", header.Value);
             }
         }
+
+        builder.ConfigureServices(services =>
+        {
+            if (DataSource is not null)
+            {
+                services.RemoveAll<DbDataSource>();
+                services.RemoveAll<DbContextOptions>();
+                services.RemoveAll<DbContextOptions<HackathonDbContext>>();
+                services.RemoveAll<HackathonDbContext>();
+
+                services.AddSingleton<DbDataSource>(DataSource);
+                services.AddDbContext<HackathonDbContext>(ob =>
+                    ob.ConfigureHackathonDbContext(
+                        DataSource,
+                        new EntityFrameworkSettings { EnableDetailedErrors = true, EnableSensitiveDataLogging = true }
+                    )
+                );
+            }
+        });
     }
 }

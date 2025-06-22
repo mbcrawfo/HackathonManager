@@ -7,6 +7,10 @@ namespace HackathonManager.Tests.IntegrationTests;
 
 public class HealthCheckTests : IntegrationTestsBase
 {
+    /// <inheritdoc />
+    public HealthCheckTests(IntegrationTestsFixture fixture)
+        : base(fixture) { }
+
     [Fact]
     public async Task HealthCheck_ShouldReturnHealthy()
     {
