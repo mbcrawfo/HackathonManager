@@ -52,6 +52,6 @@ public sealed class DatabaseFixture : IDatabaseFixture
         }
 
         await _container.StartAsync();
-        _dataSource = NpgsqlDataSource.Create(_container.GetConnectionString());
+        _dataSource = new NpgsqlDataSourceBuilder(ConnectionString).EnableParameterLogging().Build();
     }
 }

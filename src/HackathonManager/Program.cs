@@ -11,6 +11,7 @@ using HackathonManager.Migrator;
 using HackathonManager.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,10 +40,9 @@ try
     if (enableStartupMigration)
     {
         using var scope = app.Services.CreateScope();
-        var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
         MigrationRunner.UpdateDatabase(
             app.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey),
-            loggerFactory
+            scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
         );
     }
 
@@ -71,14 +71,11 @@ void ConfigureServices()
 
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
 
-    var connectionString = builder.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
-    var dataSource = NpgsqlDataSource.Create(connectionString);
-    var efSettings = builder.Configuration.GetConfigurationSettings<
-        EntityFrameworkSettings,
-        EntityFrameworkSettingsValidator
-    >();
+    var (dataSource, databaseLoggingSettings) = builder.Configuration.BuildDataSource();
     builder.Services.AddSingleton<DbDataSource>(dataSource);
-    builder.Services.AddDbContext<HackathonDbContext>(ob => ob.ConfigureHackathonDbContext(dataSource, efSettings));
+    builder.Services.AddDbContext<HackathonDbContext>(ob =>
+        ob.ConfigureHackathonDbContext(dataSource, databaseLoggingSettings)
+    );
 
     builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
 
@@ -117,7 +114,6 @@ void AddOpenTelemetryServices()
                 })
                 .AddHttpClientInstrumentation()
                 .AddNpgsql()
-                .AddEntityFrameworkCoreInstrumentation()
                 .AddProcessor<HttpRouteProcessor>();
 
             if (traceSettings.Enabled)
@@ -151,10 +147,10 @@ void ConfigurePipeline(WebApplication app)
 
     app.MapGet(
         "/api/hello",
-        (ILogger<Program> l) =>
+        async (ILogger<Program> l, HackathonDbContext db) =>
         {
             l.LogInformation("Hello endpoint called");
-            return "Hello World!!";
+            return await db.Tests.ToListAsync();
         }
     );
 

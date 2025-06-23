@@ -13,17 +13,17 @@
     "TextTemplate": ""
   },
 
+  // Optional settings related logging EF queries and database commands.
+  "DatabaseLogging": {
+    "EnableDetailedErrors": false,
+    "EnableSensitiveDataLogging": false
+  },
+
   // When true, serve the SPA using this app's Kestrel server.  SPA files must be in the ./wwwroot directory.
   "EnableIntegratedSpa": false,
 
   // When true, apply migrations to the database after the app completes startup.
   "EnableStartupMigration": false,
-
-  // Optional settings related to EF.
-  "EntityFramework": {
-    "EnableDetailedErrors": false,
-    "EnableSensitiveDataLogging": false
-  },
 
   // Optional settings controlling logging to a file (rotated daily).
   "FileLog": {

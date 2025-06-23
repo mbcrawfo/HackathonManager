@@ -10,7 +10,7 @@ public static class DbContextOptionsBuilderExtensions
     public static DbContextOptionsBuilder ConfigureHackathonDbContext(
         this DbContextOptionsBuilder builder,
         NpgsqlDataSource dataSource,
-        EntityFrameworkSettings settings
+        DatabaseLoggingSettings settings
     )
     {
         builder.UseNpgsql(dataSource, options => options.UseNodaTime());

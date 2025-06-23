@@ -123,7 +123,7 @@ public sealed class HackathonManagerWebApplicationFactory : WebApplicationFactor
                 services.AddDbContext<HackathonDbContext>(ob =>
                     ob.ConfigureHackathonDbContext(
                         DataSource,
-                        new EntityFrameworkSettings { EnableDetailedErrors = true, EnableSensitiveDataLogging = true }
+                        new DatabaseLoggingSettings { EnableDetailedErrors = true, EnableSensitiveDataLogging = true }
                     )
                 );
             }
