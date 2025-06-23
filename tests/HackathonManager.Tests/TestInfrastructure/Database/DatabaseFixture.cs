@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers;
+using HackathonManager.Database;
+using HackathonManager.Settings;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -52,6 +54,10 @@ public sealed class DatabaseFixture : IDatabaseFixture
         }
 
         await _container.StartAsync();
-        _dataSource = new NpgsqlDataSourceBuilder(ConnectionString).EnableParameterLogging().Build();
+
+        _dataSource = DataSourceFactory.Create(
+            ConnectionString,
+            new DatabaseLoggingSettings { EnableDetailedErrors = true, EnableSensitiveDataLogging = true }
+        );
     }
 }

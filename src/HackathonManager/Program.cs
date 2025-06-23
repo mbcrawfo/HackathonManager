@@ -71,7 +71,13 @@ void ConfigureServices()
 
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
 
-    var (dataSource, databaseLoggingSettings) = builder.Configuration.BuildDataSource();
+    var connectionString = builder.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
+    var databaseLoggingSettings = builder.Configuration.GetConfigurationSettings<
+        DatabaseLoggingSettings,
+        DatabaseLoggingSettingsValidator
+    >();
+    var dataSource = DataSourceFactory.Create(connectionString, databaseLoggingSettings);
+
     builder.Services.AddSingleton<DbDataSource>(dataSource);
     builder.Services.AddDbContext<HackathonDbContext>(ob =>
         ob.ConfigureHackathonDbContext(dataSource, databaseLoggingSettings)

@@ -1,5 +1,6 @@
 using System;
 using FluentValidation;
+using HackathonManager.Database;
 using HackathonManager.Settings;
 using HackathonManager.Utilities;
 using Microsoft.Extensions.Configuration;
@@ -10,24 +11,6 @@ namespace HackathonManager.Extensions;
 
 public static class ConfigurationExtensions
 {
-    public static (NpgsqlDataSource, DatabaseLoggingSettings) BuildDataSource(this IConfiguration configuration)
-    {
-        var connectionString = configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
-        var settings = configuration.GetConfigurationSettings<
-            DatabaseLoggingSettings,
-            DatabaseLoggingSettingsValidator
-        >();
-
-        var dataSource = new NpgsqlDataSourceBuilder(connectionString)
-            .EnableParameterLogging(settings.EnableSensitiveDataLogging)
-            .ConfigureTracing(ob =>
-                ob.EnableFirstResponseEvent(false).ConfigureCommandSpanNameProvider(c => c.CommandText)
-            )
-            .Build();
-
-        return (dataSource, settings);
-    }
-
     /// <summary>
     ///     Gets a value from configuration, throwing an exception if the key is not set.
     /// </summary>
