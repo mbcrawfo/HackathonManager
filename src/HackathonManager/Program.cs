@@ -2,6 +2,7 @@ using System;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Asp.Versioning;
 using DotNetEnv;
 using FastEndpoints;
@@ -15,9 +16,12 @@ using HackathonManager.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NodaTime;
+using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -110,6 +114,12 @@ void ConfigureServices()
     builder.Services.AddAuthorization();
 
     builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
+
+    builder.Services.Configure<JsonOptions>(options =>
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+        options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    });
 
     builder.Services.AddVersioning(options =>
     {
