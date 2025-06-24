@@ -2,33 +2,23 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using FastEndpoints.Testing;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Tests.TestInfrastructure;
-using HackathonManager.Tests.TestInfrastructure.Database;
+using Microsoft.AspNetCore.Hosting;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-// Does not use the normal integration test base class because it needs an uninitialized database.
-public class StartupMigrationTests : IAsyncLifetime
+public class StartupMigrationTests : TestBase<StartupMigrationTests.AppWithStartupMigration>
 {
-    private readonly DatabaseFixture _databaseFixture = new();
-    private readonly HackathonManagerWebApplicationFactory _factory = new();
+    private readonly AppWithStartupMigration _app;
 
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public StartupMigrationTests(AppWithStartupMigration app)
     {
-        await _factory.DisposeAsync();
-        await _databaseFixture.DisposeAsync();
-    }
-
-    /// <inheritdoc />
-    public async ValueTask InitializeAsync()
-    {
-        await _databaseFixture.InitializeAsync();
-        _factory.DataSource = _databaseFixture.DataSource;
+        _app = app;
     }
 
     [Fact]
@@ -40,21 +30,11 @@ public class StartupMigrationTests : IAsyncLifetime
             .Where(n => n.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
             .ToReadOnlyCollection();
 
-        using var client = _factory
-            .WithWebHostBuilder(builder =>
-                builder
-                    .UseSetting(Constants.ConnectionStringKey, _databaseFixture.ConnectionString)
-                    .UseSetting(Constants.EnableStartupMigrationKey, "true")
-            )
-            .CreateClient();
-
         // act
-        _ = await client.GetAsync("/health", TestContext.Current.CancellationToken);
+        _ = await _app.Client.GetAsync("/health", TestContext.Current.CancellationToken);
 
         // assert
-        await using var connection = await _databaseFixture.DataSource.OpenConnectionAsync(
-            TestContext.Current.CancellationToken
-        );
+        await using var connection = await _app.DataSource.OpenConnectionAsync(TestContext.Current.CancellationToken);
         var actualMigrations = await connection.QueryAsync<string>(
             new CommandDefinition(
                 "select scriptname from meta.migrations_history",
@@ -62,5 +42,15 @@ public class StartupMigrationTests : IAsyncLifetime
             )
         );
         actualMigrations.ShouldBe(expectedMigrations, ignoreOrder: true);
+    }
+
+    public sealed class AppWithStartupMigration : AppWithDatabase
+    {
+        /// <inheritdoc />
+        protected override void ConfigureApp(IWebHostBuilder builder)
+        {
+            base.ConfigureApp(builder);
+            builder.UseSetting(Constants.EnableStartupMigrationKey, "true");
+        }
     }
 }

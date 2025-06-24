@@ -36,6 +36,7 @@
         <ProjectReference Include="..\..\src\HackathonManager\HackathonManager.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="IntegrationTests\wwwroot\*" CopyToOutputDirectory="PreserveNewest" />
+        <Content Remove="TestInfrastructure\IntegrationTestContentRoot\**" />
+        <Content Include="TestInfrastructure\IntegrationTestContentRoot\**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>

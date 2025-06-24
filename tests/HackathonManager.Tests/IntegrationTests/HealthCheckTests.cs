@@ -1,24 +1,26 @@
 using System.Threading.Tasks;
+using FastEndpoints.Testing;
 using HackathonManager.Tests.TestInfrastructure;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class HealthCheckTests : IntegrationTestsBase
+public class HealthCheckTests : TestBase<AppWithDatabase>
 {
-    /// <inheritdoc />
-    public HealthCheckTests(IntegrationTestsFixture fixture)
-        : base(fixture) { }
+    private readonly AppWithDatabase _app;
+
+    public HealthCheckTests(AppWithDatabase app)
+    {
+        _app = app;
+    }
 
     [Fact]
     public async Task HealthCheck_ShouldReturnHealthy()
     {
         // arrange
-        using var client = Factory.CreateClient();
-
         // act
-        var response = await client.GetStringAsync("/health", CancellationToken);
+        var response = await _app.Client.GetStringAsync("/health", Cancellation);
 
         // assert
         response.ShouldBe("Healthy");

@@ -69,7 +69,7 @@
     // When true, logs the request body at the Trace (Verbose) level.
     // Should not be used in production as it can log sensitive information.
     // Can have a significant performance impact because it requires reading the request body twice.
-    "LogBody": "false",
+    "LogBody": false,
     // Level at which to log request bodies.  Default: Verbose.
     "BodyLogLevel": "Verbose|Debug|Information|Warning|Error|Fatal",
     // The maximum body size to log, in bytes.  Default: 4096.
