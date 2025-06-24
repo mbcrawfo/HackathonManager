@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <UserSecretsId>c3300cd6-39e9-470f-a4d3-0ca6083860e6</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\HackathonManager.Migrator\HackathonManager.Migrator.csproj" />
@@ -10,6 +11,10 @@
         <PackageReference Include="DotNetEnv" />
         <PackageReference Include="EFCore.NamingConventions" />
         <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
+        <PackageReference Include="FastEndpoints" />
+        <PackageReference Include="FastEndpoints.AspVersioning" />
+        <PackageReference Include="FastEndpoints.Security" />
+        <PackageReference Include="FastEndpoints.Swagger" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />

@@ -7,9 +7,10 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <!--
+            CS1591: "Missing XML comments": Isn't necessary to be required on all elements.
             S1135: "Complete TODO tasks": C'mon, the compiler doesn't need to tell us about these.
         -->
-        <NoWarn>$(NoWarn);S1135</NoWarn>
+        <NoWarn>$(NoWarn);CS1591;S1135</NoWarn>
         <!--
             CS0618: "Type or member is obsolete": Just because something is obsolete doesn't mean we can stop using it
                 immediately.

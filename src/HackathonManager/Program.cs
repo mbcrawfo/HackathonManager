@@ -2,16 +2,19 @@ using System;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Asp.Versioning;
 using DotNetEnv;
-using FluentValidation;
+using FastEndpoints;
+using FastEndpoints.AspVersioning;
+using FastEndpoints.Swagger;
 using HackathonManager;
 using HackathonManager.Database;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Settings;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,6 +33,8 @@ logger.Information("{Application} version {Version} starting up...", AppInfo.Nam
 
 try
 {
+    VersionSets.CreateApi("Test", v => v.HasApiVersion(new ApiVersion(1.0)));
+
     ConfigureServices();
 
     var app = builder.Build();
@@ -83,9 +88,48 @@ void ConfigureServices()
         ob.ConfigureHackathonDbContext(dataSource, databaseLoggingSettings)
     );
 
-    builder.Services.AddValidatorsFromAssembly(AppInfo.Assembly);
-
     builder.Services.AddHealthChecks();
+
+    builder
+        .Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(options =>
+        {
+            // TODO: Cookie settings
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+            options.SlidingExpiration = true;
+        })
+        .AddJwtBearer(_ =>
+        {
+            // TODO: Configure JWT Auth
+        });
+
+    builder.Services.AddAuthorization();
+
+    builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
+
+    builder.Services.AddVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1.0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ApiVersionReader = ApiVersionReader.Combine(
+            new UrlSegmentApiVersionReader(),
+            new QueryStringApiVersionReader()
+        );
+    });
+
+    builder.Services.SwaggerDocument(options =>
+    {
+        options.DocumentSettings = settings =>
+        {
+            settings.ApiVersion(new ApiVersion(1.0));
+            settings.DocumentName = "Hackathon Manager v1";
+        };
+        options.AutoTagPathSegmentIndex = 0;
+    });
 }
 
 void AddOpenTelemetryServices()
@@ -151,16 +195,21 @@ void ConfigurePipeline(WebApplication app)
 
     app.UseMiddleware<RequestLoggingMiddleware>();
 
-    app.MapGet(
-        "/api/hello",
-        async (ILogger<Program> l, HackathonDbContext db) =>
-        {
-            l.LogInformation("Hello endpoint called");
-            return await db.Tests.ToListAsync();
-        }
-    );
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-    app.MapPost("/api/echo", (HttpContext context) => context.Request.Body.ToString());
+    app.UseFastEndpoints(config =>
+    {
+        config.Binding.UsePropertyNamingPolicy = true;
+        config.Endpoints.RoutePrefix = "api";
+        config.Endpoints.ShortNames = true;
+        config.Errors.StatusCode = StatusCodes.Status422UnprocessableEntity;
+        config.Errors.UseProblemDetails(c => c.IndicateErrorCode = true);
+        config.Validation.UsePropertyNamingPolicy = true;
+        config.Versioning.PrependToRoute = true;
+    });
+
+    app.UseSwaggerGen();
 
     if (enableIntegratedSpa)
     {
