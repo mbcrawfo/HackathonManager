@@ -1,28 +1,25 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using FastEndpoints.Testing;
 using HackathonManager.Tests.TestInfrastructure;
-using Microsoft.AspNetCore.Hosting;
+using JetBrains.Annotations;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class IntegratedSpaEnabledTests : TestBase<IntegratedSpaEnabledTests.AppWithSpaEnabled>
+public class IntegratedSpaEnabledTests : IntegrationTestBase<IntegratedSpaEnabledTests.HackathonApp_SpaEnabled>
 {
-    private readonly AppWithSpaEnabled _app;
-
-    public IntegratedSpaEnabledTests(AppWithSpaEnabled app)
-    {
-        _app = app;
-    }
+    /// <inheritdoc />
+    public IntegratedSpaEnabledTests(HackathonApp_SpaEnabled hackathonApp)
+        : base(hackathonApp) { }
 
     [Fact]
     public async Task ShouldServeStaticFiles_WhenIntegratedSpaIsEnabled()
     {
         // arrange
         // act
-        var indexResponse = await _app.Client.GetStringAsync("/index.html", Cancellation);
-        var jsResponse = await _app.Client.GetStringAsync("/test.js", Cancellation);
+        var indexResponse = await App.Client.GetStringAsync("/index.html", Cancellation);
+        var jsResponse = await App.Client.GetStringAsync("/test.js", Cancellation);
 
         // assert
         indexResponse.ShouldContain("Hello test world");
@@ -37,19 +34,14 @@ public class IntegratedSpaEnabledTests : TestBase<IntegratedSpaEnabledTests.AppW
     {
         // arrange
         // act
-        var response = await _app.Client.GetStringAsync(route, Cancellation);
+        var response = await App.Client.GetStringAsync(route, Cancellation);
 
         // assert
         response.ShouldContain("Hello test world");
     }
 
-    public sealed class AppWithSpaEnabled : AppWithDatabase
-    {
-        /// <inheritdoc />
-        protected override void ConfigureApp(IWebHostBuilder builder)
-        {
-            base.ConfigureApp(builder);
-            builder.UseSetting(Constants.EnableIntegratedSpaKey, "true");
-        }
-    }
+    [UsedImplicitly]
+    // ReSharper disable once InconsistentNaming
+    public sealed class HackathonApp_SpaEnabled()
+        : HackathonApp_MigratedDatabase([new KeyValuePair<string, string>(Constants.EnableIntegratedSpaKey, "true")]);
 }

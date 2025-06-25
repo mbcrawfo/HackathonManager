@@ -35,6 +35,9 @@ public sealed class DatabaseResetDecorator : IDatabaseFixture
     }
 
     /// <inheritdoc />
+    public bool CanResetData => true;
+
+    /// <inheritdoc />
     public string ConnectionString => _fixture.ConnectionString;
 
     /// <inheritdoc />

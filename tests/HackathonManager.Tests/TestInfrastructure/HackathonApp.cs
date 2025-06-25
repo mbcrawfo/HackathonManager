@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -8,6 +9,7 @@ using HackathonManager.Database;
 using HackathonManager.Extensions;
 using HackathonManager.Settings;
 using HackathonManager.Tests.TestInfrastructure.Database;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,32 +17,41 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-[SuppressMessage(
-    "Critical Code Smell",
-    "S927:Parameter names should match base declaration and other partial definitions"
-)]
-public abstract class AppFixtureBase : AppFixture<Program>
+[UsedImplicitly]
+public class HackathonApp : AppFixture<Program>
 {
-    protected AppFixtureBase(IDatabaseFixture databaseFixture)
+    private readonly IEnumerable<KeyValuePair<string, string>> _additionalSettings;
+
+    public HackathonApp()
+        : this([]) { }
+
+    protected HackathonApp(IEnumerable<KeyValuePair<string, string>> additionalSettings)
     {
-        DatabaseFixture = databaseFixture;
+        _additionalSettings = additionalSettings;
     }
 
-    protected IDatabaseFixture DatabaseFixture { get; }
-
-    public DbDataSource DataSource => DatabaseFixture.DataSource;
+    public IDatabaseFixture Database { get; protected init; } = new DatabaseFixture();
 
     /// <inheritdoc />
-    protected override async ValueTask PreSetupAsync() => await DatabaseFixture.InitializeAsync();
+    protected override async ValueTask PreSetupAsync() => await Database.InitializeAsync();
 
     /// <inheritdoc />
+    [SuppressMessage(
+        "Critical Code Smell",
+        "S927:Parameter names should match base declaration and other partial definitions"
+    )]
     protected override void ConfigureApp(IWebHostBuilder builder)
     {
         builder.UseContentRoot(
             Path.Join(AppDomain.CurrentDomain.BaseDirectory, "TestInfrastructure", "IntegrationTestContentRoot")
         );
 
-        builder.UseSetting(Constants.ConnectionStringKey, DatabaseFixture.ConnectionString);
+        builder.UseSetting(Constants.ConnectionStringKey, Database.ConnectionString);
+
+        foreach (var (key, value) in _additionalSettings)
+        {
+            builder.UseSetting(key, value);
+        }
 
         builder.ConfigureServices(services =>
         {
@@ -49,10 +60,10 @@ public abstract class AppFixtureBase : AppFixture<Program>
             services.RemoveAll<DbContextOptions<HackathonDbContext>>();
             services.RemoveAll<HackathonDbContext>();
 
-            services.AddSingleton<DbDataSource>(DatabaseFixture.DataSource);
+            services.AddSingleton<DbDataSource>(Database.DataSource);
             services.AddDbContext<HackathonDbContext>(ob =>
                 ob.ConfigureHackathonDbContext(
-                    DatabaseFixture.DataSource,
+                    Database.DataSource,
                     new DatabaseLoggingSettings { EnableDetailedErrors = true, EnableSensitiveDataLogging = true }
                 )
             );
@@ -60,5 +71,5 @@ public abstract class AppFixtureBase : AppFixture<Program>
     }
 
     /// <inheritdoc />
-    protected override async ValueTask TearDownAsync() => await DatabaseFixture.DisposeAsync();
+    protected override async ValueTask TearDownAsync() => await Database.DisposeAsync();
 }

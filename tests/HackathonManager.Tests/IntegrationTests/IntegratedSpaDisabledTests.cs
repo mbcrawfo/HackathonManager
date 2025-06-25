@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using HackathonManager.Tests.TestInfrastructure;
+using JetBrains.Annotations;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class IntegratedSpaDisabledTests : IntegrationTestBase
+public class IntegratedSpaDisabledTests : IntegrationTestBase<IntegratedSpaDisabledTests.HackathonApp_SpaDisabled>
 {
     /// <inheritdoc />
-    public IntegratedSpaDisabledTests(AppWithDatabaseReset app)
-        : base(app) { }
+    public IntegratedSpaDisabledTests(HackathonApp_SpaDisabled hackathonApp)
+        : base(hackathonApp) { }
 
     [Theory]
     [InlineData("/")]
@@ -25,4 +27,9 @@ public class IntegratedSpaDisabledTests : IntegrationTestBase
         // assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [UsedImplicitly]
+    // ReSharper disable once InconsistentNaming
+    public sealed class HackathonApp_SpaDisabled()
+        : HackathonApp_MigratedDatabase([new KeyValuePair<string, string>(Constants.EnableIntegratedSpaKey, "false")]);
 }

@@ -3,15 +3,22 @@ using FastEndpoints.Testing;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-public abstract class IntegrationTestBase : TestBase<AppWithDatabaseReset>
+public abstract class IntegrationTestBase<TApp> : TestBase<TApp>
+    where TApp : HackathonApp
 {
-    protected readonly AppWithDatabaseReset App;
+    protected readonly HackathonApp App;
 
-    protected IntegrationTestBase(AppWithDatabaseReset app)
+    protected IntegrationTestBase(TApp hackathonApp)
     {
-        App = app;
+        App = hackathonApp;
     }
 
     /// <inheritdoc />
-    protected override async ValueTask SetupAsync() => await App.ResetData();
+    protected override async ValueTask SetupAsync()
+    {
+        if (App.Database.CanResetData)
+        {
+            await App.Database.ResetData();
+        }
+    }
 }

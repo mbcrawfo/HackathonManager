@@ -1,25 +1,22 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using FastEndpoints.Testing;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Tests.TestInfrastructure;
-using Microsoft.AspNetCore.Hosting;
+using JetBrains.Annotations;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class StartupMigrationTests : TestBase<StartupMigrationTests.AppWithStartupMigration>
+public class StartupMigrationTests : IntegrationTestBase<StartupMigrationTests.HackathonApp_StartupMigration>
 {
-    private readonly AppWithStartupMigration _app;
-
-    public StartupMigrationTests(AppWithStartupMigration app)
-    {
-        _app = app;
-    }
+    /// <inheritdoc />
+    public StartupMigrationTests(HackathonApp_StartupMigration hackathonApp)
+        : base(hackathonApp) { }
 
     [Fact]
     public async Task ShouldApplyAllMigrationsToDatabase_WhenStartupMigrationIsEnabled()
@@ -31,26 +28,20 @@ public class StartupMigrationTests : TestBase<StartupMigrationTests.AppWithStart
             .ToReadOnlyCollection();
 
         // act
-        _ = await _app.Client.GetAsync("/health", TestContext.Current.CancellationToken);
+        _ = await App.Client.GetAsync("/health", TestContext.Current.CancellationToken);
 
         // assert
-        await using var connection = await _app.DataSource.OpenConnectionAsync(TestContext.Current.CancellationToken);
+        await using var connection = await App.Database.DataSource.OpenConnectionAsync(Cancellation);
         var actualMigrations = await connection.QueryAsync<string>(
-            new CommandDefinition(
-                "select scriptname from meta.migrations_history",
-                cancellationToken: TestContext.Current.CancellationToken
-            )
+            new CommandDefinition("select scriptname from meta.migrations_history", cancellationToken: Cancellation)
         );
         actualMigrations.ShouldBe(expectedMigrations, ignoreOrder: true);
     }
 
-    public sealed class AppWithStartupMigration : AppWithDatabase
-    {
-        /// <inheritdoc />
-        protected override void ConfigureApp(IWebHostBuilder builder)
-        {
-            base.ConfigureApp(builder);
-            builder.UseSetting(Constants.EnableStartupMigrationKey, "true");
-        }
-    }
+    // ReSharper disable once InconsistentNaming
+    [UsedImplicitly]
+    public sealed class HackathonApp_StartupMigration()
+        : HackathonApp_MigratedDatabase(
+            [new KeyValuePair<string, string>(Constants.EnableStartupMigrationKey, "true")]
+        );
 }
