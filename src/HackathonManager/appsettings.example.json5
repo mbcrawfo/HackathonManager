@@ -34,6 +34,12 @@
     "Path": ""
   },
 
+  // Optional semicolon separated list of configuration keys prefixes to be removed.  This makes it possible to use user
+  // secrets or environment variables to remove configuration.  For example, removing 'Serilog:MinimumLevel:Override'
+  // would get rid of all the overrides specified in appsettings.json, enabling more detailed logging from Microsoft
+  // libraries.
+  "KeysToRemove": "",
+
   // Optional settings controlling OpenTelemetry.
   "OpenTelemetry": {
     // Minimum log level for OTEL logging sink.  Default: Verbose.

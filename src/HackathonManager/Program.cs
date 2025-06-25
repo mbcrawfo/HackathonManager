@@ -32,6 +32,19 @@ Env.LoadMulti([".env", ".env.local"]);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuration system doesn't allow removing keys defined in earlier sources.  This little hack lets us provide a
+// setting with a list of keys that we can null out (which is equivalent to removing them).
+var keysToRemove = (builder.Configuration.GetValue<string>("KeysToRemove")?.Split(';') ?? []).SelectMany(k =>
+    builder
+        .Configuration.AsEnumerable()
+        .Where(kvp => kvp.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase))
+        .Select(kvp => kvp.Key)
+);
+foreach (var key in keysToRemove)
+{
+    builder.Configuration[key] = null;
+}
+
 Log.Logger = SerilogConfiguration.CreateBootstrapLogger(builder.Configuration);
 var logger = Log.Logger.ForContext<Program>();
 logger.Information("{Application} version {Version} starting up...", AppInfo.Name, AppInfo.Version);
