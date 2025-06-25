@@ -6,10 +6,12 @@ using HackathonManager.Extensions;
 using HackathonManager.Settings;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
 using Serilog.Formatting.Compact;
+using Serilog.Sinks.OpenTelemetry;
 
 namespace HackathonManager;
 
@@ -60,18 +62,27 @@ public static class SerilogConfiguration
             );
         }
 
-        var openTelemetrySettings = appConfiguration.GetConfigurationSettings<
-            OpenTelemetryLogSettings,
-            OpenTelemetryLogSettingsValidator
+        var otelSettings = appConfiguration.GetConfigurationSettings<
+            OpenTelemetrySettings,
+            OpenTelemetrySettingsValidator
         >();
-        if (openTelemetrySettings.Enabled)
+        var exporterSettings = otelSettings.AllExporters ?? otelSettings.LogExporter;
+
+        if (exporterSettings?.Enabled is true)
         {
             loggerConfiguration.WriteTo.OpenTelemetry(options =>
             {
-                options.RestrictedToMinimumLevel = openTelemetrySettings.Level;
-                options.Endpoint = openTelemetrySettings.OtlpEndpoint;
-                options.Protocol = openTelemetrySettings.OtlpProtocol;
-                options.Headers = openTelemetrySettings.OtlpHeaders;
+                options.RestrictedToMinimumLevel = otelSettings.LogLevel;
+                options.Endpoint = exporterSettings.Endpoint;
+                options.Protocol = exporterSettings.Protocol switch
+                {
+                    OtlpExportProtocol.Grpc => OtlpProtocol.Grpc,
+                    OtlpExportProtocol.HttpProtobuf => OtlpProtocol.HttpProtobuf,
+                    _ => throw new InvalidOperationException(
+                        $"Unexpected export protocol: {exporterSettings.Protocol}"
+                    ),
+                };
+                options.Headers = exporterSettings.Headers;
                 options.OnBeginSuppressInstrumentation = SuppressInstrumentationScope.Begin;
                 options.ResourceAttributes = new Dictionary<string, object>
                 {

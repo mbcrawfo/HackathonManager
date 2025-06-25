@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -145,50 +146,70 @@ void ConfigureServices()
 void AddOpenTelemetryServices()
 {
     var serviceName = builder.Configuration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
-    var traceSettings = builder.Configuration.GetConfigurationSettings<TracerSettings, TracerSettingsValidator>();
+
+    var settings = builder.Configuration.GetConfigurationSettings<
+        OpenTelemetrySettings,
+        OpenTelemetrySettingsValidator
+    >();
 
     builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
-    builder
-        .Services.AddOpenTelemetry()
-        .WithTracing(tracerBuilder =>
-        {
-            tracerBuilder
-                .AddSource(serviceName)
-                .SetResourceBuilder(
-                    ResourceBuilder
-                        .CreateDefault()
-                        .AddService(
-                            serviceName,
-                            serviceVersion: AppInfo.Version,
-                            serviceInstanceId: Environment.MachineName
-                        )
-                )
-                .AddAspNetCoreInstrumentation(config =>
-                {
-                    config.EnrichWithHttpRequest = (activity, request) =>
-                    {
-                        // Other log properties are automatically added by the instrumentation.
-                        activity.SetTag(LogProperties.RequestId, request.HttpContext.TraceIdentifier);
-                    };
-                })
-                .AddHttpClientInstrumentation()
-                .AddNpgsql()
-                .AddProcessor<HttpRouteProcessor>();
+    var openTelemetryBuilder = builder.Services.AddOpenTelemetry();
 
-            if (traceSettings.Enabled)
+    openTelemetryBuilder.WithMetrics(mpb =>
+    {
+        var metricsExporter = settings.AllExporters ?? settings.MetricsExporter;
+        if (metricsExporter?.Enabled is not true)
+        {
+            return;
+        }
+
+        mpb.ConfigureResource(rb =>
+                rb.AddService(serviceName, serviceVersion: AppInfo.Version, serviceInstanceId: Environment.MachineName)
+            )
+            .AddRuntimeInstrumentation()
+            .AddProcessInstrumentation()
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddNpgsqlInstrumentation()
+            .AddOtlpExporter(options =>
             {
-                tracerBuilder.AddOtlpExporter(options =>
+                options.Endpoint = new Uri(metricsExporter.Endpoint);
+                options.Protocol = metricsExporter.Protocol;
+                options.Headers = string.Join(",", metricsExporter.Headers.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+            });
+    });
+
+    openTelemetryBuilder.WithTracing(tpb =>
+    {
+        var traceExporter = settings.AllExporters ?? settings.TraceExporter;
+        if (traceExporter?.Enabled is not true)
+        {
+            return;
+        }
+
+        tpb.AddSource(serviceName)
+            .ConfigureResource(rb =>
+                rb.AddService(serviceName, serviceVersion: AppInfo.Version, serviceInstanceId: Environment.MachineName)
+            )
+            .AddAspNetCoreInstrumentation(config =>
+            {
+                config.EnrichWithHttpRequest = (activity, request) =>
                 {
-                    options.Endpoint = new Uri(traceSettings.OtlpEndpoint);
-                    options.Protocol = traceSettings.OtlpProtocol;
-                    options.Headers = string.Join(
-                        ",",
-                        traceSettings.OtlpHeaders.Select(kvp => $"{kvp.Key}={kvp.Value}")
-                    );
-                });
-            }
-        });
+                    // Other log properties are automatically added by the instrumentation.
+                    activity.SetTag(LogProperties.RequestId, request.HttpContext.TraceIdentifier);
+                };
+            })
+            .AddHttpClientInstrumentation()
+            .AddNpgsql()
+            .AddProcessor<HttpRouteProcessor>()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri(traceExporter.Endpoint);
+                options.Protocol = traceExporter.Protocol;
+                options.Headers = string.Join(",", traceExporter.Headers.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+            });
+    });
 }
 
 void ConfigurePipeline(WebApplication app)

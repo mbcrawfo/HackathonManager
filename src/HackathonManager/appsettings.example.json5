@@ -34,18 +34,28 @@
     "Path": ""
   },
 
-  // Optional settings controlling OpenTelemetry logging.
-  "OpenTelemetryLog": {
-    "Enabled": false,
-    // Minimum log level for this sink.  Default: Verbose.
+  // Optional settings controlling OpenTelemetry.
+  "OpenTelemetry": {
+    // Minimum log level for OTEL logging sink.  Default: Verbose.
     "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
-    // OTLP endpoint URL including protocol and port.
-    "OtlpEndpoint": "http://server:80/path/to/collector",
-    "OtlpProtocol": "HttpProtobuf|Grpc",
-    // Optional dictionary of headers to send with OTLP log requests.
-    "OtlpHeaders": {
-      "X-Api-Key": "super-secret-api-key"
-    }
+
+    // Can be used when all exporters are enabled and all use the same settings.
+    "AllExporters": {
+      "Enabled": false,
+      // OTLP endpoint URL including protocol and port.
+      "Endpoint": "http://server:80",
+      "Protocol": "HttpProtobuf|Grpc",
+      // Optional dictionary of headers to send with OTLP requests.
+      "Headers": {
+        "X-Api-Key": "super-secret-api-key"
+      }
+    },
+
+    // To enable specific exporters, or when the exporters need different configuration, you can specify their settings
+    // individually using the same schema as AllExporters.  When AllExporters is set, it takes priority over these sections.
+    "LogExporter": {},
+    "MetricsExporter": {},
+    "TraceExport": {}
   },
 
   "Serilog": {
@@ -77,19 +87,5 @@
     // Optional list of content types used to filter requests that should be logged.  Can include wildcards.
     // Default: ["*/*"] (log everything).
     "ContentTypes": []
-  },
-
-  // OpenTelemetry tracing settings.
-  "Tracer": {
-    "Enabled": false,
-    // OTLP trace endpoint URL including protocol and port.
-    "OtlpEndpoint": "http://server:80/path/to/collector",
-    "OtlpProtocol": "HttpProtobuf|Grpc",
-    // Optional dictionary of headers to send with OTLP trace requests.
-    "OtlpHeaders": {
-      "X-Api-Key": "super-secret-api-key"
-    },
-    // Enable OpenTelemetry to redact query string parameters in traces.
-    "EnableUrlQueryRedaction": false
   }
 }
