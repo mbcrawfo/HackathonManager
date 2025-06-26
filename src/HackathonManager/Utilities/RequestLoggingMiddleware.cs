@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
-namespace HackathonManager;
+namespace HackathonManager.Utilities;
 
-public class RequestLoggingMiddleware
+public sealed class RequestLoggingMiddleware
 {
     private readonly IReadOnlyCollection<MediaTypeHeaderValue> _loggedContentTypes;
     private readonly ILogger<RequestLoggingMiddleware> _logger;
@@ -36,11 +36,11 @@ public class RequestLoggingMiddleware
     {
         KeyValuePair<string, object>[] state =
         [
-            new(LogProperties.RequestId, context.TraceIdentifier),
-            new(LogProperties.RequestMethod, context.Request.Method),
-            new(LogProperties.RequestRoute, context.Request.Path),
-            new(LogProperties.UrlPath, context.Request.Path),
-            new(LogProperties.UrlQuery, context.Request.QueryString.ToString()),
+            new(LogPropertyNames.RequestId, context.TraceIdentifier),
+            new(LogPropertyNames.RequestMethod, context.Request.Method),
+            new(LogPropertyNames.RequestRoute, context.Request.Path),
+            new(LogPropertyNames.UrlPath, context.Request.Path),
+            new(LogPropertyNames.UrlQuery, context.Request.QueryString.ToString()),
         ];
         using var scope = _logger.BeginScope(state);
 

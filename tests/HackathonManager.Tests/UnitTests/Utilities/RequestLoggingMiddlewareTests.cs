@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Bogus;
 using HackathonManager.Settings;
 using HackathonManager.Tests.TestInfrastructure.Fakes;
+using HackathonManager.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,7 @@ using Serilog.Events;
 using Shouldly;
 using Xunit;
 
-namespace HackathonManager.Tests.UnitTests;
+namespace HackathonManager.Tests.UnitTests.Utilities;
 
 public class RequestLoggingMiddlewareTests
 {
@@ -47,11 +48,11 @@ public class RequestLoggingMiddlewareTests
             .Select(x => x.Key)
             .ShouldBe(
                 [
-                    LogProperties.RequestId,
-                    LogProperties.RequestMethod,
-                    LogProperties.RequestRoute,
-                    LogProperties.UrlPath,
-                    LogProperties.UrlQuery,
+                    LogPropertyNames.RequestId,
+                    LogPropertyNames.RequestMethod,
+                    LogPropertyNames.RequestRoute,
+                    LogPropertyNames.UrlPath,
+                    LogPropertyNames.UrlQuery,
                 ],
                 ignoreOrder: true
             );

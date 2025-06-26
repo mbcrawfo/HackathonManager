@@ -1,6 +1,9 @@
 namespace HackathonManager;
 
-public static class LogProperties
+/// <summary>
+///     Constants defining shared properties for structured logging and traces.
+/// </summary>
+public static class LogPropertyNames
 {
     public const string RequestId = "http.request.id";
     public const string RequestMethod = "http.request.method";

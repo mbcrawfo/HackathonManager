@@ -46,7 +46,7 @@ public class HackathonApp : AppFixture<Program>
             Path.Join(AppDomain.CurrentDomain.BaseDirectory, "TestInfrastructure", "IntegrationTestContentRoot")
         );
 
-        builder.UseSetting(Constants.ConnectionStringKey, Database.ConnectionString);
+        builder.UseSetting(ConfigurationKeys.ConnectionStringKey, Database.ConnectionString);
 
         foreach (var (key, value) in _additionalSettings)
         {

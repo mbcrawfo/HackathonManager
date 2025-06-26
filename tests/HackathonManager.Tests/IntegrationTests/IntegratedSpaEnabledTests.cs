@@ -43,5 +43,7 @@ public class IntegratedSpaEnabledTests : IntegrationTestBase<IntegratedSpaEnable
     [UsedImplicitly]
     // ReSharper disable once InconsistentNaming
     public sealed class HackathonApp_SpaEnabled()
-        : HackathonApp_MigratedDatabase([new KeyValuePair<string, string>(Constants.EnableIntegratedSpaKey, "true")]);
+        : HackathonApp_MigratedDatabase(
+            [new KeyValuePair<string, string>(ConfigurationKeys.EnableIntegratedSpaKey, "true")]
+        );
 }

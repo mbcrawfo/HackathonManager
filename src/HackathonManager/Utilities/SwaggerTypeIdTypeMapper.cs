@@ -5,14 +5,18 @@ using NJsonSchema.Generation.TypeMappers;
 
 namespace HackathonManager.Utilities;
 
-public sealed class TypeIdTypeMapper : ITypeMapper
+/// <summary>
+///     Describes the <see cref="TypeId" /> type in Swagger docs.
+/// </summary>
+public sealed class SwaggerTypeIdTypeMapper : ITypeMapper
 {
     /// <inheritdoc />
     public void GenerateSchema(JsonSchema schema, TypeMapperContext context)
     {
-        schema.Title = "TypeId";
         schema.Type = JsonObjectType.String;
-        schema.Example = "prefix_01h93ech7jf5ktdwg6ye383x34";
+        schema.Format = "typeid";
+        schema.Description = "A resource identifier with a resource type tag and a base32 formatted UUID.";
+        schema.Example = "tag_01h93ech7jf5ktdwg6ye383x34";
     }
 
     /// <inheritdoc />

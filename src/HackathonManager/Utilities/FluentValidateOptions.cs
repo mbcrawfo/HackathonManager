@@ -9,10 +9,15 @@ using Microsoft.Extensions.Options;
 
 namespace HackathonManager.Utilities;
 
-public sealed class FluentValidateOptions<T> : IValidateOptions<T>
-    where T : class
+/// <summary>
+///     Uses Fluent Validation to validate an options type.  Expects there to be an <see cref="IValidator{T}" /> type
+///     available through the app's service provider.
+/// </summary>
+/// <typeparam name="TOptions"></typeparam>
+public sealed class FluentValidateOptions<TOptions> : IValidateOptions<TOptions>
+    where TOptions : class
 {
-    private static readonly string TypeName = typeof(T).Name;
+    private static readonly string TypeName = typeof(TOptions).Name;
     private readonly string? _optionsName;
 
     private readonly IServiceProvider _serviceProvider;
@@ -24,7 +29,7 @@ public sealed class FluentValidateOptions<T> : IValidateOptions<T>
     }
 
     /// <inheritdoc />
-    public ValidateOptionsResult Validate(string? name, T options)
+    public ValidateOptionsResult Validate(string? name, TOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -34,7 +39,7 @@ public sealed class FluentValidateOptions<T> : IValidateOptions<T>
         }
 
         using var scope = _serviceProvider.CreateScope();
-        var validator = scope.ServiceProvider.GetRequiredService<IValidator<T>>();
+        var validator = scope.ServiceProvider.GetRequiredService<IValidator<TOptions>>();
 
         if (validator.Validate(options) is { IsValid: false } result)
         {

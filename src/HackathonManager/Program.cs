@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -57,13 +58,17 @@ try
     var app = builder.Build();
     ConfigurePipeline(app);
 
-    var enableStartupMigration = app.Configuration.GetValue<bool>(Constants.EnableStartupMigrationKey);
-    logger.Information("{SettingKey}={SettingValue}", Constants.EnableStartupMigrationKey, enableStartupMigration);
+    var enableStartupMigration = app.Configuration.GetValue<bool>(ConfigurationKeys.EnableStartupMigrationKey);
+    logger.Information(
+        "{SettingKey}={SettingValue}",
+        ConfigurationKeys.EnableStartupMigrationKey,
+        enableStartupMigration
+    );
     if (enableStartupMigration)
     {
         using var scope = app.Services.CreateScope();
         MigrationRunner.UpdateDatabase(
-            app.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey),
+            app.Configuration.GetRequiredValue<string>(ConfigurationKeys.ConnectionStringKey),
             scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
         );
     }
@@ -93,6 +98,8 @@ void ConfigureServices()
 
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
 
+    builder.Services.AddSingleton<IClock>(SystemClock.Instance);
+
     builder.Services.AddSingleton(
         new SqidsEncoder<uint>(
             new SqidsOptions
@@ -103,7 +110,7 @@ void ConfigureServices()
         )
     );
 
-    var connectionString = builder.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
+    var connectionString = builder.Configuration.GetRequiredValue<string>(ConfigurationKeys.ConnectionStringKey);
     var databaseLoggingSettings = builder.Configuration.GetConfigurationSettings<
         DatabaseLoggingSettings,
         DatabaseLoggingSettingsValidator
@@ -156,8 +163,8 @@ void ConfigureServices()
         options.DocumentSettings = settings =>
         {
             settings.ApiVersion(new ApiVersion(1.0));
-            settings.DocumentName = "Hackathon Manager v1";
-            settings.SchemaSettings.TypeMappers.Add(new TypeIdTypeMapper());
+            settings.DocumentName = "v1";
+            settings.SchemaSettings.TypeMappers.Add(new SwaggerTypeIdTypeMapper());
         };
         options.AutoTagPathSegmentIndex = 0;
         options.SerializerSettings = o => o.ConfigureSerializerOptions();
@@ -167,7 +174,7 @@ void ConfigureServices()
 
 void AddOpenTelemetryServices()
 {
-    var serviceName = builder.Configuration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name;
+    var serviceName = builder.Configuration.GetValue<string>(ConfigurationKeys.ServiceNameKey) ?? AppInfo.Name;
 
     var settings = builder.Configuration.GetConfigurationSettings<
         OpenTelemetrySettings,
@@ -219,12 +226,12 @@ void AddOpenTelemetryServices()
                 config.EnrichWithHttpRequest = (activity, request) =>
                 {
                     // Other log properties are automatically added by the instrumentation.
-                    activity.SetTag(LogProperties.RequestId, request.HttpContext.TraceIdentifier);
+                    activity.SetTag(LogPropertyNames.RequestId, request.HttpContext.TraceIdentifier);
                 };
             })
             .AddHttpClientInstrumentation()
             .AddNpgsql()
-            .AddProcessor<HttpRouteProcessor>()
+            .AddProcessor<HttpRouteTraceProcessor>()
             .AddOtlpExporter(options =>
             {
                 options.Endpoint = new Uri(traceExporter.Endpoint);
@@ -236,8 +243,8 @@ void AddOpenTelemetryServices()
 
 void ConfigurePipeline(WebApplication app)
 {
-    var enableIntegratedSpa = app.Configuration.GetValue<bool>(Constants.EnableIntegratedSpaKey);
-    logger.Information("{SettingKey}={SettingValue}", Constants.EnableIntegratedSpaKey, enableIntegratedSpa);
+    var enableIntegratedSpa = app.Configuration.GetValue<bool>(ConfigurationKeys.EnableIntegratedSpaKey);
+    logger.Information("{SettingKey}={SettingValue}", ConfigurationKeys.EnableIntegratedSpaKey, enableIntegratedSpa);
 
     if (enableIntegratedSpa)
     {

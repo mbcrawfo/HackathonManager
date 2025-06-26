@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using OpenTelemetry;
 
-namespace HackathonManager;
+namespace HackathonManager.Utilities;
 
 /// <summary>
 ///     Fixes traces showing the route template instead of the actual route.
@@ -9,7 +9,7 @@ namespace HackathonManager;
 /// <remarks>
 ///     See https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/2580
 /// </remarks>
-public sealed class HttpRouteProcessor : BaseProcessor<Activity>
+public sealed class HttpRouteTraceProcessor : BaseProcessor<Activity>
 {
     /// <inheritdoc />
     public override void OnEnd(Activity data)
@@ -28,6 +28,6 @@ public sealed class HttpRouteProcessor : BaseProcessor<Activity>
         }
 
         data.DisplayName = $"{method} {path}";
-        data.SetTag(LogProperties.RequestRoute, path);
+        data.SetTag(LogPropertyNames.RequestRoute, path);
     }
 }

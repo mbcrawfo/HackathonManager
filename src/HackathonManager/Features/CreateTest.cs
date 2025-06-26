@@ -7,7 +7,7 @@ using FluentValidation;
 using HackathonManager.Database;
 using HackathonManager.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using Sqids;
 
 namespace HackathonManager.Features;
@@ -36,13 +36,15 @@ public sealed class CreateTestValidator : Validator<CreateTestRequest>
 
 public class CreateTest : Endpoint<CreateTestRequest, TestDto>
 {
+    private readonly IClock _clock;
     private readonly HackathonDbContext _dbContext;
     private readonly SqidsEncoder<uint> _versionEncoder;
 
-    public CreateTest(HackathonDbContext dbContext, SqidsEncoder<uint> versionEncoder)
+    public CreateTest(HackathonDbContext dbContext, SqidsEncoder<uint> versionEncoder, IClock clock)
     {
         _dbContext = dbContext;
         _versionEncoder = versionEncoder;
+        _clock = clock;
     }
 
     /// <inheritdoc />
@@ -60,6 +62,11 @@ public class CreateTest : Endpoint<CreateTestRequest, TestDto>
         var test = new Test { Id = id, Name = req.Name };
         _dbContext.Tests.Add(test);
         await _dbContext.SaveChangesAsync(ct);
-        Response = new TestDto(test.Id.Encode(), test.Name, _versionEncoder.Encode(test.Version));
+        Response = new TestDto(
+            test.Id.Encode(),
+            test.Name,
+            _versionEncoder.Encode(test.Version),
+            _clock.GetCurrentInstant()
+        );
     }
 }

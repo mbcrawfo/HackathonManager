@@ -42,6 +42,6 @@ public class StartupMigrationTests : IntegrationTestBase<StartupMigrationTests.H
     [UsedImplicitly]
     public sealed class HackathonApp_StartupMigration()
         : HackathonApp_MigratedDatabase(
-            [new KeyValuePair<string, string>(Constants.EnableStartupMigrationKey, "true")]
+            [new KeyValuePair<string, string>(ConfigurationKeys.EnableStartupMigrationKey, "true")]
         );
 }

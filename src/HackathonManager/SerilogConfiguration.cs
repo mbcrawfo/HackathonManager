@@ -87,7 +87,10 @@ public static class SerilogConfiguration
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     // Matches the OpenTelemetry tracing setup.
-                    { "service.name", appConfiguration.GetValue<string>(Constants.ServiceNameKey) ?? AppInfo.Name },
+                    {
+                        "service.name",
+                        appConfiguration.GetValue<string>(ConfigurationKeys.ServiceNameKey) ?? AppInfo.Name
+                    },
                     { "service.version", AppInfo.Version },
                     { "service.instance.id", Environment.MachineName },
                 };
