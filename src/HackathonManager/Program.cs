@@ -2,7 +2,6 @@ using System;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text.Json.Serialization;
 using Asp.Versioning;
 using DotNetEnv;
 using FastEndpoints;
@@ -13,6 +12,7 @@ using HackathonManager.Database;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Settings;
+using HackathonManager.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,8 +20,6 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NodaTime;
-using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -129,19 +127,16 @@ void ConfigureServices()
 
     builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
 
-    builder.Services.Configure<JsonOptions>(options =>
-    {
-        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
-        options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    });
+    builder.Services.Configure<JsonOptions>(o => o.SerializerOptions.ConfigureSerializerOptions());
 
     builder.Services.AddVersioning(options =>
     {
         options.DefaultApiVersion = new ApiVersion(1.0);
         options.AssumeDefaultVersionWhenUnspecified = true;
         options.ApiVersionReader = ApiVersionReader.Combine(
-            new UrlSegmentApiVersionReader(),
-            new QueryStringApiVersionReader()
+            new QueryStringApiVersionReader(),
+            new HeaderApiVersionReader(),
+            new MediaTypeApiVersionReader()
         );
     });
 
@@ -151,8 +146,11 @@ void ConfigureServices()
         {
             settings.ApiVersion(new ApiVersion(1.0));
             settings.DocumentName = "Hackathon Manager v1";
+            settings.SchemaSettings.TypeMappers.Add(new TypeIdTypeMapper());
         };
         options.AutoTagPathSegmentIndex = 0;
+        options.SerializerSettings = o => o.ConfigureSerializerOptions();
+        options.ShortSchemaNames = true;
     });
 }
 

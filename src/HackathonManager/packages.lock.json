@@ -89,6 +89,22 @@
           "NSwag.AspNetCore": "14.4.0"
         }
       },
+      "FastIDs.TypeId": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "tejs+oUll/P86XE/U4UuOrPpkHCfHC91D1MBLOdpsiligbAK1I5qHYegE4NuJ18nDW/CewHLqjpO4dIldBEh4Q=="
+      },
+      "FastIDs.TypeId.Serialization.SystemTextJson": {
+        "type": "Direct",
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "mU5X4u8NKf+DvR4UuNLtpXz4V7X4oKMK5M/5EUTYMiWPzcbFn2ElfuEEphA7zwub4jaQQ8/ICMc3uFiXmQDEKg==",
+        "dependencies": {
+          "FastIDs.TypeId": "1.0.0",
+          "System.Text.Json": "6.0.0"
+        }
+      },
       "FluentValidation": {
         "type": "Direct",
         "requested": "[12.0.0, )",
@@ -1450,6 +1466,11 @@
           "Microsoft.NETCore.Targets": "1.1.3"
         }
       },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg=="
+      },
       "System.Runtime.Extensions": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1671,6 +1692,23 @@
           "Microsoft.NETCore.Targets": "1.1.0",
           "System.Runtime": "4.3.0",
           "System.Text.Encoding": "4.3.0"
+        }
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "Vg8eB5Tawm1IFqj4TVK1czJX89rhFxJo9ELqc/Eiq0eXy13RK00eubyU6TJE6y+GQXjyV5gSfiewDUZjQgSE0w==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "zaJsHfESQvJ11vbXnNlkrR46IaMULk/gHxYsJphzSF+07kTjPHv+Oc14w6QEOfo3Q4hqLJgStUaYB9DBl0TmWg==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
+          "System.Text.Encodings.Web": "6.0.0"
         }
       },
       "System.Text.RegularExpressions": {

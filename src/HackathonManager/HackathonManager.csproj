@@ -15,6 +15,8 @@
         <PackageReference Include="FastEndpoints.AspVersioning" />
         <PackageReference Include="FastEndpoints.Security" />
         <PackageReference Include="FastEndpoints.Swagger" />
+        <PackageReference Include="FastIDs.TypeId" />
+        <PackageReference Include="FastIDs.TypeId.Serialization.SystemTextJson" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />

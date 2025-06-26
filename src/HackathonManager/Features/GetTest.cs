@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -5,15 +6,14 @@ using FastEndpoints.AspVersioning;
 using HackathonManager.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace HackathonManager.Features;
 
-public class Hello : EndpointWithoutRequest
+public sealed class GetTest : EndpointWithoutRequest<IReadOnlyCollection<TestDto>>
 {
     private readonly HackathonDbContext _dbContext;
 
-    public Hello(HackathonDbContext dbContext)
+    public GetTest(HackathonDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -21,7 +21,7 @@ public class Hello : EndpointWithoutRequest
     /// <inheritdoc />
     public override void Configure()
     {
-        Get("/hello");
+        Get("/test");
         AllowAnonymous();
         Options(x => x.WithVersionSet("Test").MapToApiVersion(1.0));
     }
@@ -29,7 +29,7 @@ public class Hello : EndpointWithoutRequest
     /// <inheritdoc />
     public override async Task HandleAsync(CancellationToken ct)
     {
-        Logger.LogInformation("Hello World");
-        Response = await _dbContext.Tests.ToListAsync(ct);
+        var data = await _dbContext.Tests.ToListAsync(ct);
+        Response = data.ConvertAll(x => new TestDto(x.Id.Encode(), x.Name));
     }
 }
