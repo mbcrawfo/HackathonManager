@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
 using FastEndpoints.AspVersioning;
-using HackathonManager.Database;
+using HackathonManager.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

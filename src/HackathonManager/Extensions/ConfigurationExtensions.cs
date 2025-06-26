@@ -1,6 +1,5 @@
 using System;
 using FluentValidation;
-using HackathonManager.Database;
 using HackathonManager.Settings;
 using HackathonManager.Utilities;
 using Microsoft.Extensions.Configuration;

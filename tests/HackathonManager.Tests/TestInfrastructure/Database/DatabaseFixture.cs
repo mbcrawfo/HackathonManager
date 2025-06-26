@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers;
-using HackathonManager.Database;
+using HackathonManager.Persistence;
 using HackathonManager.Settings;
 using Npgsql;
 using Testcontainers.PostgreSql;

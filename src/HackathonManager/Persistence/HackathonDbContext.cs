@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using FastIDs.TypeId;
 using Microsoft.EntityFrameworkCore;
 
-namespace HackathonManager.Database;
+namespace HackathonManager.Persistence;
 
 public class HackathonDbContext : DbContext
 {

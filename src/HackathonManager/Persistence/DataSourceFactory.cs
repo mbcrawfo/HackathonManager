@@ -1,7 +1,7 @@
 using HackathonManager.Settings;
 using Npgsql;
 
-namespace HackathonManager.Database;
+namespace HackathonManager.Persistence;
 
 public static class DataSourceFactory
 {
