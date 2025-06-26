@@ -2128,7 +2128,8 @@
           "Serilog.Expressions": "[5.0.0, )",
           "Serilog.Sinks.Console": "[6.0.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
-          "Serilog.Sinks.OpenTelemetry": "[4.2.0, )"
+          "Serilog.Sinks.OpenTelemetry": "[4.2.0, )",
+          "Sqids": "[3.1.0, )"
         }
       },
       "hackathonmanager.migrator": {
@@ -2526,6 +2527,12 @@
           "Grpc.Net.Client": "2.70.0",
           "Serilog": "4.2.0"
         }
+      },
+      "Sqids": {
+        "type": "CentralTransitive",
+        "requested": "[3.1.0, )",
+        "resolved": "3.1.0",
+        "contentHash": "Fi3/WN1s/bszAIX888hcSKYnDfdPuJD4TijskGmOxGRnA2hvngWb9IbBJPizxaOi7VpD0Nn8NHJh7i1ks/OyPw=="
       }
     }
   }

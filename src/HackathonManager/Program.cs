@@ -25,6 +25,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using Sqids;
 
 Env.LoadMulti([".env", ".env.local"]);
 
@@ -91,6 +92,16 @@ void ConfigureServices()
     AddOpenTelemetryServices();
 
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
+
+    builder.Services.AddSingleton(
+        new SqidsEncoder<uint>(
+            new SqidsOptions
+            {
+                Alphabet = "1WDJVS5qETAiad0Fohz2OQyRH3vfbX9UkPLGwg8psrMIlK74BetZNYc6muxnjC",
+                MinLength = 20,
+            }
+        )
+    );
 
     var connectionString = builder.Configuration.GetRequiredValue<string>(Constants.ConnectionStringKey);
     var databaseLoggingSettings = builder.Configuration.GetConfigurationSettings<

@@ -18,6 +18,8 @@ public class HackathonDbContext : DbContext
             .Entity<Test>()
             .Property(x => x.Id)
             .HasConversion(typeId => typeId.Id, id => TypeIdDecoded.FromUuidV7("test", id));
+
+        modelBuilder.Entity<Test>().Property(x => x.Version).IsRowVersion();
     }
 }
 
@@ -27,4 +29,6 @@ public class Test
     public TypeIdDecoded Id { get; set; }
 
     public required string Name { get; set; }
+
+    public uint Version { get; set; }
 }

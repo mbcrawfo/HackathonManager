@@ -6,16 +6,20 @@ using FastEndpoints.AspVersioning;
 using HackathonManager.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Sqids;
 
 namespace HackathonManager.Features;
 
 public sealed class GetTest : EndpointWithoutRequest<IReadOnlyCollection<TestDto>>
 {
     private readonly HackathonDbContext _dbContext;
+    private readonly SqidsEncoder<uint> _versionEncoder;
 
-    public GetTest(HackathonDbContext dbContext)
+    public GetTest(HackathonDbContext dbContext, SqidsEncoder<uint> versionEncoder)
     {
         _dbContext = dbContext;
+        _versionEncoder = versionEncoder;
     }
 
     /// <inheritdoc />
@@ -30,6 +34,6 @@ public sealed class GetTest : EndpointWithoutRequest<IReadOnlyCollection<TestDto
     public override async Task HandleAsync(CancellationToken ct)
     {
         var data = await _dbContext.Tests.ToListAsync(ct);
-        Response = data.ConvertAll(x => new TestDto(x.Id.Encode(), x.Name));
+        Response = data.ConvertAll(x => new TestDto(x.Id.Encode(), x.Name, _versionEncoder.Encode(x.Version)));
     }
 }

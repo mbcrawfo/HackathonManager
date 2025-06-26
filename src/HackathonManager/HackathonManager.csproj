@@ -44,6 +44,7 @@
         <PackageReference Include="Serilog.Sinks.Console" />
         <PackageReference Include="Serilog.Sinks.File" />
         <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
+        <PackageReference Include="Sqids" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="logs\**" />
