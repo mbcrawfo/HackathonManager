@@ -100,15 +100,14 @@ void ConfigureServices()
 
     builder.Services.AddSingleton<IClock>(SystemClock.Instance);
 
-    builder.Services.AddSingleton(
-        new SqidsEncoder<uint>(
-            new SqidsOptions
-            {
-                Alphabet = "1WDJVS5qETAiad0Fohz2OQyRH3vfbX9UkPLGwg8psrMIlK74BetZNYc6muxnjC",
-                MinLength = 20,
-            }
-        )
-    );
+    var sqidsOptions = new SqidsOptions
+    {
+        // No need for this to be configuration, we are just providing a shuffled alphabet unique to our app.
+        Alphabet = "1WDJVS5qETAiad0Fohz2OQyRH3vfbX9UkPLGwg8psrMIlK74BetZNYc6muxnjC",
+        MinLength = 10,
+    };
+    builder.Services.AddSingleton(new SqidsEncoder<int>(sqidsOptions));
+    builder.Services.AddSingleton(new SqidsEncoder<uint>(sqidsOptions));
 
     var connectionString = builder.Configuration.GetRequiredValue<string>(ConfigurationKeys.ConnectionStringKey);
     var databaseLoggingSettings = builder.Configuration.GetConfigurationSettings<
