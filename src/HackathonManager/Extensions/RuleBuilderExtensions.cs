@@ -6,28 +6,31 @@ namespace HackathonManager.Extensions;
 
 public static class RuleBuilderExtensions
 {
-    public static IRuleBuilderOptions<T, string?> MustBeValidTypeId<T>(
+    public static IRuleBuilderOptions<T, string?> MustBeValidTypeIdWithCode<T>(
         this IRuleBuilder<T, string?> builder,
         string prefix
     )
     {
         ArgumentException.ThrowIfNullOrEmpty(prefix);
 
-        const string errorCode = "typeid_invalid";
-        var message = $"'{{PropertyName}}' must be a valid type id for '{prefix}'.";
+        var message = $"'{{PropertyName}}' must be a string in the format '{prefix}_01h93ech7jf5ktdwg6ye383x34'.";
 
         return builder
-            .NotEmpty()
+            .NotEmptyWithCode()
             .DependentRules(() =>
-            {
                 builder
-                    .Must(x => x!.StartsWith($"{prefix}_"))
-                    .WithErrorCode(errorCode)
+                    .Must(x => x!.StartsWith($"{prefix}_") && TypeId.TryParse(x, out _))
+                    .WithErrorCode(ValidationErrorCodes.TypeIdInvalid)
                     .WithMessage(message)
-                    .DependentRules(() =>
-                    {
-                        builder.Must(x => TypeId.TryParse(x!, out _)).WithErrorCode(errorCode).WithMessage(message);
-                    });
-            });
+            );
     }
+
+    public static IRuleBuilderOptions<T, string> MaxLengthWithCode<T>(
+        this IRuleBuilder<T, string> builder,
+        int maxLength
+    ) => builder.MaximumLength(maxLength).WithErrorCode(ValidationErrorCodes.MaxLength);
+
+    public static IRuleBuilderOptions<T, TProperty> NotEmptyWithCode<T, TProperty>(
+        this IRuleBuilder<T, TProperty> builder
+    ) => builder.NotEmpty().WithErrorCode(ValidationErrorCodes.NotEmpty);
 }
