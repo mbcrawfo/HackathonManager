@@ -1,5 +1,4 @@
 using System;
-using FastIDs.TypeId;
 using FluentValidation;
 
 namespace HackathonManager.Extensions;
@@ -13,14 +12,16 @@ public static class RuleBuilderExtensions
     {
         ArgumentException.ThrowIfNullOrEmpty(prefix);
 
+        var expectedPrefix = $"{prefix}_";
+        var expectedLength = expectedPrefix.Length + 26;
         var message = $"'{{PropertyName}}' must be a string in the format '{prefix}_01h93ech7jf5ktdwg6ye383x34'.";
 
         return builder
-            .NotEmptyWithCode()
+            .NotNullWithCode()
             .DependentRules(() =>
                 builder
-                    .Must(x => x!.StartsWith($"{prefix}_") && TypeId.TryParse(x, out _))
-                    .WithErrorCode(ValidationErrorCodes.TypeIdInvalid)
+                    .Must(x => x?.Length == expectedLength && x.StartsWith(prefix))
+                    .WithErrorCode(ErrorCodes.Validation.TypeIdInvalidFormat)
                     .WithMessage(message)
             );
     }
@@ -28,9 +29,16 @@ public static class RuleBuilderExtensions
     public static IRuleBuilderOptions<T, string> MaxLengthWithCode<T>(
         this IRuleBuilder<T, string> builder,
         int maxLength
-    ) => builder.MaximumLength(maxLength).WithErrorCode(ValidationErrorCodes.MaxLength);
+    ) => builder.MaximumLength(maxLength).WithErrorCode(ErrorCodes.Validation.MaxLength);
 
-    public static IRuleBuilderOptions<T, TProperty> NotEmptyWithCode<T, TProperty>(
+    public static IRuleBuilderOptions<T, TProperty> NotNullWithCode<T, TProperty>(
         this IRuleBuilder<T, TProperty> builder
-    ) => builder.NotEmpty().WithErrorCode(ValidationErrorCodes.NotEmpty);
+    ) => builder.NotNull().WithErrorCode(ErrorCodes.Validation.NotNull);
+
+    public static IRuleBuilderOptions<T, TProperty> NotNullOrEmptyWithCode<T, TProperty>(
+        this IRuleBuilder<T, TProperty> builder
+    ) =>
+        builder
+            .NotNullWithCode()
+            .DependentRules(() => builder.NotEmpty().WithErrorCode(ErrorCodes.Validation.NotEmpty));
 }

@@ -30,7 +30,7 @@ public sealed class CreateTestValidator : Validator<CreateTestRequest>
     public CreateTestValidator()
     {
         RuleFor(x => x.Id).MustBeValidTypeIdWithCode("test").When(x => x.Id is not null);
-        RuleFor(x => x.Name).NotEmptyWithCode().MaxLengthWithCode(100);
+        RuleFor(x => x.Name).NotNullOrEmptyWithCode().MaxLengthWithCode(100);
     }
 }
 
