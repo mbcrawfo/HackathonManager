@@ -54,7 +54,7 @@ docker run \
 mcr.microsoft.com/dotnet/aspire-dashboard:9.0
 ```
 
-Set the following configuration for the backend app:
+Set the following configuration for the backend app in user secrets or `.env.local`:
 
 ```json
 {
@@ -73,7 +73,7 @@ docker run \
 --name seq \
 --env "ACCEPT_EULA=Y" \
 --env "SEQ_FIRSTRUN_ADMINPASSWORDHASH=QNwxcXb5uVV9ZJma8mOK/ZbQzRTEDIrvupQHFnCkEYFzktF1UYWwa1DfjG7tyy4ceGbq3yrfqd2aUrli0EC/Izlyoh/AfJyuYZFD9WE/zAOw" \
---env "SEQ_API_CANONICALURI=http://localhost:5341" \
+--env "SEQ_API_CANONICALURI=http://localhost:5050" \
 --publish 5050:80 \
 --publish 4317:5341 \
 --volume seq-data:/data \
@@ -82,7 +82,7 @@ docker run \
 datalust/seq
 ```
 
-Set the following configuration for the backend app:
+Set the following configuration for the backend app in user secrets or `.env.local`:
 
 ```json
 {
