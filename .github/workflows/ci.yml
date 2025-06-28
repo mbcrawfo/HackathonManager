@@ -2,6 +2,9 @@ name: CI
 
 on: [push, pull_request]
 
+permissions:
+  checks: write
+
 jobs:
   backend-check-formatting:
     runs-on: "ubuntu-latest"
@@ -16,6 +19,31 @@ jobs:
 
     - name: Run CSharpier
       run: dotnet csharpier check .
+
+  backend-sql-lint:
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v4
+
+    - name: Run SqlFluff
+      run: >-
+        docker run
+        -it
+        --rm
+        --volume "${{ github.workspace }}:/sql"
+        sqlfluff/sqlfluff:3.4.1
+        lint
+        --format github-annotation
+        --write-output /sql/sql-lint.json
+
+    - name: Annotate Pull Request
+      if: github.workflow.event.name == 'pull_request'
+      uses: yuzutech/annotations-action@v0.5.0
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        title: SQL Lint Results
+        input: ./sql-lint.json
 
   backend-build-test:
     runs-on: "ubuntu-latest"
