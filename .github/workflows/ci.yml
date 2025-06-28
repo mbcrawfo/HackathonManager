@@ -29,8 +29,8 @@ jobs:
     - name: Run SqlFluff
       run: >-
         docker run
-        -it
         --rm
+        --tty
         --volume "${{ github.workspace }}:/sql"
         sqlfluff/sqlfluff:3.4.1
         lint
