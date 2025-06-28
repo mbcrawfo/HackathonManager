@@ -24,7 +24,10 @@ public class StartupMigrationTests : IntegrationTestBase<StartupMigrationTests.H
         // arrange
         var expectedMigrations = typeof(MigrationRunner)
             .Assembly.GetManifestResourceNames()
-            .Where(n => n.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
+            .Where(n =>
+                n.StartsWith("HackathonManager.Migrator.Migrations")
+                && n.EndsWith(".sql", StringComparison.OrdinalIgnoreCase)
+            )
             .ToReadOnlyCollection();
 
         // act

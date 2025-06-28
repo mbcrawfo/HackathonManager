@@ -9,6 +9,8 @@
         <PackageReference Include="Npgsql" />
     </ItemGroup>
     <ItemGroup>
+        <None Remove="Everytime\*.sql" />
+        <EmbeddedResource Include="Everytime\*.sql" />
         <None Remove="Migrations\*.sql" />
         <EmbeddedResource Include="Migrations\*.sql" />
     </ItemGroup>

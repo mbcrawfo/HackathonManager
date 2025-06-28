@@ -21,6 +21,22 @@ public static class MigrationRunner
             throw new MigrationException("Failed to create journal schema.", journalResult);
         }
 
+        var everytimeMigrator = DeployChanges
+            .To.PostgresqlDatabase(connectionString)
+            .WithScriptsEmbeddedInAssembly(
+                typeof(MigrationRunner).Assembly,
+                name => name.StartsWith("HackathonManager.Migrator.Everytime") && name.EndsWith(".sql")
+            )
+            .WithTransactionPerScript()
+            .JournalTo(new NullJournal())
+            .LogTo(loggerFactory)
+            .Build();
+
+        if (everytimeMigrator.PerformUpgrade() is { Successful: false } everytimeResult)
+        {
+            throw new MigrationException("Failed to apply everytime scripts.", everytimeResult);
+        }
+
         var scriptMigrator = DeployChanges
             .To.PostgresqlDatabase(connectionString)
             .WithScriptsEmbeddedInAssembly(
