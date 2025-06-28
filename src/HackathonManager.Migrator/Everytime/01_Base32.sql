@@ -45,6 +45,8 @@ end
 $$
 language plpgsql
 immutable
+leakproof
+parallel safe
 returns null on null input;
 
 comment on function base32_encode(id uuid) is 'Encodes a uuid as base32 text.';
@@ -146,6 +148,8 @@ end
 $$
 language plpgsql
 immutable
+leakproof
+parallel safe
 returns null on null input;
 
 comment on function base32_decode(s text) is 'Decodes a 26 character base32 string into a uuid.';

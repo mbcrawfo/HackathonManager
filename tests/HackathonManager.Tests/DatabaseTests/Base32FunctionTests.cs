@@ -42,8 +42,8 @@ public class Base32FunctionTests : DatabaseTestBase
     public async Task Base32Decode_ShouldRaiseException_WhenInputContainsInvalidCharacters()
     {
         // arrange
-        var typeid = TypeId.New("test");
-        var invalidBase32 = typeid.GetSuffix()[..^1] + "L";
+        var typeId = TypeId.New("test");
+        var invalidBase32 = typeId.GetSuffix()[..^1] + "L";
 
         // act
         await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
@@ -65,8 +65,8 @@ public class Base32FunctionTests : DatabaseTestBase
     public async Task Base32Decode_ShouldRaiseException_WhenInputFirstCharacterIsNotValid()
     {
         // arrange
-        var typeid = TypeId.New("test");
-        var invalidBase32 = "8" + typeid.GetSuffix()[1..];
+        var typeId = TypeId.New("test");
+        var invalidBase32 = "8" + typeId.GetSuffix()[1..];
 
         // act
         await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
@@ -88,15 +88,15 @@ public class Base32FunctionTests : DatabaseTestBase
     public async Task Base32Decode_ShouldConvertTextToUuid()
     {
         // arrange
-        var typeid = TypeId.New("test");
-        var expected = typeid.Id;
+        var typeId = TypeId.New("test");
+        var expected = typeId.Id;
 
         // act
         await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
         var actual = await connection.QuerySingleAsync<Guid>(
             new CommandDefinition(
                 "select base32_decode(@Text);",
-                new { Text = typeid.GetSuffix() },
+                new { Text = typeId.GetSuffix() },
                 cancellationToken: Cancellation
             )
         );
@@ -109,15 +109,15 @@ public class Base32FunctionTests : DatabaseTestBase
     public async Task Base32Encode_ShouldConvertUuidToText()
     {
         // arrange
-        var typeid = TypeId.New("test");
-        var expected = typeid.GetSuffix();
+        var typeId = TypeId.New("test");
+        var expected = typeId.GetSuffix();
 
         // act
         await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
         var actual = await connection.QuerySingleAsync<string>(
             new CommandDefinition(
                 "select base32_encode(@Uuid);",
-                new { Uuid = typeid.Id },
+                new { Uuid = typeId.Id },
                 cancellationToken: Cancellation
             )
         );
