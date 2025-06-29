@@ -26,17 +26,14 @@ jobs:
       - name: Clone the repo
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
       - name: Run SqlFluff
-        run: >-
-          docker run
-          --user root
-          --rm
-          --tty
-          --volume "${{ github.workspace }}:/sql:rw"
-          sqlfluff/sqlfluff:3.4.1
-          lint
-          --format github-annotation
-          --write-output /sql/sql-lint.json
+        run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
 
       - name: Annotate Pull Request
         if: github.workflow.event.name == 'pull_request'
