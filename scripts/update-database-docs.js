@@ -78,7 +78,6 @@ const main = async () => {
             "doc",
             `"postgres://postgres:postgres@localhost:${port}/hackathon?sslmode=disable"`,
             "/docs",
-            "--rm-dist",
             "--adjust-table",
         ];
 
