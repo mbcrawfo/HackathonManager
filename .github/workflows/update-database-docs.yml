@@ -1,0 +1,74 @@
+name: Update Database Docs
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  update-database-docs:
+    if: github.actor != 'dependabot[bot]'
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Get changed files
+        id: check-file-changes
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            **/*.sql
+
+      - uses: ./.github/actions/dotnet-setup
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+
+      - name: Set up Node.js
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
+      - name: Update Database Docs
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: npm run update-database-docs
+
+      - name: Check for docs changes
+        id: check-docs-changes
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: |
+          if [[ -z $(git status --porcelain -- docs/database | wc -l) ]]; then
+            echo "No changes in docs/database"
+            echo "docs_changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in docs/database"
+            echo "docs_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check-docs-changes.outputs.docs_changed == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "[Generated] Update database docs"
+          file_pattern: "docs/database/**"
+
+      - name: Comment on PR
+        if: steps.check-docs-changes.outputs.docs_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Database documentation has been updated.'
+            });
