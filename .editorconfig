@@ -19,6 +19,11 @@ indent_size = 2
 [Dockerfile]
 indent_size = 2
 
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl}]
+indent_size = 4
+end_of_line = lf
+
+
 [*.sql]
 indent_size = 4
 

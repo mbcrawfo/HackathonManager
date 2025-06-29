@@ -3,22 +3,22 @@ description: "Run a specified npm script for the Hackathon SPA project"
 
 inputs:
   task:
-    description: 'npm script to run'
+    description: "npm script to run"
     required: true
 
 runs:
   using: "composite"
   steps:
-  - name: Set up Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: 24
-      cache: 'npm'
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: "npm"
 
-  - name: Restore dependencies
-    run: npm ci
-    shell: bash
+    - name: Restore dependencies
+      run: npm ci
+      shell: bash
 
-  - name: Run npm script ${{ inputs.task }}
-    run: npm run spa ${{ inputs.task }}
-    shell: bash
+    - name: Run npm script ${{ inputs.task }}
+      run: npm run spa ${{ inputs.task }}
+      shell: bash

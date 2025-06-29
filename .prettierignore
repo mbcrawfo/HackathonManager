@@ -1,0 +1,8 @@
+.config
+coverage
+dist
+src/HackathonManager
+src/HackathonManager.Migrator
+tests/HackathonManager.Tests
+
+*.md

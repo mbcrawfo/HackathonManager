@@ -9,100 +9,100 @@ jobs:
   backend-check-formatting:
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - uses: ./.github/actions/dotnet-setup
+      - uses: ./.github/actions/dotnet-setup
 
-    - name: Restore tools
-      run: dotnet tool restore
+      - name: Restore tools
+        run: dotnet tool restore
 
-    - name: Run CSharpier
-      run: dotnet csharpier check .
+      - name: Run CSharpier
+        run: dotnet csharpier check .
 
   backend-sql-lint:
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Run SqlFluff
-      run: >-
-        docker run
-        --user root
-        --rm
-        --tty
-        --volume "${{ github.workspace }}:/sql:rw"
-        sqlfluff/sqlfluff:3.4.1
-        lint
-        --format github-annotation
-        --write-output /sql/sql-lint.json
+      - name: Run SqlFluff
+        run: >-
+          docker run
+          --user root
+          --rm
+          --tty
+          --volume "${{ github.workspace }}:/sql:rw"
+          sqlfluff/sqlfluff:3.4.1
+          lint
+          --format github-annotation
+          --write-output /sql/sql-lint.json
 
-    - name: Annotate Pull Request
-      if: github.workflow.event.name == 'pull_request'
-      uses: yuzutech/annotations-action@v0.5.0
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        title: SQL Lint Results
-        input: ./sql-lint.json
+      - name: Annotate Pull Request
+        if: github.workflow.event.name == 'pull_request'
+        uses: yuzutech/annotations-action@v0.5.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          title: SQL Lint Results
+          input: ./sql-lint.json
 
   backend-build-test:
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - uses: ./.github/actions/dotnet-setup
+      - uses: ./.github/actions/dotnet-setup
 
-    - name: Build
-      run: dotnet build --configuration Release
+      - name: Build
+        run: dotnet build --configuration Release
 
-    - name: Preload docker images for tests
-      run: docker pull postgres:18beta1
+      - name: Preload docker images for tests
+        run: docker pull postgres:18beta1
 
-    - name: Run Tests
-      run: >-
-        dotnet test
-        --no-restore
-        --no-build
-        --configuration Release
-        --logger "console;verbosity=normal"
-        --logger "trx;LogFileName=test-results/results.trx"
-        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
-        --blame
-        --blame-hang-timeout 7m
-        --blame-crash
-        --results-directory test-results
-        --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
+      - name: Run Tests
+        run: >-
+          dotnet test
+          --no-restore
+          --no-build
+          --configuration Release
+          --logger "console;verbosity=normal"
+          --logger "trx;LogFileName=test-results/results.trx"
+          --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+          --blame
+          --blame-hang-timeout 7m
+          --blame-crash
+          --results-directory test-results
+          --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
 
-    - name: Upload test results
-      if: ${{ !cancelled() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: dotnet-test-results
-        path: test-results/**
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: test-results/**
 
-    - name: Publish Migrator
-      run: >-
-        dotnet publish
-        ./src/HackathonManager.Migrator/HackathonManager.Migrator.csproj
-        --no-build
-        --configuration Release
-        --output ./artifacts/HackathonManager.Migrator
+      - name: Publish Migrator
+        run: >-
+          dotnet publish
+          ./src/HackathonManager.Migrator/HackathonManager.Migrator.csproj
+          --no-build
+          --configuration Release
+          --output ./artifacts/HackathonManager.Migrator
 
-    - name: Publish App
-      run: >-
-        dotnet publish
-        ./src/HackathonManager/HackathonManager.csproj
-        --no-build
-        --configuration Release
-        --output ./artifacts/HackathonManager
+      - name: Publish App
+        run: >-
+          dotnet publish
+          ./src/HackathonManager/HackathonManager.csproj
+          --no-build
+          --configuration Release
+          --output ./artifacts/HackathonManager
 
-    - name: Upload publish artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: dotnet-build-artifacts
-        path: ./artifacts/**
+      - name: Upload publish artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-build-artifacts
+          path: ./artifacts/**
 
   frontend-check-formatting:
     runs-on: "ubuntu-latest"
@@ -110,71 +110,71 @@ jobs:
       run:
         working-directory: ./src/hackathon-spa
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Run prettier
-      uses: ./.github/actions/hackathon-spa-task
-      with:
-        task: format:check
+      - name: Run prettier
+        uses: ./.github/actions/hackathon-spa-task
+        with:
+          task: format:check
 
   frontend-lint:
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Run ESLint
-      uses: ./.github/actions/hackathon-spa-task
-      with:
+      - name: Run ESLint
+        uses: ./.github/actions/hackathon-spa-task
+        with:
           task: lint:check
 
   frontend-type-check:
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Run type checking
-      uses: ./.github/actions/hackathon-spa-task
-      with:
-        task: type-check
+      - name: Run type checking
+        uses: ./.github/actions/hackathon-spa-task
+        with:
+          task: type-check
 
   frontend-build:
     needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Build the frontend
-      uses: ./.github/actions/hackathon-spa-task
-      with:
+      - name: Build the frontend
+        uses: ./.github/actions/hackathon-spa-task
+        with:
           task: build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: spa-build-artifacts
-        path: ./artifacts/**
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: spa-build-artifacts
+          path: ./artifacts/**
 
   frontend-unit-tests:
     needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
     runs-on: "ubuntu-latest"
     steps:
-    - name: Clone the repo
-      uses: actions/checkout@v4
+      - name: Clone the repo
+        uses: actions/checkout@v4
 
-    - name: Run unit tests
-      uses: ./.github/actions/hackathon-spa-task
-      with:
+      - name: Run unit tests
+        uses: ./.github/actions/hackathon-spa-task
+        with:
           task: test:unit -- --coverage
 
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: spa-test-results
-        path: |
-          ./src/hackathon-spa/test-results/
-          ./src/hackathon-spa/coverage/
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: spa-test-results
+          path: |
+            ./src/hackathon-spa/test-results/
+            ./src/hackathon-spa/coverage/
