@@ -6,16 +6,18 @@ on:
     types:
       - completed
 
-permissions:
-  contents: read
-  actions: read
-  checks: write
-  pull-requests: write
-
 jobs:
   report:
     if: github.event.workflow_run.conclusion == 'success' && github.actor != 'dependabot[bot]'
+
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
@@ -64,7 +66,7 @@ jobs:
         shell: bash
 
       - name: Add comment to PR
-        if: github.event.workflow_run.event.name == 'pull_request'
+        if: github.event.workflow_run.event.pull_request != null
         run: gh pr comment $PR_NUMBER --body-file dotnet-report/SummaryGithub.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,4 +89,5 @@ jobs:
           vite-config-path: src/hackathon-spa/vite.config.ts
           json-summary-path: spa-test-results/coverage/coverage-summary.json
           json-final-path: spa-test-results/coverage/coverage-final.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           pr-number: ${{ github.event.workflow_run.event.pull_request.number }}
