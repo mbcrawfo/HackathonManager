@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: echo "${{ toJson(github.event.workflow_run) }}"
+
+        shell: bash
       - name: Clone the repo
         uses: actions/checkout@v4
 
