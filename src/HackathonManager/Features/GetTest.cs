@@ -6,7 +6,6 @@ using FastEndpoints.AspVersioning;
 using HackathonManager.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Sqids;
 
@@ -14,9 +13,9 @@ namespace HackathonManager.Features;
 
 public sealed class GetTest : EndpointWithoutRequest<IReadOnlyCollection<TestDto>>
 {
+    private readonly IClock _clock;
     private readonly HackathonDbContext _dbContext;
     private readonly SqidsEncoder<uint> _versionEncoder;
-    private readonly IClock _clock;
 
     public GetTest(HackathonDbContext dbContext, SqidsEncoder<uint> versionEncoder, IClock clock)
     {
@@ -40,6 +39,7 @@ public sealed class GetTest : EndpointWithoutRequest<IReadOnlyCollection<TestDto
         Response = data.ConvertAll(x => new TestDto(
             x.Id.Encode(),
             x.Name,
+            x.Description,
             _versionEncoder.Encode(x.Version),
             _clock.GetCurrentInstant()
         ));

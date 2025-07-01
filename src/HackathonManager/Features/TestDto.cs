@@ -4,4 +4,10 @@ using NodaTime;
 
 namespace HackathonManager.Features;
 
-public sealed record TestDto(TypeId Id, string Name, [property: ToHeader("ETag")] string Version, Instant Queried);
+public sealed record TestDto(
+    TypeId Id,
+    string Name,
+    string? Description,
+    [property: ToHeader("ETag")] string Version,
+    Instant Queried
+);

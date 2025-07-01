@@ -15,8 +15,6 @@ public sealed class SwaggerTypeIdTypeMapper : ITypeMapper
     {
         schema.Type = JsonObjectType.String;
         schema.Format = "typeid";
-        schema.Description = "A resource identifier with a resource type tag and a base32 formatted UUID.";
-        schema.Example = "tag_01h93ech7jf5ktdwg6ye383x34";
     }
 
     /// <inheritdoc />

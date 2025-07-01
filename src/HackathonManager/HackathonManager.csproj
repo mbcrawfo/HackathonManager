@@ -19,9 +19,11 @@
         <PackageReference Include="FastIDs.TypeId.Serialization.SystemTextJson" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="NodaTime" />
         <PackageReference Include="NodaTime.Serialization.SystemTextJson" />
         <PackageReference Include="Npgsql" />

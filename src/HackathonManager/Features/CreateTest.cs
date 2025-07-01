@@ -17,20 +17,23 @@ public sealed class CreateTestRequest
     /// <summary>
     ///     Optional id.
     /// </summary>
-    public string? Id { get; init; }
+    public TypeId? Id { get; init; }
 
     /// <summary>
     ///     Name of the test.
     /// </summary>
     public required string Name { get; init; }
+
+    public string? Description { get; init; }
 }
 
 public sealed class CreateTestValidator : Validator<CreateTestRequest>
 {
     public CreateTestValidator()
     {
-        RuleFor(x => x.Id).MustBeValidTypeIdWithCode("test").When(x => x.Id is not null);
-        RuleFor(x => x.Name).NotNullOrEmptyWithCode().MaxLengthWithCode(100);
+        RuleFor(x => x.Id).MustBeIdOfType("test").When(x => x.Id.HasValue);
+        RuleFor(x => x.Name).NotNullOrEmptyWithCode().MaximumLengthWithCode(100);
+        RuleFor(x => x.Description).MaximumLengthWithCode(100);
     }
 }
 
@@ -58,13 +61,14 @@ public class CreateTest : Endpoint<CreateTestRequest, TestDto>
     /// <inheritdoc />
     public override async Task HandleAsync(CreateTestRequest req, CancellationToken ct)
     {
-        var id = req.Id is null ? TypeIdDecoded.New("test") : TypeId.Parse(req.Id).Decode();
+        var id = req.Id?.Decode() ?? TypeIdDecoded.New("test");
         var test = new Test { Id = id, Name = req.Name };
         _dbContext.Tests.Add(test);
         await _dbContext.SaveChangesAsync(ct);
         Response = new TestDto(
             test.Id.Encode(),
             test.Name,
+            test.Description,
             _versionEncoder.Encode(test.Version),
             _clock.GetCurrentInstant()
         );

@@ -1,4 +1,4 @@
-create table test (id uuid primary key, name text not null);
+create table test (id uuid primary key, name text not null, description text);
 
 insert into test (id, name) values
 (uuidv7(), 'foo'),
