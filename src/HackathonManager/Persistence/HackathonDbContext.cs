@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 using FastIDs.TypeId;
+using HackathonManager.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HackathonManager.Persistence;
@@ -11,9 +13,13 @@ public class HackathonDbContext : DbContext
 
     public DbSet<Test> Tests { get; protected set; }
 
+    public DbSet<User> Users { get; protected set; }
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
         modelBuilder
             .Entity<Test>()
             .Property(x => x.Id)

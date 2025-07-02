@@ -7,6 +7,15 @@ namespace HackathonManager.Extensions;
 
 public static class RuleBuilderExtensions
 {
+    public static IRuleBuilderOptions<T, string> EmailAddressWithCode<T>(this IRuleBuilder<T, string> ruleBuilder) =>
+        ruleBuilder.EmailAddress().WithErrorCode(ErrorCodes.EmailAddress);
+
+    public static IRuleBuilderOptions<T, string> LengthWithCode<T>(
+        this IRuleBuilder<T, string> builder,
+        int min,
+        int max
+    ) => builder.Length(min, max).WithErrorCode(ErrorCodes.InvalidLength);
+
     public static IRuleBuilderOptions<T, string> MustBeValidETag<T>(
         this IRuleBuilder<T, string> builder,
         SqidsEncoder<uint> encoder

@@ -1,0 +1,107 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FastEndpoints;
+using FastEndpoints.AspVersioning;
+using FastIDs.TypeId;
+using FluentValidation.Results;
+using HackathonManager.Extensions;
+using HackathonManager.Persistence;
+using HackathonManager.Persistence.Entities;
+using Humanizer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using NodaTime;
+using Sqids;
+
+namespace HackathonManager.Features.Users.CreateUserEndpoint;
+
+public sealed class CreateUser : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
+{
+    private readonly IClock _clock;
+    private readonly HackathonDbContext _dbContext;
+    private readonly SqidsEncoder<uint> _encoder;
+
+    /// <inheritdoc />
+    public CreateUser(IClock clock, HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
+    {
+        _clock = clock;
+        _dbContext = dbContext;
+        _encoder = encoder;
+    }
+
+    /// <inheritdoc />
+    public override void Configure()
+    {
+        Post("/users");
+        AllowAnonymous();
+        Description(b =>
+        {
+            b.WithVersionSet(ApiTags.Users).HasApiVersion(1);
+            b.ProducesProblemDetails(StatusCodes.Status409Conflict);
+        });
+
+        Summary(s =>
+        {
+            s.Summary = "Creates a user account.";
+            s.Responses[StatusCodes.Status409Conflict] = "The user email or display name is already in use.";
+        });
+    }
+
+    /// <inheritdoc />
+    public override async Task<Results<CreatedAtRoute<UserDto>, ProblemDetails>> ExecuteAsync(
+        CreateUserRequest req,
+        CancellationToken ct
+    )
+    {
+        var now = _clock.GetCurrentInstant();
+        var user = new User
+        {
+            Id = TypeIdDecoded.FromUuidV7(ResourceTypes.User, Guid.CreateVersion7(now.ToDateTimeOffset())),
+            CreatedAt = now,
+            UpdatedAt = now,
+            Email = req.Email,
+            DisplayName = req.DisplayName,
+            PasswordHash = req.Password,
+        };
+
+        _dbContext.Users.Add(user);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException ex) when (ex.IsUniqueConstraintViolation())
+        {
+            Logger.LogDebug(ex, "Unique constraint error on user creation");
+
+            var propertyName = (ex.GetPostgresException().ConstraintName ?? "") switch
+            {
+                var x when x.Contains("email") => nameof(CreateUserRequest.Email).Camelize(),
+                var x when x.Contains("display_name") => nameof(CreateUserRequest.DisplayName).Camelize(),
+                _ => throw new InvalidOperationException("Unexpected unique constraint error", ex),
+            };
+
+            return new ProblemDetails(
+                [
+                    new ValidationFailure
+                    {
+                        ErrorCode = ErrorCodes.UniqueValueRequired,
+                        ErrorMessage = $"Value provided for '{propertyName}' is already in use.",
+                        PropertyName = propertyName,
+                    },
+                ],
+                StatusCodes.Status409Conflict
+            );
+        }
+
+        HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(user.RowVersion));
+
+        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.UpdatedAt, user.Email, user.DisplayName);
+        return TypedResults.CreatedAtRoute(result, nameof(GetUserById), new { Id = result.Id.ToString() });
+    }
+}

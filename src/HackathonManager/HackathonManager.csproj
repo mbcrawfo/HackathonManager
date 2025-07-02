@@ -10,7 +10,6 @@
         <PackageReference Include="Destructurama.Attributed" />
         <PackageReference Include="DotNetEnv" />
         <PackageReference Include="EFCore.NamingConventions" />
-        <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
         <PackageReference Include="FastEndpoints" />
         <PackageReference Include="FastEndpoints.AspVersioning" />
         <PackageReference Include="FastEndpoints.Security" />
@@ -19,6 +18,7 @@
         <PackageReference Include="FastIDs.TypeId.Serialization.SystemTextJson" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+        <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" />
