@@ -17,6 +17,27 @@ public class TypeIdTests : DatabaseTestBase
         : base(fixture) { }
 
     [Fact]
+    public async Task TypeIdEncode_ShouldReturnEncodedInputs()
+    {
+        // arrange
+        var typeId = TypeId.New("test");
+        var expected = typeId.ToString();
+
+        // act
+        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        var actual = await connection.QuerySingleAsync<string>(
+            new CommandDefinition(
+                "select typeid_encode(@Prefix, @Id);",
+                new { Prefix = typeId.Type, typeId.Id },
+                cancellationToken: Cancellation
+            )
+        );
+
+        // assert
+        actual.ShouldBe(expected);
+    }
+
+    [Fact]
     public async Task UuidFromTypeId_ShouldRaiseException_WhenInputHasInvalidFormat()
     {
         // arrange
@@ -24,6 +45,7 @@ public class TypeIdTests : DatabaseTestBase
 
         // act
         await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+
         async Task Act() =>
             // ReSharper disable once AccessToDisposedClosure
             await connection.QuerySingleAsync<Guid>(
