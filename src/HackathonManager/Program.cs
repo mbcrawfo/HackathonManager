@@ -51,7 +51,7 @@ logger.Information("{Application} version {Version} starting up...", AppInfo.Nam
 
 try
 {
-    VersionSets.CreateApi("Test", v => v.HasApiVersion(new ApiVersion(1.0)));
+    ApiTags.Create();
 
     ConfigureServices();
 

@@ -1,4 +1,3 @@
-using EntityFramework.Exceptions.PostgreSQL;
 using HackathonManager.Settings;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -15,7 +14,6 @@ public static class DbContextOptionsBuilderExtensions
     {
         builder.UseNpgsql(dataSource, options => options.UseNodaTime());
         builder.UseSnakeCaseNamingConvention();
-        builder.UseExceptionProcessor();
 
         builder.EnableSensitiveDataLogging(settings.EnableSensitiveDataLogging);
         builder.EnableDetailedErrors(settings.EnableDetailedErrors);
