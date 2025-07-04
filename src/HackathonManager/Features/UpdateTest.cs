@@ -34,7 +34,10 @@ public sealed class UpdateTestRequestValidator : PatchRequestValidator<UpdateTes
     public UpdateTestRequestValidator(SqidsEncoder<uint> encoder)
     {
         RuleFor(x => x.Id).MustBeIdOfType("test");
-        RuleFor(x => x.IfMatch!).MustBeValidETag(encoder).When(x => x.IfMatch is not null);
+        RuleFor(x => x.IfMatch!)
+            .NotEmptyWithCode()
+            .MaximumLengthWithCode(ValidationConstants.ETagMaxLength)
+            .When(x => x.IfMatch is not null);
     }
 }
 

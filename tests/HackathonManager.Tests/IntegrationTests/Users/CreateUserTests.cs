@@ -7,6 +7,7 @@ using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Tests.TestInfrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Shouldly;
 using Sqids;
 using Xunit;
@@ -41,7 +42,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         user.Id.ShouldBe(actual.Id.Decode());
 
         var expectedETag = scope.ServiceProvider.GetRequiredService<SqidsEncoder<uint>>().Encode(user.RowVersion);
-        response.Headers.GetValues("ETag").ShouldHaveSingleItem().ShouldBe(expectedETag);
+        response.Headers.GetValues(HeaderNames.ETag).ShouldHaveSingleItem().ShouldBe(expectedETag);
 
         actual.ShouldSatisfyAllConditions(
             x => x.Id.Type.ToString().ShouldBe(ResourceTypes.User),
@@ -54,7 +55,6 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn409_WhenDisplayNameAlreadyExists()
     {
         // arrange
-
         var displayName = Fake.Name.FullName();
         var seedUserResponse = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
             new CreateUserRequest

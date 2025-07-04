@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using NodaTime;
 using Sqids;
 
@@ -50,6 +51,7 @@ public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<Cre
         {
             s.Summary = "Creates a user account.";
             s.Responses[StatusCodes.Status409Conflict] = "The user email or display name is already in use.";
+            s.ResponseHeaders.Add(new ResponseHeader(StatusCodes.Status200OK, HeaderNames.ETag));
         });
     }
 
