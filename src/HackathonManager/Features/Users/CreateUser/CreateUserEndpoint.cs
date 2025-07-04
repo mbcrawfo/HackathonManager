@@ -6,6 +6,7 @@ using FastEndpoints.AspVersioning;
 using FastIDs.TypeId;
 using FluentValidation.Results;
 using HackathonManager.Extensions;
+using HackathonManager.Features.Users.GetUserById;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using Humanizer;
@@ -18,16 +19,16 @@ using Microsoft.Extensions.Primitives;
 using NodaTime;
 using Sqids;
 
-namespace HackathonManager.Features.Users.CreateUserEndpoint;
+namespace HackathonManager.Features.Users.CreateUser;
 
-public sealed class CreateUser : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
+public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
 {
     private readonly IClock _clock;
     private readonly HackathonDbContext _dbContext;
     private readonly SqidsEncoder<uint> _encoder;
 
     /// <inheritdoc />
-    public CreateUser(IClock clock, HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
+    public CreateUserEndpoint(IClock clock, HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
     {
         _clock = clock;
         _dbContext = dbContext;
@@ -102,6 +103,6 @@ public sealed class CreateUser : Endpoint<CreateUserRequest, Results<CreatedAtRo
         HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(user.RowVersion));
 
         var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.UpdatedAt, user.Email, user.DisplayName);
-        return TypedResults.CreatedAtRoute(result, nameof(GetUserById), new { Id = result.Id.ToString() });
+        return TypedResults.CreatedAtRoute(result, nameof(GetUserByIdEndpoint), new { Id = result.Id.ToString() });
     }
 }

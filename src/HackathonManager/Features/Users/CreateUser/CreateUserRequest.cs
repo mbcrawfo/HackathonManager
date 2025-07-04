@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace HackathonManager.Features.Users.CreateUserEndpoint;
+namespace HackathonManager.Features.Users.CreateUser;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 public sealed class CreateUserRequest

@@ -3,20 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
 using FastEndpoints.AspVersioning;
-using FastIDs.TypeId;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 
-namespace HackathonManager.Features.Users;
+namespace HackathonManager.Features.Users.GetUserById;
 
-public sealed class GetUserByIdRequest
-{
-    [FromRoute]
-    public TypeId Id { get; init; }
-}
-
-public sealed class GetUserById : Endpoint<GetUserByIdRequest, Results<Ok<UserDto>, NotFound>>
+public sealed class GetUserByIdEndpoint : Endpoint<GetUserByIdRequest, Results<Ok<UserDto>, NotFound>>
 {
     /// <inheritdoc />
     public override void Configure()

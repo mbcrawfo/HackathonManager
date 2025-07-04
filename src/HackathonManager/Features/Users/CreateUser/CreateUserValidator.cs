@@ -2,11 +2,11 @@ using FastEndpoints;
 using HackathonManager.Extensions;
 using HackathonManager.Persistence.Entities;
 
-namespace HackathonManager.Features.Users.CreateUserEndpoint;
+namespace HackathonManager.Features.Users.CreateUser;
 
-public sealed class CreateUserRequestValidator : Validator<CreateUserRequest>
+public sealed class CreateUserValidator : Validator<CreateUserRequest>
 {
-    public CreateUserRequestValidator()
+    public CreateUserValidator()
     {
         RuleFor(x => x.Email)
             .NotNullWithCode()

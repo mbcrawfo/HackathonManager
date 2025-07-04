@@ -2,7 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using FastEndpoints;
 using HackathonManager.Features.Users;
-using HackathonManager.Features.Users.CreateUserEndpoint;
+using HackathonManager.Features.Users.CreateUser;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Tests.TestInfrastructure;
@@ -31,7 +31,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         };
 
         // act
-        var (response, actual) = await App.Client.POSTAsync<CreateUser, CreateUserRequest, UserDto>(expected);
+        var (response, actual) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(expected);
 
         // assert
         using var scope = App.Services.CreateScope();
@@ -56,7 +56,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         // arrange
 
         var displayName = Fake.Name.FullName();
-        var seedUserResponse = await App.Client.POSTAsync<CreateUser, CreateUserRequest>(
+        var seedUserResponse = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
             new CreateUserRequest
             {
                 Email = Fake.Internet.Email(),
@@ -67,7 +67,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUser, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
                 Email = Fake.Internet.Email(),
@@ -94,7 +94,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     {
         // arrange
         var email = Fake.Internet.Email();
-        var seedUserResponse = await App.Client.POSTAsync<CreateUser, CreateUserRequest>(
+        var seedUserResponse = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
             new CreateUserRequest
             {
                 Email = email,
@@ -105,7 +105,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUser, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
                 Email = email,
@@ -132,7 +132,7 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     {
         // arrange
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUser, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
                 Email = Fake.Internet.Email(),
