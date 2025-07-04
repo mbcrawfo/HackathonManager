@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using FastEndpoints.Testing;
@@ -36,10 +35,6 @@ public class HackathonApp : AppFixture<Program>
     protected override async ValueTask PreSetupAsync() => await Database.InitializeAsync();
 
     /// <inheritdoc />
-    [SuppressMessage(
-        "Critical Code Smell",
-        "S927:Parameter names should match base declaration and other partial definitions"
-    )]
     protected override void ConfigureApp(IWebHostBuilder builder)
     {
         builder.UseContentRoot(

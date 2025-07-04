@@ -1,7 +1,6 @@
 using System;
 using FastIDs.TypeId;
 using FluentValidation;
-using Sqids;
 
 namespace HackathonManager.Extensions;
 
@@ -15,14 +14,6 @@ public static class RuleBuilderExtensions
         int min,
         int max
     ) => builder.Length(min, max).WithErrorCode(ErrorCodes.InvalidLength);
-
-    public static IRuleBuilderOptions<T, string> MustBeValidETag<T>(
-        this IRuleBuilder<T, string> builder,
-        SqidsEncoder<uint> encoder
-    ) =>
-        builder
-            .Must(s => encoder.Decode(s) is [var etag] && encoder.Encode(etag) == s)
-            .WithErrorCode(ErrorCodes.InvalidETag);
 
     public static IRuleBuilderOptions<T, TypeId> MustBeIdOfType<T>(
         this IRuleBuilder<T, TypeId> builder,
@@ -54,6 +45,10 @@ public static class RuleBuilderExtensions
         this IRuleBuilder<T, string?> builder,
         int maxLength
     ) => builder.MaximumLength(maxLength).WithErrorCode(ErrorCodes.MaxLength);
+
+    public static IRuleBuilderOptions<T, TProperty> NotEmptyWithCode<T, TProperty>(
+        this IRuleBuilder<T, TProperty> builder
+    ) => builder.NotEmpty().WithErrorCode(ErrorCodes.NotEmpty);
 
     public static IRuleBuilderOptions<T, TProperty> NotNullWithCode<T, TProperty>(
         this IRuleBuilder<T, TProperty> builder

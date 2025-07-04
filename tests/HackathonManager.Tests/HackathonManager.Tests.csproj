@@ -7,7 +7,7 @@
             S1144: "Remove unused private setter": False warnings on test models that are private classes.
             S3459: "Remove unassigned auto-property": False warnings on test models.
         -->
-        <NoWarn>S1144;S3459</NoWarn>
+        <NoWarn>$(NoWarn);S1144;S3459</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Bogus" />

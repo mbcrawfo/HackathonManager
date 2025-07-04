@@ -1,10 +1,15 @@
+using FastEndpoints;
 using FastIDs.TypeId;
-using Microsoft.AspNetCore.Mvc;
+using JetBrains.Annotations;
 
 namespace HackathonManager.Features.Users.GetUserById;
 
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 public sealed class GetUserByIdRequest
 {
-    [FromRoute]
+    [RouteParam]
     public TypeId Id { get; init; }
+
+    [FromHeader("If-None-Match", isRequired: false)]
+    public string? IfNoneMatch { get; init; }
 }

@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using FastEndpoints.Testing;
+using JetBrains.Annotations;
+using Xunit;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
