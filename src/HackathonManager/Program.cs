@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -95,6 +96,10 @@ void ConfigureServices()
     );
 
     AddOpenTelemetryServices();
+
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    );
 
     builder.Services.AddConfigurationSettings<RequestLoggingSettings>();
 
@@ -244,6 +249,8 @@ void ConfigurePipeline(WebApplication app)
 {
     var enableIntegratedSpa = app.Configuration.GetValue<bool>(ConfigurationKeys.EnableIntegratedSpaKey);
     logger.Information("{SettingKey}={SettingValue}", ConfigurationKeys.EnableIntegratedSpaKey, enableIntegratedSpa);
+
+    app.UseForwardedHeaders();
 
     if (enableIntegratedSpa)
     {
