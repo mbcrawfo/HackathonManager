@@ -27,6 +27,8 @@ public sealed class HackathonApp : WebApplicationFactory<Program>
             );
         }
 
+        builder.UseEnvironment("Testing");
+
         builder.UseContentRoot(
             Path.Join(AppDomain.CurrentDomain.BaseDirectory, "TestInfrastructure", "IntegrationTestContentRoot")
         );

@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
 using FastEndpoints.AspVersioning;
-using FastIDs.TypeId;
 using FluentValidation.Results;
 using HackathonManager.Extensions;
 using HackathonManager.Features.Users.GetUserById;
@@ -17,21 +16,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
-using NodaTime;
 using Sqids;
 
 namespace HackathonManager.Features.Users.CreateUser;
 
 public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
 {
-    private readonly IClock _clock;
     private readonly HackathonDbContext _dbContext;
     private readonly SqidsEncoder<uint> _encoder;
 
     /// <inheritdoc />
-    public CreateUserEndpoint(IClock clock, HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
+    public CreateUserEndpoint(HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
     {
-        _clock = clock;
         _dbContext = dbContext;
         _encoder = encoder;
     }
@@ -61,12 +57,8 @@ public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<Cre
         CancellationToken ct
     )
     {
-        var now = _clock.GetCurrentInstant();
         var user = new User
         {
-            Id = TypeIdDecoded.FromUuidV7(ResourceTypes.User, Guid.CreateVersion7(now.ToDateTimeOffset())),
-            CreatedAt = now,
-            UpdatedAt = now,
             Email = req.Email,
             DisplayName = req.DisplayName,
             PasswordHash = req.Password,
@@ -104,7 +96,7 @@ public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<Cre
 
         HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(user.RowVersion));
 
-        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.UpdatedAt, user.Email, user.DisplayName);
+        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.Email, user.DisplayName);
         return TypedResults.CreatedAtRoute(result, nameof(GetUserByIdEndpoint), new { Id = result.Id.ToString() });
     }
 }

@@ -72,7 +72,7 @@ public sealed class GetUserByIdEndpoint : Endpoint<GetUserByIdRequest, Results<O
 
         HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(user.RowVersion));
 
-        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.UpdatedAt, user.Email, user.DisplayName);
+        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.Email, user.DisplayName);
         return TypedResults.Ok(result);
     }
 }

@@ -15,8 +15,6 @@ public class User
 
     public Instant CreatedAt { get; set; }
 
-    public Instant UpdatedAt { get; set; }
-
     public required string Email { get; set; }
 
     public required string DisplayName { get; set; }
