@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using HackathonManager.Migrator;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,11 @@ namespace HackathonManager.Tests.TestInfrastructure.Database;
 /// <summary>
 ///     Decorates a database fixture, applying migrations after the database is initialized.
 /// </summary>
-public sealed class DatabaseMigrationDecorator : IDatabaseFixture
+public sealed class DatabaseMigrationFixture : IDatabaseFixture
 {
     private readonly IDatabaseFixture _fixture;
 
-    public DatabaseMigrationDecorator(IDatabaseFixture fixture)
+    public DatabaseMigrationFixture(IDatabaseFixture fixture)
     {
         _fixture = fixture;
     }
@@ -34,4 +35,7 @@ public sealed class DatabaseMigrationDecorator : IDatabaseFixture
 
     /// <inheritdoc />
     public NpgsqlDataSource DataSource => _fixture.DataSource;
+
+    /// <inheritdoc />
+    public static IDatabaseFixture Create() => new DatabaseMigrationFixture(new DatabaseFixture());
 }

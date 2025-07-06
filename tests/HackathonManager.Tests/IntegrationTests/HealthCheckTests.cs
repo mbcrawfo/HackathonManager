@@ -5,18 +5,20 @@ using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class HealthCheckTests : IntegrationTestBase<HackathonApp>
+public class HealthCheckTests : IntegrationTestWithReset
 {
     /// <inheritdoc />
-    public HealthCheckTests(HackathonApp hackathonApp)
-        : base(hackathonApp) { }
+    public HealthCheckTests(IntegrationTestWithResetFixture fixture)
+        : base(fixture) { }
 
     [Fact]
     public async Task HealthCheck_ShouldReturnHealthy()
     {
         // arrange
+        using var client = App.CreateClient();
+
         // act
-        var response = await App.Client.GetStringAsync("/health", Cancellation);
+        var response = await client.GetStringAsync("/health", CancellationToken);
 
         // assert
         response.ShouldBe("Healthy");

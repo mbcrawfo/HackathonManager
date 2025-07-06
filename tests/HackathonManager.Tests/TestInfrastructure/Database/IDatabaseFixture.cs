@@ -14,4 +14,6 @@ public interface IDatabaseFixture : IAsyncLifetime
     NpgsqlDataSource DataSource { get; }
 
     Task ResetData() => throw new NotImplementedException();
+
+    static abstract IDatabaseFixture Create();
 }

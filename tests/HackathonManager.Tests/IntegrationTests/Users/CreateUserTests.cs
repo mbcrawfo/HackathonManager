@@ -14,11 +14,11 @@ using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests.Users;
 
-public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
+public class CreateUserTests : IntegrationTestWithReset
 {
     /// <inheritdoc />
-    public CreateUserTests(HackathonApp_DatabaseReset hackathonApp)
-        : base(hackathonApp) { }
+    public CreateUserTests(IntegrationTestWithResetFixture fixture)
+        : base(fixture) { }
 
     [Fact]
     public async Task ShouldReturn200AndCreateUser()
@@ -26,13 +26,15 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         // arrange
         var expected = new CreateUserRequest
         {
-            Email = Fake.Internet.Email(),
-            DisplayName = Fake.Name.FullName(),
-            Password = Fake.Random.AlphaNumeric(10),
+            Email = Faker.Internet.Email(),
+            DisplayName = Faker.Name.FullName(),
+            Password = Faker.Random.AlphaNumeric(10),
         };
 
+        using var client = App.CreateClient();
+
         // act
-        var (response, actual) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(expected);
+        var (response, actual) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(expected);
 
         // assert
         using var scope = App.Services.CreateScope();
@@ -55,24 +57,26 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn409_WhenDisplayNameAlreadyExists()
     {
         // arrange
-        var displayName = Fake.Name.FullName();
-        var seedUserResponse = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
+        using var client = App.CreateClient();
+
+        var displayName = Faker.Name.FullName();
+        var seedUserResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
             new CreateUserRequest
             {
-                Email = Fake.Internet.Email(),
+                Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Fake.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
-                Email = Fake.Internet.Email(),
+                Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Fake.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
 
@@ -93,24 +97,26 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn409_WhenEmailAlreadyExists()
     {
         // arrange
-        var email = Fake.Internet.Email();
-        var seedUserResponse = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
+        using var client = App.CreateClient();
+
+        var email = Faker.Internet.Email();
+        var seedUserResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
             new CreateUserRequest
             {
                 Email = email,
-                DisplayName = Fake.Name.FullName(),
-                Password = Fake.Random.AlphaNumeric(10),
+                DisplayName = Faker.Name.FullName(),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
                 Email = email,
-                DisplayName = Fake.Name.FullName(),
-                Password = Fake.Random.AlphaNumeric(10),
+                DisplayName = Faker.Name.FullName(),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
 
@@ -131,13 +137,15 @@ public class CreateUserTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn422_WhenInputsAreNotValid()
     {
         // arrange
+        using var client = App.CreateClient();
+
         // act
-        var (response, error) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
+        var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
             new CreateUserRequest
             {
-                Email = Fake.Internet.Email(),
-                DisplayName = Fake.Random.AlphaNumeric(User.EmailMaxLength + 1),
-                Password = Fake.Random.AlphaNumeric(10),
+                Email = Faker.Internet.Email(),
+                DisplayName = Faker.Random.AlphaNumeric(User.EmailMaxLength + 1),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
 

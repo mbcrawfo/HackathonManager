@@ -1,27 +1,30 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Tests.TestInfrastructure;
-using JetBrains.Annotations;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests;
 
-public class StartupMigrationTests : IntegrationTestBase<StartupMigrationTests.HackathonApp_StartupMigration>
+public class StartupMigrationTests : IntegrationTestEmptyDb
 {
     /// <inheritdoc />
-    public StartupMigrationTests(HackathonApp_StartupMigration hackathonApp)
-        : base(hackathonApp) { }
+    public StartupMigrationTests(IntegrationTestEmptyDbFixture fixture)
+        : base(fixture) { }
 
     [Fact]
     public async Task ShouldApplyAllMigrationsToDatabase_WhenStartupMigrationIsEnabled()
     {
         // arrange
+        using var client = App.WithWebHostBuilder(b =>
+                b.UseSetting(ConfigurationKeys.EnableStartupMigrationKey, "true")
+            )
+            .CreateClient();
+
         var expectedMigrations = typeof(MigrationRunner)
             .Assembly.GetManifestResourceNames()
             .Where(n =>
@@ -31,20 +34,16 @@ public class StartupMigrationTests : IntegrationTestBase<StartupMigrationTests.H
             .ToReadOnlyCollection();
 
         // act
-        _ = await App.Client.GetAsync("/health", TestContext.Current.CancellationToken);
+        _ = await client.GetAsync("/health", CancellationToken);
 
         // assert
-        await using var connection = await App.Database.DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await Database.DataSource.OpenConnectionAsync(CancellationToken);
         var actualMigrations = await connection.QueryAsync<string>(
-            new CommandDefinition("select scriptname from meta.migrations_history", cancellationToken: Cancellation)
+            new CommandDefinition(
+                "select scriptname from meta.migrations_history",
+                cancellationToken: CancellationToken
+            )
         );
         actualMigrations.ShouldBe(expectedMigrations, ignoreOrder: true);
     }
-
-    // ReSharper disable once InconsistentNaming
-    [UsedImplicitly]
-    public sealed class HackathonApp_StartupMigration()
-        : HackathonApp_MigratedDatabase(
-            [new KeyValuePair<string, string>(ConfigurationKeys.EnableStartupMigrationKey, "true")]
-        );
 }
