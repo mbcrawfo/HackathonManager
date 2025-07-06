@@ -35,6 +35,9 @@ public sealed class DatabaseFixture : IDatabaseFixture
         };
 
     /// <inheritdoc />
+    public static IDatabaseFixture Create() => new DatabaseFixture();
+
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         if (_dataSource is not null)

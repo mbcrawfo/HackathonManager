@@ -9,12 +9,12 @@ namespace HackathonManager.Tests.TestInfrastructure.Database;
 /// <summary>
 ///     Decorates a database fixture, adding the ability to reset it between tests.
 /// </summary>
-public sealed class DatabaseResetDecorator : IDatabaseFixture
+public sealed class DatabaseResetFixture : IDatabaseFixture
 {
     private readonly IDatabaseFixture _fixture;
     private Respawner? _respawner;
 
-    public DatabaseResetDecorator(IDatabaseFixture fixture)
+    public DatabaseResetFixture(IDatabaseFixture fixture)
     {
         _fixture = fixture;
     }
@@ -47,10 +47,14 @@ public sealed class DatabaseResetDecorator : IDatabaseFixture
     {
         if (_respawner is null)
         {
-            throw new InvalidOperationException($"{nameof(DatabaseResetDecorator)} is not initialized.");
+            throw new InvalidOperationException($"{nameof(DatabaseResetFixture)} is not initialized.");
         }
 
         await using var connection = await DataSource.OpenConnectionAsync(TestContext.Current.CancellationToken);
         await _respawner.ResetAsync(connection);
     }
+
+    /// <inheritdoc />
+    public static IDatabaseFixture Create() =>
+        new DatabaseResetFixture(new DatabaseMigrationFixture(new DatabaseFixture()));
 }

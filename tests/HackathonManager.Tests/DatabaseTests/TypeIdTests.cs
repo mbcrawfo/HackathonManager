@@ -3,17 +3,16 @@ using System.Threading.Tasks;
 using Dapper;
 using FastIDs.TypeId;
 using HackathonManager.Tests.TestInfrastructure;
-using HackathonManager.Tests.TestInfrastructure.Database;
 using Npgsql;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.DatabaseTests;
 
-public class TypeIdTests : DatabaseTestBase
+public class TypeIdTests : DatabaseTest
 {
     /// <inheritdoc />
-    public TypeIdTests(ResettingDatabaseFixture fixture)
+    public TypeIdTests(DatabaseTestFixture fixture)
         : base(fixture) { }
 
     [Fact]
@@ -24,12 +23,12 @@ public class TypeIdTests : DatabaseTestBase
         var expected = typeId.ToString();
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var actual = await connection.QuerySingleAsync<string>(
             new CommandDefinition(
                 "select typeid_encode(@Prefix, @Id);",
                 new { Prefix = typeId.Type, typeId.Id },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 
@@ -44,7 +43,7 @@ public class TypeIdTests : DatabaseTestBase
         var typeId = TypeId.New("test");
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
 
         async Task Act() =>
             // ReSharper disable once AccessToDisposedClosure
@@ -52,7 +51,7 @@ public class TypeIdTests : DatabaseTestBase
                 new CommandDefinition(
                     "select uuid_from_typeid(@Text);",
                     new { Text = typeId.GetSuffix() },
-                    cancellationToken: Cancellation
+                    cancellationToken: CancellationToken
                 )
             );
 
@@ -68,12 +67,12 @@ public class TypeIdTests : DatabaseTestBase
         var expected = typeId.Id;
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var actual = await connection.QuerySingleAsync<Guid>(
             new CommandDefinition(
                 "select uuid_from_typeid(@Text);",
                 new { Text = typeId.Encode().ToString() },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 
@@ -89,12 +88,12 @@ public class TypeIdTests : DatabaseTestBase
         var typeId = TypeId.New("test");
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var result = await connection.QuerySingleAsync<bool>(
             new CommandDefinition(
                 "select @Uuid === @TypeId;",
                 new { Uuid = uuid, TypeId = typeId.Encode().ToString() },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 
@@ -109,12 +108,12 @@ public class TypeIdTests : DatabaseTestBase
         var typeId = TypeId.New("test");
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var result = await connection.QuerySingleAsync<bool>(
             new CommandDefinition(
                 "select @Uuid === @TypeId;",
                 new { Uuid = typeId.Id, TypeId = typeId.Encode().ToString() },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 

@@ -1,26 +1,34 @@
 using System.Threading.Tasks;
-using FastEndpoints.Testing;
-using JetBrains.Annotations;
-using Xunit;
+using HackathonManager.Tests.TestInfrastructure.Database;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-public abstract class IntegrationTestBase<TApp> : TestBase<TApp>
-    where TApp : HackathonApp
+/// <summary>
+///     Common base for all integration tests of the web app.
+/// </summary>
+/// <typeparam name="TDatabase"></typeparam>
+public abstract class IntegrationTestBase<TDatabase> : TestBase
+    where TDatabase : IDatabaseFixture
 {
-    protected readonly HackathonApp App;
+    private readonly IntegrationTestFixture<TDatabase> _fixture;
 
-    protected IntegrationTestBase(TApp hackathonApp)
+    protected IntegrationTestBase(IntegrationTestFixture<TDatabase> fixture)
     {
-        App = hackathonApp;
+        _fixture = fixture;
     }
 
+    protected HackathonApp App => _fixture.App;
+
+    protected IDatabaseFixture Database => _fixture.Database;
+
     /// <inheritdoc />
-    protected override async ValueTask SetupAsync()
+    public override async ValueTask InitializeAsync()
     {
-        if (App.Database.CanResetData)
+        await base.InitializeAsync();
+
+        if (Database.CanResetData)
         {
-            await App.Database.ResetData();
+            await Database.ResetData();
         }
     }
 }

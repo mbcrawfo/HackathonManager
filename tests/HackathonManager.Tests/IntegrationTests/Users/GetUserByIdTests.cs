@@ -13,22 +13,24 @@ using Xunit;
 
 namespace HackathonManager.Tests.IntegrationTests.Users;
 
-public class GetUserByIdTests : IntegrationTestBase<HackathonApp_DatabaseReset>
+public class GetUserByIdTests : IntegrationTestWithReset
 {
     /// <inheritdoc />
-    public GetUserByIdTests(HackathonApp_DatabaseReset hackathonApp)
-        : base(hackathonApp) { }
+    public GetUserByIdTests(IntegrationTestWithResetFixture fixture)
+        : base(fixture) { }
 
     [Fact]
     public async Task ShouldReturn200AndUser()
     {
         // arrange
-        var (seedResponse, expected) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
+        using var client = App.CreateClient();
+
+        var (seedResponse, expected) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
             new CreateUserRequest
             {
-                Email = Fake.Internet.Email(),
-                DisplayName = Fake.Name.FullName(),
-                Password = Fake.Random.AlphaNumeric(10),
+                Email = Faker.Internet.Email(),
+                DisplayName = Faker.Name.FullName(),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
         seedResponse.EnsureSuccessStatusCode();
@@ -36,7 +38,7 @@ public class GetUserByIdTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         var expectedETag = seedResponse.Headers.GetValues(HeaderNames.ETag).Single();
 
         // act
-        var (response, actual) = await App.Client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest, UserDto>(
+        var (response, actual) = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest, UserDto>(
             new GetUserByIdRequest { Id = expected.Id }
         );
 
@@ -50,12 +52,14 @@ public class GetUserByIdTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn304_WhenUserHasNotBeenModified()
     {
         // arrange
-        var (seedResponse, expected) = await App.Client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
+        using var client = App.CreateClient();
+
+        var (seedResponse, expected) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
             new CreateUserRequest
             {
-                Email = Fake.Internet.Email(),
-                DisplayName = Fake.Name.FullName(),
-                Password = Fake.Random.AlphaNumeric(10),
+                Email = Faker.Internet.Email(),
+                DisplayName = Faker.Name.FullName(),
+                Password = Faker.Random.AlphaNumeric(10),
             }
         );
         seedResponse.EnsureSuccessStatusCode();
@@ -63,7 +67,7 @@ public class GetUserByIdTests : IntegrationTestBase<HackathonApp_DatabaseReset>
         var etag = seedResponse.Headers.GetValues(HeaderNames.ETag).Single();
 
         // act
-        var response = await App.Client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
+        var response = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
             new GetUserByIdRequest { Id = expected.Id, IfNoneMatch = etag }
         );
 
@@ -75,8 +79,10 @@ public class GetUserByIdTests : IntegrationTestBase<HackathonApp_DatabaseReset>
     public async Task ShouldReturn404_WhenUserDoesNotExist()
     {
         // arrange
+        using var client = App.CreateClient();
+
         // act
-        var response = await App.Client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
+        var response = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
             new GetUserByIdRequest { Id = TypeId.New(ResourceTypes.User).Encode() }
         );
 

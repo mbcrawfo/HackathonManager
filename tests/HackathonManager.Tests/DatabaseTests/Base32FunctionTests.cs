@@ -3,34 +3,34 @@ using System.Threading.Tasks;
 using Dapper;
 using FastIDs.TypeId;
 using HackathonManager.Tests.TestInfrastructure;
-using HackathonManager.Tests.TestInfrastructure.Database;
 using Npgsql;
 using Shouldly;
 using Xunit;
 
 namespace HackathonManager.Tests.DatabaseTests;
 
-public class Base32FunctionTests : DatabaseTestBase
+public class Base32FunctionTests : DatabaseTest
 {
     /// <inheritdoc />
-    public Base32FunctionTests(ResettingDatabaseFixture fixture)
+    public Base32FunctionTests(DatabaseTestFixture fixture)
         : base(fixture) { }
 
     [Fact]
     public async Task Base32Decode_ShouldRaiseException_WhenInputIsWrongLength()
     {
         // arrange
-        var text = Fake.Random.AlphaNumeric(30);
+        var text = Faker.Random.AlphaNumeric(30);
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
+
         async Task Act() =>
             // ReSharper disable once AccessToDisposedClosure
             await connection.QuerySingleAsync<Guid>(
                 new CommandDefinition(
                     "select base32_decode(@Text);",
                     new { Text = text },
-                    cancellationToken: Cancellation
+                    cancellationToken: CancellationToken
                 )
             );
 
@@ -46,14 +46,15 @@ public class Base32FunctionTests : DatabaseTestBase
         var invalidBase32 = typeId.GetSuffix()[..^1] + "L";
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
+
         async Task Act() =>
             // ReSharper disable once AccessToDisposedClosure
             await connection.QuerySingleAsync<Guid>(
                 new CommandDefinition(
                     "select base32_decode(@Text);",
                     new { Text = invalidBase32 },
-                    cancellationToken: Cancellation
+                    cancellationToken: CancellationToken
                 )
             );
 
@@ -69,14 +70,15 @@ public class Base32FunctionTests : DatabaseTestBase
         var invalidBase32 = "8" + typeId.GetSuffix()[1..];
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
+
         async Task Act() =>
             // ReSharper disable once AccessToDisposedClosure
             await connection.QuerySingleAsync<Guid>(
                 new CommandDefinition(
                     "select base32_decode(@Text);",
                     new { Text = invalidBase32 },
-                    cancellationToken: Cancellation
+                    cancellationToken: CancellationToken
                 )
             );
 
@@ -92,12 +94,12 @@ public class Base32FunctionTests : DatabaseTestBase
         var expected = typeId.Id;
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var actual = await connection.QuerySingleAsync<Guid>(
             new CommandDefinition(
                 "select base32_decode(@Text);",
                 new { Text = typeId.GetSuffix() },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 
@@ -113,12 +115,12 @@ public class Base32FunctionTests : DatabaseTestBase
         var expected = typeId.GetSuffix();
 
         // act
-        await using var connection = await DataSource.OpenConnectionAsync(Cancellation);
+        await using var connection = await DataSource.OpenConnectionAsync(CancellationToken);
         var actual = await connection.QuerySingleAsync<string>(
             new CommandDefinition(
                 "select base32_encode(@Uuid);",
                 new { Uuid = typeId.Id },
-                cancellationToken: Cancellation
+                cancellationToken: CancellationToken
             )
         );
 

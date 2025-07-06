@@ -1,52 +1,37 @@
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
-using System.Threading.Tasks;
-using FastEndpoints.Testing;
 using HackathonManager.Extensions;
 using HackathonManager.Persistence;
 using HackathonManager.Settings;
 using HackathonManager.Tests.TestInfrastructure.Database;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-[UsedImplicitly]
-public class HackathonApp : AppFixture<Program>
+public sealed class HackathonApp : WebApplicationFactory<Program>
 {
-    private readonly IEnumerable<KeyValuePair<string, string>> _additionalSettings;
-
-    public HackathonApp()
-        : this([]) { }
-
-    protected HackathonApp(IEnumerable<KeyValuePair<string, string>> additionalSettings)
-    {
-        _additionalSettings = additionalSettings;
-    }
-
-    public IDatabaseFixture Database { get; protected init; } = new DatabaseFixture();
+    public IDatabaseFixture? Database { get; set; }
 
     /// <inheritdoc />
-    protected override async ValueTask PreSetupAsync() => await Database.InitializeAsync();
-
-    /// <inheritdoc />
-    protected override void ConfigureApp(IWebHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        if (Database is null)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(Database)} must be set before {nameof(HackathonApp)} can be used."
+            );
+        }
+
         builder.UseContentRoot(
             Path.Join(AppDomain.CurrentDomain.BaseDirectory, "TestInfrastructure", "IntegrationTestContentRoot")
         );
 
         builder.UseSetting(ConfigurationKeys.ConnectionStringKey, Database.ConnectionString);
-
-        foreach (var (key, value) in _additionalSettings)
-        {
-            builder.UseSetting(key, value);
-        }
 
         builder.ConfigureServices(services =>
         {
@@ -64,7 +49,4 @@ public class HackathonApp : AppFixture<Program>
             );
         });
     }
-
-    /// <inheritdoc />
-    protected override async ValueTask TearDownAsync() => await Database.DisposeAsync();
 }
