@@ -4,14 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HackathonManager.Persistence.Configuration;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("users");
+        builder.ToTable("users").HasKey(x => x.Id);
 
-        builder.HasKey(x => x.Id);
-
+        // *** Columns ***
         builder
             .Property(x => x.Id)
             .IsRequired()
@@ -27,5 +26,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.PasswordHash).IsRequired().HasMaxLength(1000);
 
         builder.Property(x => x.RowVersion).IsRowVersion();
+
+        // *** Relationships ***
+        builder.HasMany(x => x.AuditEvents).WithOne(x => x.User).HasForeignKey(x => x.UserId);
     }
 }

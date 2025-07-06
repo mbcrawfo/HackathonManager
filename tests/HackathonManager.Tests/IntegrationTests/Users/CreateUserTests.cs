@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -5,7 +6,9 @@ using HackathonManager.Features.Users;
 using HackathonManager.Features.Users.CreateUser;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
+using HackathonManager.Persistence.Enums;
 using HackathonManager.Tests.TestInfrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Shouldly;
@@ -40,8 +43,23 @@ public class CreateUserTests : IntegrationTestWithReset
         using var scope = App.Services.CreateScope();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var user = scope.ServiceProvider.GetRequiredService<HackathonDbContext>().Users.ShouldHaveSingleItem();
+        var dbContext = scope.ServiceProvider.GetRequiredService<HackathonDbContext>();
+        var users = await dbContext.Users.ToArrayAsync(CancellationToken);
+        var user = users.ShouldHaveSingleItem();
         user.Id.ShouldBe(actual.Id.Decode());
+
+        var auditEvents = await dbContext
+            .UserAuditEvents.Where(x => x.UserId == user.Id)
+            .ToArrayAsync(CancellationToken);
+        auditEvents
+            .ShouldHaveSingleItem()
+            .ShouldSatisfyAllConditions(
+                x => x.UserId.ShouldBe(user.Id),
+                x => x.Event.ShouldBe(UserAuditEventType.Registration),
+                x =>
+                    x.GetMetadata<UserRegistrationMetadataV1>()
+                        .ShouldBe(new UserRegistrationMetadataV1(expected.Email, expected.DisplayName))
+            );
 
         var expectedETag = scope.ServiceProvider.GetRequiredService<SqidsEncoder<uint>>().Encode(user.RowVersion);
         response.Headers.GetValues(HeaderNames.ETag).ShouldHaveSingleItem().ShouldBe(expectedETag);

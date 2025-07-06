@@ -30,7 +30,7 @@ public sealed class DatabaseResetFixture : IDatabaseFixture
         await using var connection = await DataSource.OpenConnectionAsync(TestContext.Current.CancellationToken);
         _respawner = await Respawner.CreateAsync(
             connection,
-            new RespawnerOptions { DbAdapter = DbAdapter.Postgres, SchemasToExclude = ["meta"] }
+            new RespawnerOptions { DbAdapter = DbAdapter.Postgres, SchemasToExclude = ["enums", "meta"] }
         );
     }
 
