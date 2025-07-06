@@ -3,11 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
 using FastEndpoints.AspVersioning;
+using FastIDs.TypeId;
 using FluentValidation.Results;
 using HackathonManager.Extensions;
 using HackathonManager.Features.Users.GetUserById;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
+using HackathonManager.Persistence.Enums;
 using Humanizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,20 +18,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using NodaTime;
 using Sqids;
 
 namespace HackathonManager.Features.Users.CreateUser;
 
 public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
 {
+    private readonly IClock _clock;
     private readonly HackathonDbContext _dbContext;
     private readonly SqidsEncoder<uint> _encoder;
 
     /// <inheritdoc />
-    public CreateUserEndpoint(HackathonDbContext dbContext, SqidsEncoder<uint> encoder)
+    public CreateUserEndpoint(HackathonDbContext dbContext, SqidsEncoder<uint> encoder, IClock clock)
     {
         _dbContext = dbContext;
         _encoder = encoder;
+        _clock = clock;
     }
 
     /// <inheritdoc />
@@ -57,11 +62,23 @@ public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<Cre
         CancellationToken ct
     )
     {
+        var now = _clock.GetCurrentInstant();
         var user = new User
         {
+            Id = TypeIdDecoded.FromUuidV7(ResourceTypes.User, Guid.CreateVersion7(now.ToDateTimeOffset())),
+            CreatedAt = now,
             Email = req.Email,
             DisplayName = req.DisplayName,
             PasswordHash = req.Password,
+            AuditEvents =
+            [
+                new UserAudit
+                {
+                    Timestamp = now,
+                    Event = UserAuditEventType.Registration,
+                    Metadata = new UserRegistrationMetadataV1(req.Email, req.DisplayName),
+                },
+            ],
         };
 
         _dbContext.Users.Add(user);

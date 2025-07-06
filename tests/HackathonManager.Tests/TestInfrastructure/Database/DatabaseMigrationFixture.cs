@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using HackathonManager.Migrator;
 using Microsoft.Extensions.Logging;

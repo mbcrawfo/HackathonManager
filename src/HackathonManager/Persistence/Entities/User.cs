@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using FastIDs.TypeId;
 using NodaTime;
 
@@ -22,4 +22,6 @@ public class User
     public required string PasswordHash { get; set; }
 
     public uint RowVersion { get; set; }
+
+    public ICollection<UserAudit> AuditEvents { get; set; } = [];
 }

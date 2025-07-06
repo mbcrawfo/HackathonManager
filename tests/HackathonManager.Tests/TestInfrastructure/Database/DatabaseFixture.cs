@@ -23,7 +23,7 @@ public sealed class DatabaseFixture : IDatabaseFixture
     public string ConnectionString =>
         _container.State switch
         {
-            TestcontainersStates.Running => _container.GetConnectionString(),
+            TestcontainersStates.Running => _container.GetConnectionString() + ";Include Error Detail=True",
             _ => throw new InvalidOperationException($"{nameof(DatabaseFixture)} is not initialized"),
         };
 
