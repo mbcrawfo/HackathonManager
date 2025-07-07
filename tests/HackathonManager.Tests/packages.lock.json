@@ -46,6 +46,16 @@
         "resolved": "2024.3.0",
         "contentHash": "ox5pkeLQXjvJdyAB4b2sBYAlqZGLh3PjSnP1bQNVx72ONuTJ9+34/+Rq91Fc0dG29XG9RgZur9+NcP4riihTug=="
       },
+      "MartinCostello.Logging.XUnit.v3": {
+        "type": "Direct",
+        "requested": "[0.6.0, )",
+        "resolved": "0.6.0",
+        "contentHash": "9AjzwkmqezSeoJ+JmZRWUQsbYBF51RqYGIkTkCGj8PsdCVAOaRnsslyGRT9sQWiXsnDVvWqqCr0uKFNL0CtaPw==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "8.0.1",
+          "xunit.v3.extensibility.core": "2.0.1"
+        }
+      },
       "Microsoft.AspNetCore.Mvc.Testing": {
         "type": "Direct",
         "requested": "[9.0.6, )",
@@ -2471,6 +2481,7 @@
       "hackathonmanager": {
         "type": "Project",
         "dependencies": {
+          "BCrypt.Net-Next": "[4.0.3, )",
           "Destructurama.Attributed": "[5.1.0, )",
           "DotNetEnv": "[3.1.1, )",
           "EFCore.NamingConventions": "[9.0.0, )",
@@ -2524,6 +2535,12 @@
           "Npgsql": "[9.0.3, )",
           "dbup-postgresql": "[6.0.3, )"
         }
+      },
+      "BCrypt.Net-Next": {
+        "type": "CentralTransitive",
+        "requested": "[4.0.3, )",
+        "resolved": "4.0.3",
+        "contentHash": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA=="
       },
       "dbup-postgresql": {
         "type": "CentralTransitive",

@@ -1,6 +1,7 @@
 using HackathonManager.Tests.TestInfrastructure.Database;
 using JetBrains.Annotations;
 using Xunit;
+using Xunit.Sdk;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
@@ -19,4 +20,5 @@ public abstract class IntegrationTestEmptyDb : IntegrationTestBase<DatabaseFixtu
 public sealed class IntegrationTestEmptyDbCollection : ICollectionFixture<IntegrationTestEmptyDbFixture>;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-public sealed class IntegrationTestEmptyDbFixture : IntegrationTestFixture<DatabaseFixture>;
+public sealed class IntegrationTestEmptyDbFixture(IMessageSink _messageSink)
+    : IntegrationTestFixture<DatabaseFixture>(_messageSink);

@@ -8,9 +8,7 @@
   "ConsoleLog": {
     "Type": "Disabled|Text|Json",
     // Minimum log level for this sink.  Default: Verbose.
-    "Level": "Verbose|Debug|Information|Warning|Error|Fatal",
-    // The template use for formatting text output.  See Serilog docs for details.
-    "TextTemplate": ""
+    "Level": "Verbose|Debug|Information|Warning|Error|Fatal"
   },
 
   // Optional settings related logging EF queries and database commands.

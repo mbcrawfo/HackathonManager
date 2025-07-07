@@ -10,6 +10,7 @@ using HackathonManager.Features.Users.GetUserById;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Persistence.Enums;
+using HackathonManager.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,20 +24,13 @@ using Sqids;
 
 namespace HackathonManager.Features.Users.CreateUser;
 
-public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
+public sealed class CreateUserEndpoint(
+    HackathonDbContext _dbContext,
+    SqidsEncoder<uint> _encoder,
+    IClock _clock,
+    PasswordService _passwordService
+) : Endpoint<CreateUserRequest, Results<CreatedAtRoute<UserDto>, ProblemDetails>>
 {
-    private readonly IClock _clock;
-    private readonly HackathonDbContext _dbContext;
-    private readonly SqidsEncoder<uint> _encoder;
-
-    /// <inheritdoc />
-    public CreateUserEndpoint(HackathonDbContext dbContext, SqidsEncoder<uint> encoder, IClock clock)
-    {
-        _dbContext = dbContext;
-        _encoder = encoder;
-        _clock = clock;
-    }
-
     /// <inheritdoc />
     public override void Configure()
     {
@@ -69,7 +63,7 @@ public sealed class CreateUserEndpoint : Endpoint<CreateUserRequest, Results<Cre
             CreatedAt = now,
             Email = req.Email,
             DisplayName = req.DisplayName,
-            PasswordHash = req.Password,
+            PasswordHash = _passwordService.HashPassword(req.Password),
             AuditEvents =
             [
                 new UserAudit

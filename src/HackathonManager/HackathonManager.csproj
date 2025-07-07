@@ -7,6 +7,7 @@
         <ProjectReference Include="..\HackathonManager.Migrator\HackathonManager.Migrator.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" />
         <PackageReference Include="Destructurama.Attributed" />
         <PackageReference Include="DotNetEnv" />
         <PackageReference Include="EFCore.NamingConventions" />

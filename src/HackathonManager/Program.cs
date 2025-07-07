@@ -11,6 +11,7 @@ using HackathonManager;
 using HackathonManager.Extensions;
 using HackathonManager.Migrator;
 using HackathonManager.Persistence;
+using HackathonManager.Services;
 using HackathonManager.Settings;
 using HackathonManager.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -90,6 +91,8 @@ finally
 
 void ConfigureServices()
 {
+    builder.Services.AddTransient<PasswordService>();
+
     builder.Services.AddSerilog(
         (provider, config) => config.ConfigureAppLogger(provider.GetRequiredService<IConfiguration>()),
         preserveStaticLogger: true
