@@ -105,9 +105,15 @@ public sealed class CreateUserEndpoint(
             );
         }
 
-        HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(user.RowVersion));
+        var userDto = new UserDto(
+            user.Id.Encode(),
+            user.CreatedAt,
+            user.Email,
+            user.DisplayName,
+            _encoder.Encode(user.RowVersion)
+        );
 
-        var result = new UserDto(user.Id.Encode(), user.CreatedAt, user.Email, user.DisplayName);
-        return TypedResults.CreatedAtRoute(result, nameof(GetUserByIdEndpoint), new { Id = result.Id.ToString() });
+        HttpContext.Response.Headers.ETag = new StringValues(userDto.Version);
+        return TypedResults.CreatedAtRoute(userDto, nameof(GetUserByIdEndpoint), new { Id = userDto.Id.ToString() });
     }
 }
