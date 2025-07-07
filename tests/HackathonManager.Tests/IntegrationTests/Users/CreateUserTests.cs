@@ -7,6 +7,7 @@ using HackathonManager.Features.Users.CreateUser;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Persistence.Enums;
+using HackathonManager.Services;
 using HackathonManager.Tests.TestInfrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ public class CreateUserTests : IntegrationTestWithReset
         {
             Email = Faker.Internet.Email(),
             DisplayName = Faker.Name.FullName(),
-            Password = Faker.Random.AlphaNumeric(10),
+            Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
         };
 
         using var client = App.CreateClient();
@@ -47,6 +48,10 @@ public class CreateUserTests : IntegrationTestWithReset
         var users = await dbContext.Users.ToArrayAsync(CancellationToken);
         var user = users.ShouldHaveSingleItem();
         user.Id.ShouldBe(actual.Id.Decode());
+        scope
+            .ServiceProvider.GetRequiredService<PasswordService>()
+            .VerifyPassword(expected.Password, user.PasswordHash)
+            .ShouldBeTrue();
 
         var auditEvents = await dbContext
             .UserAuditEvents.Where(x => x.UserId == user.Id)
@@ -83,7 +88,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
@@ -94,7 +99,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
 
@@ -123,7 +128,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = email,
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
@@ -134,7 +139,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = email,
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
 
@@ -162,8 +167,8 @@ public class CreateUserTests : IntegrationTestWithReset
             new CreateUserRequest
             {
                 Email = Faker.Internet.Email(),
-                DisplayName = Faker.Random.AlphaNumeric(User.EmailMaxLength + 1),
-                Password = Faker.Random.AlphaNumeric(10),
+                DisplayName = Faker.Random.AlphaNumeric(User.DisplayNameMaxLength + 1),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
 

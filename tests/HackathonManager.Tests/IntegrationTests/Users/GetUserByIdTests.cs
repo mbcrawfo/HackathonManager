@@ -30,7 +30,7 @@ public class GetUserByIdTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
         seedResponse.EnsureSuccessStatusCode();
@@ -59,7 +59,7 @@ public class GetUserByIdTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(10),
+                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
             }
         );
         seedResponse.EnsureSuccessStatusCode();

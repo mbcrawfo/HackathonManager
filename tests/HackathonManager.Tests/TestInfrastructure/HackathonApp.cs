@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Xunit.Sdk;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-public sealed class HackathonApp : WebApplicationFactory<Program>
+public sealed class HackathonApp(IMessageSink _messageSink) : WebApplicationFactory<Program>
 {
     public IDatabaseFixture? Database { get; set; }
 
@@ -37,6 +39,19 @@ public sealed class HackathonApp : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<ILoggerFactory>();
+            services.AddSingleton(
+                LoggerFactory
+                    .Create(b =>
+                        b.AddConsole()
+                            .SetMinimumLevel(LogLevel.Trace)
+                            .AddFilter("Microsoft", LogLevel.Warning)
+                            .AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Information)
+                            .AddFilter("System", LogLevel.Warning)
+                    )
+                    .AddXUnit(_messageSink)
+            );
+
             services.RemoveAll<DbDataSource>();
             services.RemoveAll<DbContextOptions>();
             services.RemoveAll<DbContextOptions<HackathonDbContext>>();

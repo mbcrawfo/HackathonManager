@@ -1,6 +1,7 @@
 using HackathonManager.Tests.TestInfrastructure.Database;
 using JetBrains.Annotations;
 using Xunit;
+using Xunit.Sdk;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
@@ -19,4 +20,5 @@ public abstract class IntegrationTestWithReset : IntegrationTestBase<DatabaseRes
 public sealed class IntegrationTestWithResetCollection : ICollectionFixture<IntegrationTestWithResetFixture>;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-public sealed class IntegrationTestWithResetFixture : IntegrationTestFixture<DatabaseResetFixture>;
+public sealed class IntegrationTestWithResetFixture(IMessageSink _messageSink)
+    : IntegrationTestFixture<DatabaseResetFixture>(_messageSink);

@@ -3,14 +3,15 @@ using System.Threading.Tasks;
 using HackathonManager.Tests.TestInfrastructure.Database;
 using JetBrains.Annotations;
 using Xunit;
+using Xunit.Sdk;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-public class IntegrationTestFixture<TDatabase> : IAsyncLifetime
+public class IntegrationTestFixture<TDatabase>(IMessageSink _messageSink) : IAsyncLifetime
     where TDatabase : IDatabaseFixture
 {
-    public HackathonApp App { get; } = new();
+    public HackathonApp App { get; } = new(_messageSink);
 
     public IDatabaseFixture Database { get; } = TDatabase.Create();
 
