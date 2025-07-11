@@ -7,7 +7,7 @@ namespace HackathonManager.Tests.TestInfrastructure;
 ///     Common base for all integration tests of the web app.
 /// </summary>
 /// <typeparam name="TDatabase"></typeparam>
-public abstract class IntegrationTestBase<TDatabase> : TestBase
+public abstract class IntegrationTestBase<TDatabase> : UnitTest
     where TDatabase : IDatabaseFixture
 {
     private readonly IntegrationTestFixture<TDatabase> _fixture;

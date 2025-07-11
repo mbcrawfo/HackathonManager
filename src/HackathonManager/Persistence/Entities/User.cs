@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using FastIDs.TypeId;
+using HackathonManager.Interfaces;
 using NodaTime;
 
 namespace HackathonManager.Persistence.Entities;
 
-public class User
+public class User : IRowVersion
 {
     public const int EmailMinLength = 3;
     public const int EmailMaxLength = 254;

@@ -3,11 +3,30 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using HackathonManager.Interfaces;
 
 namespace HackathonManager.Extensions;
 
 public static class EnumerableExtensions
 {
+    /// <summary>
+    ///     Generates an ETag from a collection of versioned resources.
+    /// </summary>
+    /// <param name="enumerable"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static int GenerateETag<T>(this IEnumerable<T> enumerable)
+        where T : IRowVersion
+    {
+        var hash = new HashCode();
+        foreach (var item in enumerable)
+        {
+            hash.Add(item.RowVersion);
+        }
+
+        return hash.ToHashCode();
+    }
+
     /// <summary>
     ///     Converts an <see cref="IEnumerable{T}" /> to <see cref="IReadOnlyCollection{T}" />, avoiding a redundant
     ///     copy of the data when possible.

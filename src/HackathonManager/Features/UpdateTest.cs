@@ -36,7 +36,7 @@ public sealed class UpdateTestRequestValidator : PatchRequestValidator<UpdateTes
         RuleFor(x => x.Id).MustBeIdOfType("test");
         RuleFor(x => x.IfMatch!)
             .NotEmptyWithCode()
-            .MaximumLengthWithCode(ValidationConstants.ETagMaxLength)
+            .MaximumLengthWithCode(Constants.ETagMaxLength)
             .When(x => x.IfMatch is not null);
     }
 }

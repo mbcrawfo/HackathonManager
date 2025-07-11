@@ -19,6 +19,6 @@ public sealed class CreateUserValidator : Validator<CreateUserRequest>
 
         RuleFor(x => x.Password)
             .NotNullWithCode()
-            .LengthWithCode(ValidationConstants.PasswordMinLength, ValidationConstants.PasswordMaxLength);
+            .LengthWithCode(Constants.PasswordMinLength, Constants.PasswordMaxLength);
     }
 }
