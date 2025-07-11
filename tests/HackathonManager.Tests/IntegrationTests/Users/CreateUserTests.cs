@@ -32,7 +32,7 @@ public class CreateUserTests : IntegrationTestWithReset
         {
             Email = Faker.Internet.Email(),
             DisplayName = Faker.Name.FullName(),
-            Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+            Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
         };
 
         using var client = App.CreateClient();
@@ -72,7 +72,7 @@ public class CreateUserTests : IntegrationTestWithReset
         actual.ShouldSatisfyAllConditions(
             x => x.Id.Type.ToString().ShouldBe(ResourceTypes.User),
             x => x.Email.ShouldBe(expected.Email),
-            x => x.DisplayName.ShouldBe(expected.DisplayName)
+            x => x.Name.ShouldBe(expected.DisplayName)
         );
     }
 
@@ -88,7 +88,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
@@ -99,7 +99,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
             }
         );
 
@@ -128,7 +128,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = email,
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
             }
         );
         seedUserResponse.EnsureSuccessStatusCode();
@@ -139,7 +139,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = email,
                 DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
             }
         );
 
@@ -168,7 +168,7 @@ public class CreateUserTests : IntegrationTestWithReset
             {
                 Email = Faker.Internet.Email(),
                 DisplayName = Faker.Random.AlphaNumeric(User.DisplayNameMaxLength + 1),
-                Password = Faker.Random.AlphaNumeric(ValidationConstants.PasswordMinLength),
+                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
             }
         );
 

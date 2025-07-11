@@ -6,7 +6,7 @@ using Xunit;
 namespace HackathonManager.Tests.TestInfrastructure;
 
 [Collection(nameof(DatabaseTestCollection))]
-public abstract class DatabaseTest : TestBase
+public abstract class DatabaseTest : UnitTest
 {
     private readonly IDatabaseFixture _database;
 

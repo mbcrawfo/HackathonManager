@@ -12,7 +12,7 @@ public sealed class GetUserByIdValidator : Validator<GetUserByIdRequest>
 
         RuleFor(x => x.IfNoneMatch)
             .NotEmptyWithCode()
-            .MaximumLengthWithCode(ValidationConstants.ETagMaxLength)
+            .MaximumLengthWithCode(Constants.ETagMaxLength)
             .When(x => x.IfNoneMatch is not null);
     }
 }

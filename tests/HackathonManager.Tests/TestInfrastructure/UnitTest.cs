@@ -6,7 +6,7 @@ using Xunit;
 
 namespace HackathonManager.Tests.TestInfrastructure;
 
-public abstract class TestBase : IAsyncLifetime
+public abstract class UnitTest : IAsyncLifetime
 {
     protected Faker Faker { get; } = new();
 
