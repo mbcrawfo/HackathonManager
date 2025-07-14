@@ -44,44 +44,44 @@
       },
       "FastEndpoints": {
         "type": "Direct",
-        "requested": "[6.2.0, )",
-        "resolved": "6.2.0",
-        "contentHash": "KhWPR4sGhuj6/qBksmAIR60zQtVDYMR/HWSKqtZhDUN/gnhJpq9/9nCpKw7Cssq8rbw68AmVBFzLKWsfAe4dZQ==",
+        "requested": "[6.3.0-beta.12, )",
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "F8IYB2UhaxPHE67YHMGb6doxybUMDqACHoPFgtOP5qUCpivLN8bFUiCNPuAYGZDszOSAMq7ecWtzi2qiBda2Cw==",
         "dependencies": {
-          "FastEndpoints.Attributes": "6.2.0",
-          "FastEndpoints.Messaging.Core": "6.2.0",
+          "FastEndpoints.Attributes": "6.3.0-beta.12",
+          "FastEndpoints.Messaging.Core": "6.3.0-beta.12",
           "FluentValidation": "12.0.0"
         }
       },
       "FastEndpoints.AspVersioning": {
         "type": "Direct",
-        "requested": "[6.2.0, )",
-        "resolved": "6.2.0",
-        "contentHash": "AMDalj5uM5RfWKMp8yjKrD8qmMyGXNXWDmgP9CgXOYqVzvHFWuUwPXOy0nJzqWcQTNqc5AyMoGm092uT+72piA==",
+        "requested": "[6.3.0-beta.12, )",
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "u8E0RJuJlSLgwJj3bGvKfam9wQvtzYMB14kXVI7n20kyY5B7khTCEWf8kh68aBCKtmn5RvOUn3efvMGAw+vdKQ==",
         "dependencies": {
           "Asp.Versioning.Http": "8.1.0",
           "Asp.Versioning.Mvc.ApiExplorer": "8.1.0",
-          "FastEndpoints": "6.2.0",
+          "FastEndpoints": "6.3.0-beta.12",
           "NSwag.Generation.AspNetCore": "14.4.0"
         }
       },
       "FastEndpoints.Security": {
         "type": "Direct",
-        "requested": "[6.2.0, )",
-        "resolved": "6.2.0",
-        "contentHash": "N/77wAHa7YIWkdN8yHYQeuqcB8xEjf2fyCqFQcJ6rhw/bbzNz5Q5TVWKsBXw7An4ASTypPSGhIMwmSB4PXyr8Q==",
+        "requested": "[6.3.0-beta.12, )",
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "Jin6gKKdZo50pZ52LYnOTkn3ZLbcEN0kkD+hkOtOZfUHoz/Nx8BRj2lc6CEbV9aWRcwIQxNGFRfgeXdKnC1PaQ==",
         "dependencies": {
-          "FastEndpoints": "6.2.0",
+          "FastEndpoints": "6.3.0-beta.12",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.6"
         }
       },
       "FastEndpoints.Swagger": {
         "type": "Direct",
-        "requested": "[6.2.0, )",
-        "resolved": "6.2.0",
-        "contentHash": "Swb+vBx1y6y3pX3iQ2eBGnNeRNb7FtOW5stoGbwjMLVOSas05yp7lDQKPk6QIWTGt99JeNFwjJs3S+aoEst0qw==",
+        "requested": "[6.3.0-beta.12, )",
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "2KyvdbhmS5VFtedfc2TIs41pA1Qkd027rXkB1ytX6ErQUBiMoCV4f4LLUihdzAbEIc0PNKE4+WyyeWNSzTuwcg==",
         "dependencies": {
-          "FastEndpoints": "6.2.0",
+          "FastEndpoints": "6.3.0-beta.12",
           "NSwag.AspNetCore": "14.4.0"
         }
       },
@@ -497,16 +497,16 @@
       },
       "FastEndpoints.Attributes": {
         "type": "Transitive",
-        "resolved": "6.2.0",
-        "contentHash": "Z2tWmd7tA8cVuHl6WsHZVIhdI2Dy++SddEgswoefpoZjOFMtkORKIOYpGec/MyaMqQpCRm/zgWfXjFvZrm/Oag==",
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "uNkKpUWfQ53/C4eYL62LPsBXmL1TcjZ1k5HE3agzScgun6dvO1ecscyEIP418q7B+pnQ+QHQC7rNzInJAhYg2Q==",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "8.0.0"
         }
       },
       "FastEndpoints.Messaging.Core": {
         "type": "Transitive",
-        "resolved": "6.2.0",
-        "contentHash": "ycdbVd1IedyVFUpthcVa6NEJ4J1/JjEFHdfVEsBtO4Qts5IBQuqcirbyx7GoogCwqrgQapru5sZ/9Dns/cLPkA=="
+        "resolved": "6.3.0-beta.12",
+        "contentHash": "v40mgFNjhwreTNCxQLgdfpSnv2UCrmQa1yiRMWCdkjOXJjHpACP/3p5/po1Z3ucES0qX7GmESRrmdV94z7Kjdw=="
       },
       "Google.Protobuf": {
         "type": "Transitive",
