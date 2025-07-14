@@ -6,6 +6,8 @@ namespace HackathonManager.Services;
 
 public sealed class PasswordService
 {
+    public static int WorkFactor { get; set; } = 13;
+
     private readonly ILogger<PasswordService> _logger;
 
     public PasswordService(ILogger<PasswordService> logger)
@@ -16,7 +18,7 @@ public sealed class PasswordService
     public string HashPassword(string password)
     {
         var stopwatch = Stopwatch.StartNew();
-        var hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password, workFactor: 13);
+        var hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password, WorkFactor);
         _logger.LogTrace("Password hashing completed in {ElapsedMilliseconds} ms", stopwatch.Elapsed.TotalMilliseconds);
 
         return hash;
