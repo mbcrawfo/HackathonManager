@@ -20,11 +20,8 @@ using Sqids;
 namespace HackathonManager.Features.Users.GetUsers;
 
 [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don\'t access instance data should be static")]
-public sealed class GetUsersEndpoint(
-    HackathonDbContext _dbContext,
-    SqidsEncoder<uint> _uintEncoder,
-    SqidsEncoder<int> _intEncoder
-) : PaginatedEndpoint<GetUsersRequest, GetUsersResponseDto>
+public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder<uint> _encoder)
+    : PaginatedEndpoint<GetUsersRequest, GetUsersResponseDto>
 {
     /// <inheritdoc />
     public override void Configure()
@@ -60,9 +57,9 @@ public sealed class GetUsersEndpoint(
         var users = await query.Take(req.PageSize + 1).ToArrayAsync(ct);
         var etag = users.Take(req.PageSize).GenerateETag();
 
-        HttpContext.Response.Headers.ETag = new StringValues(_intEncoder.Encode(etag));
+        HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(etag));
         Response = new GetUsersResponseDto(
-            users.Take(req.PageSize).Select(u => u.ToDto(_uintEncoder)),
+            users.Take(req.PageSize).Select(u => u.ToDto(_encoder)),
             cursor is null ? null : PaginationCursor.Encode(cursor),
             CreateNextCursor(req, users)
         );

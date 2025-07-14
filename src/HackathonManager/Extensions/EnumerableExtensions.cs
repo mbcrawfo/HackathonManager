@@ -15,7 +15,7 @@ public static class EnumerableExtensions
     /// <param name="enumerable"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static int GenerateETag<T>(this IEnumerable<T> enumerable)
+    public static uint GenerateETag<T>(this IEnumerable<T> enumerable)
         where T : IRowVersion
     {
         var hash = new HashCode();
@@ -24,7 +24,7 @@ public static class EnumerableExtensions
             hash.Add(item.RowVersion);
         }
 
-        return hash.ToHashCode();
+        return (uint)hash.ToHashCode();
     }
 
     /// <summary>

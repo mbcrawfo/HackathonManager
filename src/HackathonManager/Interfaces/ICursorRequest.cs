@@ -21,7 +21,6 @@ public static class CursorRequestValidatorExtensions
     {
         validator
             .RuleFor(x => x.Cursor)
-            .NotEmptyWithCode()
             .MaximumLengthWithCode(ICursorRequest.CursorMaxLength)
             .When(x => x.Cursor is not null);
     }
