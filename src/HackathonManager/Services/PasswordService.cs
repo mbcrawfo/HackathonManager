@@ -1,24 +1,31 @@
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace HackathonManager.Services;
 
 public sealed class PasswordService
 {
-    public static int WorkFactor { get; set; } = 13;
-
     private readonly ILogger<PasswordService> _logger;
+    private readonly int _workFactor = 13;
 
-    public PasswordService(ILogger<PasswordService> logger)
+    public PasswordService(ILogger<PasswordService> logger, IConfiguration configuration)
     {
         _logger = logger;
+
+        var workFactorOverride = configuration.GetValue("BCryptWorkFactor_DoNotSet_ForTestingOnly", defaultValue: 0);
+        if (workFactorOverride is not 0)
+        {
+            _logger.LogWarning("BCrypt work factor set to {WorkFactor} via configuration", workFactorOverride);
+            _workFactor = workFactorOverride;
+        }
     }
 
     public string HashPassword(string password)
     {
         var stopwatch = Stopwatch.StartNew();
-        var hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password, WorkFactor);
+        var hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password, _workFactor);
         _logger.LogTrace("Password hashing completed in {ElapsedMilliseconds} ms", stopwatch.Elapsed.TotalMilliseconds);
 
         return hash;
