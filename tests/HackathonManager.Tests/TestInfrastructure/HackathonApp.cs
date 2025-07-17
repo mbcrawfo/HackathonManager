@@ -35,6 +35,9 @@ public sealed class HackathonApp(IMessageSink _messageSink) : WebApplicationFact
             Path.Join(AppDomain.CurrentDomain.BaseDirectory, "TestInfrastructure", "IntegrationTestContentRoot")
         );
 
+        // Set the minimum allowed work factor to improve test speed.
+        builder.UseSetting("BCryptWorkFactor_DoNotSet_ForTestingOnly", "4");
+
         builder.UseSetting(ConfigurationKeys.ConnectionStringKey, Database.ConnectionString);
 
         builder.ConfigureServices(services =>
