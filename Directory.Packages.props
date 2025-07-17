@@ -14,11 +14,11 @@
         <PackageVersion Include="Destructurama.Attributed" Version="5.1.0" />
         <PackageVersion Include="DotNetEnv" Version="3.1.1" />
         <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
-        <PackageVersion Include="FastEndpoints" Version="6.3.0-beta.12" />
-        <PackageVersion Include="FastEndpoints.AspVersioning" Version="6.3.0-beta.12" />
-        <PackageVersion Include="FastEndpoints.Security" Version="6.3.0-beta.12" />
-        <PackageVersion Include="FastEndpoints.Swagger" Version="6.3.0-beta.12" />
-        <PackageVersion Include="FastEndpoints.Testing" Version="6.3.0-beta.12" />
+        <PackageVersion Include="FastEndpoints" Version="6.3.0-beta.13" />
+        <PackageVersion Include="FastEndpoints.AspVersioning" Version="6.3.0-beta.13" />
+        <PackageVersion Include="FastEndpoints.Security" Version="6.3.0-beta.13" />
+        <PackageVersion Include="FastEndpoints.Swagger" Version="6.3.0-beta.13" />
+        <PackageVersion Include="FastEndpoints.Testing" Version="6.3.0-beta.13" />
         <PackageVersion Include="FastIDs.TypeId" Version="1.1.0" />
         <PackageVersion Include="FastIDs.TypeId.Serialization.SystemTextJson" Version="1.0.0" />
         <PackageVersion Include="FluentValidation" Version="12.0.0" />
