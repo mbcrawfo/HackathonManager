@@ -11,7 +11,6 @@ using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Persistence.Enums;
 using HackathonManager.Services;
-using Humanizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -85,13 +84,7 @@ public sealed class CreateUserEndpoint(
         {
             Logger.LogDebug(ex, "Unique constraint error on user creation");
 
-            var propertyName = (ex.GetPostgresException().ConstraintName ?? "") switch
-            {
-                var x when x.Contains("email") => nameof(CreateUserRequest.Email).Camelize(),
-                var x when x.Contains("display_name") => nameof(CreateUserRequest.DisplayName).Camelize(),
-                _ => throw new InvalidOperationException("Unexpected unique constraint error", ex),
-            };
-
+            var propertyName = ex.GetUniqueConstraintPropertyName<User>();
             return new ProblemDetails(
                 [
                     new ValidationFailure
