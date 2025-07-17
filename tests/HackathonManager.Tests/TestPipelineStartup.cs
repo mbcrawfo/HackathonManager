@@ -11,7 +11,7 @@ public sealed class TestPipelineStartup : ITestPipelineStartup
     public ValueTask StartAsync(IMessageSink diagnosticMessageSink)
     {
         // Reduced hashing significantly speeds up integration tests.
-        PasswordService.WorkFactor = 1;
+        PasswordService.WorkFactor = 4;
 
         return ValueTask.CompletedTask;
     }
