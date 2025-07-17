@@ -65,22 +65,6 @@ public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder
         );
     }
 
-    private IQueryable<User> ApplySearchFilter(IQueryable<User> query, GetUsersRequest? request)
-    {
-        if (request is not { Search: not null, Term.Length: > 0 })
-        {
-            return query;
-        }
-
-        var pattern = $"%{request.Term}%";
-        return request.Search switch
-        {
-            UserSearch.Email => query.Where(u => EF.Functions.ILike(u.Email, pattern)),
-            UserSearch.Name => query.Where(u => EF.Functions.ILike(u.DisplayName, pattern)),
-            _ => throw new UnexpectedEnumValueException<UserSearch>(request.Search),
-        };
-    }
-
     private IQueryable<User> ApplyCursor(IQueryable<User> query, GetUsersCursor? cursor)
     {
         if (cursor is null)
@@ -113,6 +97,22 @@ public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder
             UserSort.Name => query.Where(u => u.DisplayName.CompareTo(cursor.SortValue) > 0),
             UserSort.NameDesc => query.Where(u => u.DisplayName.CompareTo(cursor.SortValue) < 0),
             _ => throw new UnexpectedEnumValueException<UserSort>(cursor.Sort),
+        };
+    }
+
+    private IQueryable<User> ApplySearchFilter(IQueryable<User> query, GetUsersRequest? request)
+    {
+        if (request is not { Search: not null, Term.Length: > 0 })
+        {
+            return query;
+        }
+
+        var pattern = $"%{request.Term}%";
+        return request.Search switch
+        {
+            UserSearch.Email => query.Where(u => EF.Functions.ILike(u.Email, pattern)),
+            UserSearch.Name => query.Where(u => EF.Functions.ILike(u.DisplayName, pattern)),
+            _ => throw new UnexpectedEnumValueException<UserSearch>(request.Search),
         };
     }
 
