@@ -45,7 +45,15 @@ public class GetUserByIdTests : IntegrationTestWithReset
         // assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Headers.GetValues(HeaderNames.ETag).ShouldHaveSingleItem().ShouldBe(expectedETag);
-        actual.ShouldBe(expected);
+
+        actual.ShouldSatisfyAllConditions(
+            x => x.Id.ShouldBe(expected.Id),
+            // Avoids mismatches in timestamp precision between Postgres and NodaTime.
+            x => x.Created.ToUnixTimeMilliseconds().ShouldBe(expected.Created.ToUnixTimeMilliseconds()),
+            x => x.Email.ShouldBe(expected.Email),
+            x => x.Name.ShouldBe(expected.Name),
+            x => x.Version.ShouldBe(expected.Version)
+        );
     }
 
     [Fact]
