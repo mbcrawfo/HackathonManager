@@ -10,7 +10,6 @@ namespace HackathonManager.Utilities;
 
 public abstract class PaginatedEndpoint<TRequest, TResponse> : Endpoint<TRequest, TResponse>
     where TRequest : ICursorRequest
-    where TResponse : ICursorResponse
 {
     protected bool TryDecodeCursor<TCursor>(string? value, [NotNullWhen(true)] out TCursor? cursor)
         where TCursor : class

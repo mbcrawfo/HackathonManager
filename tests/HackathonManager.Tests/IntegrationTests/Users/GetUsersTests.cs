@@ -17,6 +17,7 @@ public class GetUsersTests : IntegrationTestWithReset
     public GetUsersTests(IntegrationTestWithResetFixture fixture)
         : base(fixture) { }
 
+    // 200 OK Tests
     [Fact]
     public async Task ShouldReturn200WithDefaultSort_WhenNoParametersProvided()
     {
@@ -287,5 +288,102 @@ public class GetUsersTests : IntegrationTestWithReset
 
         secondResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         secondResult.Users.Count().ShouldBeLessThanOrEqualTo(1);
+    }
+
+    [Fact]
+    public async Task ShouldReturn200WithNewETag_WhenIfNoneMatchHeaderDoesNotMatchETag()
+    {
+        // arrange
+        using var client = App.CreateClient();
+
+        // Create initial user
+        var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
+        );
+        createResponse.EnsureSuccessStatusCode();
+
+        // Get initial ETag
+        var (firstResponse, _) = await client.GETAsync<GetUsersEndpoint, GetUsersRequest, GetUsersResponseDto>(
+            new GetUsersRequest(Search: null, Term: null)
+        );
+        firstResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var initialETag = firstResponse.Headers.GetValues(HeaderNames.ETag).Single();
+
+        // Create another user to change the collection ETag
+        var createResponse2 = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
+        );
+        createResponse2.EnsureSuccessStatusCode();
+
+        // act - Request with old ETag in If-None-Match header
+        var (secondResponse, secondResult) = await client.GETAsync<GetUsersEndpoint, GetUsersRequest, GetUsersResponseDto>(
+            new GetUsersRequest(Search: null, Term: null, IfNoneMatch: initialETag)
+        );
+
+        // assert
+        secondResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var newETag = secondResponse.Headers.GetValues(HeaderNames.ETag).Single();
+        newETag.ShouldNotBe(initialETag);
+        secondResult.Users.Count().ShouldBe(2);
+    }
+
+    // 304 Not Modified Tests
+    [Fact]
+    public async Task ShouldReturn304_WhenIfNoneMatchHeaderMatchesETag()
+    {
+        // arrange
+        using var client = App.CreateClient();
+
+        // Create a user to ensure we have data
+        var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
+        );
+        createResponse.EnsureSuccessStatusCode();
+
+        // First request to get the ETag
+        var (firstResponse, _) = await client.GETAsync<GetUsersEndpoint, GetUsersRequest, GetUsersResponseDto>(
+            new GetUsersRequest(Search: null, Term: null)
+        );
+
+        firstResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var etag = firstResponse.Headers.GetValues(HeaderNames.ETag).Single();
+
+        // act - Second request with If-None-Match header
+        var secondResponse = await client.GETAsync<GetUsersEndpoint, GetUsersRequest>(
+            new GetUsersRequest(Search: null, Term: null, IfNoneMatch: etag)
+        );
+
+        // assert
+        secondResponse.StatusCode.ShouldBe(HttpStatusCode.NotModified);
+        secondResponse.Headers.ShouldNotContain(h => h.Key == HeaderNames.ETag);
+    }
+
+    // 422 Unprocessable Entity Tests
+    [Fact]
+    public async Task ShouldReturn422_WhenIfNoneMatchHeaderIsInvalid()
+    {
+        // arrange
+        using var client = App.CreateClient();
+        var invalidETag = "invalid-etag-value";
+
+        // act
+        var response = await client.GETAsync<GetUsersEndpoint, GetUsersRequest>(
+            new GetUsersRequest(Search: null, Term: null, IfNoneMatch: invalidETag)
+        );
+
+        // assert
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
 }
