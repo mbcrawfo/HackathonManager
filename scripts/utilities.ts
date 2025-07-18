@@ -1,13 +1,13 @@
 import { execSync } from "child_process";
 import net from "net";
 
-export const findAvailablePort = () => {
+export const findAvailablePort = (): Promise<number> => {
     return new Promise((resolve, reject) => {
         const server = net.createServer();
         server.unref();
         server.on("error", reject);
         server.listen(0, () => {
-            const { port } = server.address();
+            const { port } = server.address() as net.AddressInfo;
             server.close(() => {
                 resolve(port);
             });
@@ -15,7 +15,7 @@ export const findAvailablePort = () => {
     });
 };
 
-export const cleanupContainer = (containerId) => {
+export const cleanupContainer = (containerId: string): void => {
     try {
         console.log(`Cleaning up container ${containerId}...`);
         execSync(`docker stop ${containerId}`, { stdio: "ignore" });
@@ -25,4 +25,4 @@ export const cleanupContainer = (containerId) => {
     }
 };
 
-export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
