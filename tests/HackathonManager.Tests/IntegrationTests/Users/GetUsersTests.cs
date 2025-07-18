@@ -27,12 +27,11 @@ public class GetUsersTests : IntegrationTestWithReset
         foreach (var name in Faker.Random.Shuffle(expectedUserNames))
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = Faker.Internet.Email(),
-                    DisplayName = name,
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: Faker.Internet.Email(),
+                    DisplayName: name,
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }
@@ -72,12 +71,11 @@ public class GetUsersTests : IntegrationTestWithReset
         foreach (var user in Faker.Random.Shuffle(users))
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = user.Email,
-                    DisplayName = user.Name,
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: user.Email,
+                    DisplayName: user.Name,
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }
@@ -137,12 +135,11 @@ public class GetUsersTests : IntegrationTestWithReset
         foreach (var userData in users)
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = userData.Email,
-                    DisplayName = userData.Name,
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: userData.Email,
+                    DisplayName: userData.Name,
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }
@@ -176,12 +173,11 @@ public class GetUsersTests : IntegrationTestWithReset
         for (int i = 0; i < 3; i++)
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = $"user{i}@example.com",
-                    DisplayName = $"User {i}",
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: $"user{i}@example.com",
+                    DisplayName: $"User {i}",
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }
@@ -208,12 +204,11 @@ public class GetUsersTests : IntegrationTestWithReset
         foreach (var name in userNames)
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = $"{name.ToLower()}@example.com",
-                    DisplayName = name,
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: $"{name.ToLower()}@example.com",
+                    DisplayName: name,
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }
@@ -263,12 +258,11 @@ public class GetUsersTests : IntegrationTestWithReset
         foreach (var userData in users)
         {
             var createResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-                new CreateUserRequest
-                {
-                    Email = userData.Email,
-                    DisplayName = userData.Name,
-                    Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-                }
+                new CreateUserRequest(
+                    Email: userData.Email,
+                    DisplayName: userData.Name,
+                    Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+                )
             );
             createResponse.EnsureSuccessStatusCode();
         }

@@ -28,12 +28,11 @@ public class CreateUserTests : IntegrationTestWithReset
     public async Task ShouldReturn200AndCreateUser()
     {
         // arrange
-        var expected = new CreateUserRequest
-        {
-            Email = Faker.Internet.Email(),
-            DisplayName = Faker.Name.FullName(),
-            Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-        };
+        var expected = new CreateUserRequest(
+            Email: Faker.Internet.Email(),
+            DisplayName: Faker.Name.FullName(),
+            Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+        );
 
         using var client = App.CreateClient();
 
@@ -84,23 +83,21 @@ public class CreateUserTests : IntegrationTestWithReset
 
         var displayName = Faker.Name.FullName();
         var seedUserResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-            new CreateUserRequest
-            {
-                Email = Faker.Internet.Email(),
-                DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: displayName,
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
         var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
-            new CreateUserRequest
-            {
-                Email = Faker.Internet.Email(),
-                DisplayName = displayName,
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: displayName,
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
 
         // assert
@@ -124,23 +121,21 @@ public class CreateUserTests : IntegrationTestWithReset
 
         var email = Faker.Internet.Email();
         var seedUserResponse = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest>(
-            new CreateUserRequest
-            {
-                Email = email,
-                DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: email,
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
         seedUserResponse.EnsureSuccessStatusCode();
 
         // act
         var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
-            new CreateUserRequest
-            {
-                Email = email,
-                DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: email,
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
 
         // assert
@@ -164,12 +159,11 @@ public class CreateUserTests : IntegrationTestWithReset
 
         // act
         var (response, error) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, ProblemDetails>(
-            new CreateUserRequest
-            {
-                Email = Faker.Internet.Email(),
-                DisplayName = Faker.Random.AlphaNumeric(User.DisplayNameMaxLength + 1),
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Random.AlphaNumeric(User.DisplayNameMaxLength + 1),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
 
         // assert
