@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path, { join } from "path";
 
-import { cleanupContainer, findAvailablePort, sleep } from "./utilities.js";
+import { cleanupContainer, findAvailablePort, sleep } from "./utilities.ts";
 
 const postgresImage = "postgres:18beta1";
 const tblsImage = "k1low/tbls";
@@ -13,9 +13,9 @@ if (!fs.existsSync(databaseDocsPath)) {
     fs.mkdirSync(databaseDocsPath, { recursive: true });
 }
 
-const main = async () => {
+const main = async (): Promise<void> => {
     let error = false;
-    let containerId = null;
+    let containerId: string | null = null;
 
     try {
         const port = await findAvailablePort();
@@ -85,9 +85,9 @@ const main = async () => {
         execSync(tblsRunCommand.join(" "), { stdio: "inherit" });
 
         console.log("Database documentation generated successfully!");
-    } catch (error) {
+    } catch (err) {
         error = true;
-        console.error("Error:", error.message);
+        console.error("Error:", (err as Error).message);
     } finally {
         if (containerId) {
             cleanupContainer(containerId);
