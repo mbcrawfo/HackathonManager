@@ -1,4 +1,5 @@
 using FluentValidation;
+using HackathonManager.Interfaces;
 using Serilog.Events;
 
 namespace HackathonManager.Settings;

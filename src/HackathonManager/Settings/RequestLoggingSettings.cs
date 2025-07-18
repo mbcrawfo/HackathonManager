@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
+using HackathonManager.Interfaces;
 using JetBrains.Annotations;
 using Microsoft.Net.Http.Headers;
 using Serilog.Events;
