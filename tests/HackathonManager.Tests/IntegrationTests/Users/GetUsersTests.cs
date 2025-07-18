@@ -324,9 +324,11 @@ public class GetUsersTests : IntegrationTestWithReset
         createResponse2.EnsureSuccessStatusCode();
 
         // act - Request with old ETag in If-None-Match header
-        var (secondResponse, secondResult) = await client.GETAsync<GetUsersEndpoint, GetUsersRequest, GetUsersResponseDto>(
-            new GetUsersRequest(Search: null, Term: null, IfNoneMatch: initialETag)
-        );
+        var (secondResponse, secondResult) = await client.GETAsync<
+            GetUsersEndpoint,
+            GetUsersRequest,
+            GetUsersResponseDto
+        >(new GetUsersRequest(Search: null, Term: null, IfNoneMatch: initialETag));
 
         // assert
         secondResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
