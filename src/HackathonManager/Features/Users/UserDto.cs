@@ -27,7 +27,7 @@ namespace HackathonManager.Features.Users;
 [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
 public sealed record UserDto(TypeId Id, Instant Created, string Email, string Name, string Version);
 
-public static class UserDtoMapping
+public static class UserDtoMapper
 {
     public static UserDto ToDto(this User user, SqidsEncoder<uint> encoder) =>
         new(user.Id.Encode(), user.CreatedAt, user.Email, user.DisplayName, encoder.Encode(user.RowVersion));
