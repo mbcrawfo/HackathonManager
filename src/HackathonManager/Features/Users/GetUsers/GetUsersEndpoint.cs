@@ -11,9 +11,13 @@ using HackathonManager.Extensions;
 using HackathonManager.Persistence;
 using HackathonManager.Persistence.Entities;
 using HackathonManager.Utilities;
+using HackathonManager.Utilities.Results;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using NodaTime;
 using Sqids;
 
@@ -21,7 +25,7 @@ namespace HackathonManager.Features.Users.GetUsers;
 
 [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don\'t access instance data should be static")]
 public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder<uint> _encoder)
-    : PaginatedEndpoint<GetUsersRequest, GetUsersResponseDto>
+    : PaginatedEndpoint<GetUsersRequest, Results<Ok<GetUsersResponseDto>, NotModified>>
 {
     /// <inheritdoc />
     public override void Configure()
@@ -32,12 +36,22 @@ public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder
         Description(b =>
         {
             b.WithVersionSet(ApiTags.Users).HasApiVersion(1);
+            b.Produces(StatusCodes.Status304NotModified);
         });
     }
 
     /// <inheritdoc />
-    public override async Task HandleAsync(GetUsersRequest req, CancellationToken ct)
+    public override async Task<Results<Ok<GetUsersResponseDto>, NotModified>> ExecuteAsync(
+        GetUsersRequest req,
+        CancellationToken ct
+    )
     {
+        uint? requestETag = null;
+        if (req.IfNoneMatch is not null && !_encoder.DecodeAndValidate(req.IfNoneMatch, out requestETag))
+        {
+            this.ThrowInvalidETagError(HeaderNames.IfNoneMatch);
+        }
+
         if (TryDecodeCursor<GetUsersCursor>(req.Cursor, out var cursor))
         {
             req = req with
@@ -57,12 +71,19 @@ public sealed class GetUsersEndpoint(HackathonDbContext _dbContext, SqidsEncoder
         var users = await query.Take(req.PageSize + 1).ToArrayAsync(ct);
         var etag = users.Take(req.PageSize).GenerateETag();
 
+        if (requestETag == etag)
+        {
+            return NotModified.Instance;
+        }
+
         HttpContext.Response.Headers.ETag = new StringValues(_encoder.Encode(etag));
-        Response = new GetUsersResponseDto(
+        var response = new GetUsersResponseDto(
             users.Take(req.PageSize).Select(u => u.ToDto(_encoder)),
             cursor is null ? null : PaginationCursor.Encode(cursor),
             CreateNextCursor(req, users)
         );
+
+        return TypedResults.Ok(response);
     }
 
     private IQueryable<User> ApplyCursor(IQueryable<User> query, GetUsersCursor? cursor)

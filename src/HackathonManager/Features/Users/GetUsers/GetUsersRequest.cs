@@ -24,5 +24,6 @@ public sealed record GetUsersRequest(
     [property: QueryParam] string? Term,
     [property: QueryParam] UserSort Sort = UserSort.Name,
     [property: QueryParam] int PageSize = Constants.PageSizeDefault,
-    [property: QueryParam] string? Cursor = null
+    [property: QueryParam] string? Cursor = null,
+    [property: FromHeader("If-None-Match", isRequired: false)] string? IfNoneMatch = null
 ) : ICursorRequest;
