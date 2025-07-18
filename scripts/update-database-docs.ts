@@ -1,3 +1,6 @@
+// Automates the generation of database documentation by applying migrations to a temporary Postgres container, then
+// using tbls running in a Docker container to generate the documentation.
+
 import { execSync } from "child_process";
 import fs from "fs";
 import path, { join } from "path";

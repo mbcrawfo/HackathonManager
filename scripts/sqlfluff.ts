@@ -1,3 +1,5 @@
+// Helper script to run SQLFluff in a Docker container.
+
 import { spawn } from "child_process";
 
 let slqfluffArgs: string[] = [];

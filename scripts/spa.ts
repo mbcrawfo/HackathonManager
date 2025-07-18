@@ -1,3 +1,5 @@
+// Helper script to run commands in the hackathon SPA workspace.
+
 import { spawn } from "child_process";
 import { readFileSync } from "fs";
 import { join } from "path";
