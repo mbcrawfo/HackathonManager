@@ -26,12 +26,11 @@ public class GetUserByIdTests : IntegrationTestWithReset
         using var client = App.CreateClient();
 
         var (seedResponse, expected) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
-            new CreateUserRequest
-            {
-                Email = Faker.Internet.Email(),
-                DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
         seedResponse.EnsureSuccessStatusCode();
 
@@ -39,7 +38,7 @@ public class GetUserByIdTests : IntegrationTestWithReset
 
         // act
         var (response, actual) = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest, UserDto>(
-            new GetUserByIdRequest { Id = expected.Id }
+            new GetUserByIdRequest(Id: expected.Id, IfNoneMatch: null)
         );
 
         // assert
@@ -63,12 +62,11 @@ public class GetUserByIdTests : IntegrationTestWithReset
         using var client = App.CreateClient();
 
         var (seedResponse, expected) = await client.POSTAsync<CreateUserEndpoint, CreateUserRequest, UserDto>(
-            new CreateUserRequest
-            {
-                Email = Faker.Internet.Email(),
-                DisplayName = Faker.Name.FullName(),
-                Password = Faker.Random.AlphaNumeric(Constants.PasswordMinLength),
-            }
+            new CreateUserRequest(
+                Email: Faker.Internet.Email(),
+                DisplayName: Faker.Name.FullName(),
+                Password: Faker.Random.AlphaNumeric(Constants.PasswordMinLength)
+            )
         );
         seedResponse.EnsureSuccessStatusCode();
 
@@ -76,7 +74,7 @@ public class GetUserByIdTests : IntegrationTestWithReset
 
         // act
         var response = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
-            new GetUserByIdRequest { Id = expected.Id, IfNoneMatch = etag }
+            new GetUserByIdRequest(Id: expected.Id, IfNoneMatch: etag)
         );
 
         // assert
@@ -91,7 +89,7 @@ public class GetUserByIdTests : IntegrationTestWithReset
 
         // act
         var response = await client.GETAsync<GetUserByIdEndpoint, GetUserByIdRequest>(
-            new GetUserByIdRequest { Id = TypeId.New(ResourceTypes.User).Encode() }
+            new GetUserByIdRequest(Id: TypeId.New(ResourceTypes.User).Encode(), IfNoneMatch: null)
         );
 
         // assert
