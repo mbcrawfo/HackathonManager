@@ -1,3 +1,4 @@
+using HackathonManager.Interfaces;
 using HackathonManager.Settings;
 using HackathonManager.Utilities;
 using Microsoft.Extensions.DependencyInjection;

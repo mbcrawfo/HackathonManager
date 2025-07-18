@@ -1,4 +1,5 @@
 using FluentValidation;
+using HackathonManager.Interfaces;
 
 namespace HackathonManager.Settings;
 

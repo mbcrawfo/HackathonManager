@@ -1,4 +1,4 @@
-namespace HackathonManager.Settings;
+namespace HackathonManager.Interfaces;
 
 /// <summary>
 ///     Marker interface to allow settings classes to be used with common helper methods.
