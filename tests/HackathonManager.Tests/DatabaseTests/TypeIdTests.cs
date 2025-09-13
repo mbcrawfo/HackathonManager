@@ -5,6 +5,7 @@ using FastIDs.TypeId;
 using HackathonManager.Tests.TestInfrastructure;
 using Npgsql;
 using Shouldly;
+using UUIDNext;
 using Xunit;
 
 namespace HackathonManager.Tests.DatabaseTests;
@@ -84,7 +85,7 @@ public class TypeIdTests : DatabaseTest
     public async Task UuidTypeIdEqualityOperator_ShouldReturnFalse_WhenOperandsAreNotEqual()
     {
         // arrange
-        var uuid = Guid.CreateVersion7();
+        var uuid = Uuid.NewSequential();
         var typeId = TypeId.New("test");
 
         // act

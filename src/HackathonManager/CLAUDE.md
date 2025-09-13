@@ -26,7 +26,8 @@ All requests must include input validation using FluentValidation.
 - Wrappers for built-in FluentValidation rules, as well as custom rules, are defined in `Extensions/RuleBuilderExtensions.cs`.
 - Always use the `...WithCode()` extension methods instead of built-in rules (add new wrappers as needed).
 
-The API uses TypeId's for resource id values.  A TypeId consists of a type identifier prefix and base32 suffix that encodes a uuid.  Example: `user_2x4y6z8a0b1c2d3e4f5g6h7j8k`.
+The API uses TypeId's for resource id values.  A TypeId consists of a type identifier prefix and base32 suffix that encodes a version 7 uuid.  Example: `user_2x4y6z8a0b1c2d3e4f5g6h7j8k`.
+- When creating a TypeId, use `Uuid.NewSequential()` from the `UUIDNext` package to generate the uuidv7 value.
 - Type identifiers are defined in `ResourceTypes.cs`, along with value converters for the id types.
 - API request and response models use the `FastIDs.TypeId.TypeId` type for id properties.
 - Database entities use the `FastIDs.TypeId.TypeIdDecoded` type for id properties.  The underlying database column is always a uuid, so the property's EF type configuration must use a value converter from `ResourceTypes`.
