@@ -2524,7 +2524,8 @@
           "Serilog.Sinks.Console": "[6.0.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
           "Serilog.Sinks.OpenTelemetry": "[4.2.0, )",
-          "Sqids": "[3.1.0, )"
+          "Sqids": "[3.1.0, )",
+          "UUIDNext": "[4.2.0, )"
         }
       },
       "hackathonmanager.migrator": {
@@ -2996,6 +2997,12 @@
         "requested": "[3.1.0, )",
         "resolved": "3.1.0",
         "contentHash": "Fi3/WN1s/bszAIX888hcSKYnDfdPuJD4TijskGmOxGRnA2hvngWb9IbBJPizxaOi7VpD0Nn8NHJh7i1ks/OyPw=="
+      },
+      "UUIDNext": {
+        "type": "CentralTransitive",
+        "requested": "[4.2.0, )",
+        "resolved": "4.2.0",
+        "contentHash": "1gev4skcDdEaz80oZKY19nZ+yvqbXvOZG/FaDMMk4GsXLb2HiAiTsWitEAU1DX4mdsK3lAFhiIJgds8/PpFAmA=="
       }
     }
   }

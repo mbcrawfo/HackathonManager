@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -20,6 +19,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using NodaTime;
 using Sqids;
+using UUIDNext;
 
 namespace HackathonManager.Features.Users.CreateUser;
 
@@ -58,7 +58,7 @@ public sealed class CreateUserEndpoint(
         var now = _clock.GetCurrentInstant();
         var user = new User
         {
-            Id = TypeIdDecoded.FromUuidV7(ResourceTypes.User, Guid.CreateVersion7(now.ToDateTimeOffset())),
+            Id = TypeIdDecoded.FromUuidV7(ResourceTypes.User, Uuid.NewSequential()),
             CreatedAt = now,
             Email = req.Email,
             DisplayName = req.DisplayName,
