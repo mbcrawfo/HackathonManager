@@ -7,7 +7,7 @@ import path, { join } from "path";
 
 import { cleanupContainer, findAvailablePort, sleep } from "./utilities.ts";
 
-const postgresImage = "postgres:18beta1";
+const postgresImage = "postgres:18.2";
 const tblsImage = "k1low/tbls";
 const databaseDocsPath = path.join(process.cwd(), "docs", "database");
 

@@ -61,7 +61,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Preload docker images for tests
-        run: docker pull postgres:18beta1
+        run: docker pull postgres:18.2
 
       - name: Run Tests
         run: >-
