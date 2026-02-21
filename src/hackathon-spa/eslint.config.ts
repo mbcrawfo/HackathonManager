@@ -2,13 +2,13 @@ import { recommended as eslintCommentsRecommended } from "@eslint-community/esli
 import eslintReact from "@eslint-react/eslint-plugin";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
-import importXPlugin from "eslint-plugin-import-x";
+import { flatConfigs as importXConfigs } from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import perfectionist from "eslint-plugin-perfectionist";
+import { configs as perfectionistConfigs } from "eslint-plugin-perfectionist";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefreshPlugin from "eslint-plugin-react-refresh";
-import regexp from "eslint-plugin-regexp";
+import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import testingLibrary from "eslint-plugin-testing-library";
 import unicorn from "eslint-plugin-unicorn";
 import { globalIgnores } from "eslint/config";
@@ -30,8 +30,8 @@ export default tseslint.config(
 
     jsxA11y.flatConfigs.recommended,
 
-    importXPlugin.flatConfigs.recommended,
-    importXPlugin.flatConfigs.typescript,
+    importXConfigs.recommended,
+    importXConfigs.typescript,
     { rules: { "import-x/order": "off" } },
 
     eslintCommentsRecommended,
@@ -47,10 +47,10 @@ export default tseslint.config(
         },
     },
 
-    perfectionist.configs["recommended-natural"],
+    perfectionistConfigs["recommended-natural"],
     { rules: { "perfectionist/sort-imports": "off" } },
 
-    regexp.configs.recommended,
+    regexpConfigs.recommended,
 
     {
         plugins: { "react-refresh": reactRefreshPlugin },
