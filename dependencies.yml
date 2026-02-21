@@ -1,7 +1,7 @@
 services:
   database:
     container_name: hackathon-database
-    image: postgres:18beta1
+    image: postgres:18.2
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
