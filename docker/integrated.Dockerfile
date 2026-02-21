@@ -1,6 +1,6 @@
 # Builds an integrated HackathonManager image with the SPA built into the .NET app.
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-dotnet
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-dotnet
 WORKDIR /build
 
 # See https://github.com/NuGet/Home/issues/13062
@@ -28,7 +28,7 @@ RUN npm ci
 COPY src/hackathon-spa ./src/hackathon-spa
 RUN npm run build --workspace=src/hackathon-spa -- --outDir /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
 
 WORKDIR /app
 COPY --from=build-dotnet /app/publish .
