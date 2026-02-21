@@ -3,7 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageVersion Include="BCrypt.Net-Next" Version="4.1.0" />
         <PackageVersion Include="Bogus" Version="35.6.5" />
         <PackageVersion Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
