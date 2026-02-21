@@ -6,7 +6,7 @@
 
 You can run the app and explore it locally using docker compose.  Run `docker compose up -d`, and after all containers have been pulled/built and are running, access the app at http://localhost:5000.
 
-This [default configuration](./compose.yml) uses the .Net web application to serve the Vue SPA files in a single container.  An [alternate configuration](./compose-separate.yml) is provided that simulates hosting the SPA separately from the .Net app, with a reverse proxy that presents the two as a single web app.  You can run this configuration with `docker compose -f compose-separate.yml up -d`.
+This [default configuration](./compose.yml) uses the .Net web application to serve the React SPA files in a single container.  An [alternate configuration](./compose-separate.yml) is provided that simulates hosting the SPA separately from the .Net app, with a reverse proxy that presents the two as a single web app.  You can run this configuration with `docker compose -f compose-separate.yml up -d`.
 
 ### Development
 
