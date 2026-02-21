@@ -1,6 +1,7 @@
 import eslintReact from "@eslint-react/eslint-plugin";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
+import importX from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -21,6 +22,10 @@ export default tseslint.config(
     eslintReact.configs["recommended-typescript"],
 
     jsxA11y.flatConfigs.recommended,
+
+    importX.flatConfigs.recommended,
+    importX.flatConfigs.typescript,
+    { rules: { "import-x/order": "off" } },
 
     {
         plugins: { "react-refresh": reactRefresh },
