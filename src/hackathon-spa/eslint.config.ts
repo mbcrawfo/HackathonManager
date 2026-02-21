@@ -1,6 +1,7 @@
 import eslintReact from "@eslint-react/eslint-plugin";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactRefresh from "eslint-plugin-react-refresh";
 import { globalIgnores } from "eslint/config";
@@ -17,6 +18,8 @@ export default tseslint.config(
     ...tseslint.configs.recommended,
 
     eslintReact.configs["recommended-typescript"],
+
+    jsxA11y.flatConfigs.recommended,
 
     {
         plugins: { "react-refresh": reactRefresh },
