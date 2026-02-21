@@ -4,6 +4,7 @@ import prettierConfig from "eslint-config-prettier";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactRefresh from "eslint-plugin-react-refresh";
+import testingLibrary from "eslint-plugin-testing-library";
 import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
@@ -30,6 +31,11 @@ export default tseslint.config(
 
     {
         ...pluginVitest.configs.recommended,
+        files: ["src/**/__tests__/*"],
+    },
+
+    {
+        ...testingLibrary.configs["flat/react"],
         files: ["src/**/__tests__/*"],
     },
 
