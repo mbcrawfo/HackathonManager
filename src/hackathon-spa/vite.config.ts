@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, ServerOptions, UserConfig } from "vite";
 
-const isValidPort = (port: number) => !isNaN(port) && port > 0 && port <= 65535;
+const isValidPort = (port: number) => !Number.isNaN(port) && port > 0 && port <= 65_535;
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
         plugins: [react()],
         resolve: {
             alias: {
-                "@": fileURLToPath(new URL("./src", import.meta.url)),
+                "@": fileURLToPath(new URL("src", import.meta.url)),
             },
         },
     };
@@ -21,12 +21,12 @@ export default defineConfig(({ command, mode }) => {
         return baseConfig;
     }
 
-    const port = parseInt(process.env.VITE_PORT ?? "", 10);
+    const port = Number.parseInt(process.env.VITE_PORT ?? "", 10);
     if (!isValidPort(port)) {
         throw new Error(`Invalid VITE_PORT: ${process.env.VITE_PORT}`);
     }
 
-    const apiPort = parseInt(process.env.VITE_API_PORT ?? "", 10);
+    const apiPort = Number.parseInt(process.env.VITE_API_PORT ?? "", 10);
     if (!isValidPort(apiPort)) {
         throw new Error(`Invalid VITE_API_PORT: ${process.env.VITE_API_PORT}`);
     }
