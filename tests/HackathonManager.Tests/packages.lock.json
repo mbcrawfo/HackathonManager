@@ -157,23 +157,23 @@
       },
       "Testcontainers": {
         "type": "Direct",
-        "requested": "[4.6.0, )",
-        "resolved": "4.6.0",
-        "contentHash": "JFGPwuEqVuY3qJiGuxR+2J+E+dGc+1TgbBooB1346zUFKJqH6zWeSCXju5Siwek3ExOVRES4AbECXoaYt9jkXA==",
+        "requested": "[4.10.0, )",
+        "resolved": "4.10.0",
+        "contentHash": "a7tH+s9IRME6QEeMRgl/mTqQyudgtGNJmJRPn1+LwW8w/2L11cJzRJd7Io0QoSrP+i6lAOETX2SRY7cLbElcdQ==",
         "dependencies": {
-          "Docker.DotNet.Enhanced": "3.128.3",
-          "Docker.DotNet.Enhanced.X509": "3.128.3",
-          "SSH.NET": "2024.2.0",
+          "Docker.DotNet.Enhanced": "3.131.1",
+          "Docker.DotNet.Enhanced.X509": "3.131.1",
+          "SSH.NET": "2025.1.0",
           "SharpZipLib": "1.4.2"
         }
       },
       "Testcontainers.PostgreSql": {
         "type": "Direct",
-        "requested": "[4.6.0, )",
-        "resolved": "4.6.0",
-        "contentHash": "JAqPYOVtIE7GJ3Mv3K6jR72Na76KSwf3BLogCGZIeOJ+4tm7As91MDH3mzCIDxNoK5I+FJZTm+iaONUTu7N45w==",
+        "requested": "[4.10.0, )",
+        "resolved": "4.10.0",
+        "contentHash": "TP7j3N014O9MONT21lqZPzlVuP1LJYhkRKYZPbRdHl3VN+4RPk5Jt799WvLfxDsOFLVNibNO3B7tP1vcYQmXHA==",
         "dependencies": {
-          "Testcontainers": "4.6.0"
+          "Testcontainers": "4.10.0"
         }
       },
       "xunit.analyzers": {
@@ -247,8 +247,8 @@
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
-        "resolved": "2.4.0",
-        "contentHash": "SwXsAV3sMvAU/Nn31pbjhWurYSjJ+/giI/0n6tCrYoupEK34iIHCuk3STAd9fx8yudM85KkLSVdn951vTng/vQ=="
+        "resolved": "2.6.2",
+        "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -271,15 +271,15 @@
       },
       "Docker.DotNet.Enhanced": {
         "type": "Transitive",
-        "resolved": "3.128.3",
-        "contentHash": "yOiBJfGltxjMTPBRVPt2Yeiqy2rLNQSf5x0U57FgipbsGnCXSm1a04UHi3h2QtABJSpTSHoBw+LPqA6yN9CGFg=="
+        "resolved": "3.131.1",
+        "contentHash": "hGLHCNUsQbT2Ab/HUznRnNqYZQs40zInXa3eLwYjeNyfUYbw1pqqDGqcOLl5uGepS8IuigEYakEdAcVT/2ezYg=="
       },
       "Docker.DotNet.Enhanced.X509": {
         "type": "Transitive",
-        "resolved": "3.128.3",
-        "contentHash": "U6G7H+vX0Htk86Fd1xS5i7iRGd0C33vx61sLH8gI9uzxqQJRfeYCbuzQOOp3J7m4zVZ2mP6x9gB9onspgP0QCg==",
+        "resolved": "3.131.1",
+        "contentHash": "8FU7zmttFQzp0xb0EPupxQ0nGtC2cTpukgh3jMxMT8luj5TSDyzIKTnroDpXCjpg9P2fV+6JIvC+IetsMEfyBA==",
         "dependencies": {
-          "Docker.DotNet.Enhanced": "3.128.3"
+          "Docker.DotNet.Enhanced": "3.131.1"
         }
       },
       "EmptyFiles": {
@@ -1100,10 +1100,10 @@
       },
       "SSH.NET": {
         "type": "Transitive",
-        "resolved": "2024.2.0",
-        "contentHash": "9r+4UF2P51lTztpd+H7SJywk7WgmlWB//Cm2o96c6uGVZU5r58ys2/cD9pCgTk0zCdSkfflWL1WtqQ9I4IVO9Q==",
+        "resolved": "2025.1.0",
+        "contentHash": "jrnbtf0ItVaXAe6jE8X/kSLa6uC+0C+7W1vepcnRQB/rD88qy4IxG7Lf1FIbWmkoc4iVXv0pKrz+Wc6J4ngmHw==",
         "dependencies": {
-          "BouncyCastle.Cryptography": "2.4.0"
+          "BouncyCastle.Cryptography": "2.6.2"
         }
       },
       "System.CodeDom": {

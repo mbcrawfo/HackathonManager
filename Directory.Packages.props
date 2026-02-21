@@ -71,8 +71,8 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageVersion>
         <PackageVersion Include="Sqids" Version="3.1.0" />
-        <PackageVersion Include="Testcontainers" Version="4.6.0" />
-        <PackageVersion Include="Testcontainers.PostgreSql" Version="4.6.0" />
+        <PackageVersion Include="Testcontainers" Version="4.10.0" />
+        <PackageVersion Include="Testcontainers.PostgreSql" Version="4.10.0" />
         <PackageVersion Include="UUIDNext" Version="4.2.0" />
         <PackageVersion Include="xunit.analyzers" Version="1.27.0">
             <PrivateAssets>all</PrivateAssets>
