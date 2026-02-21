@@ -7,7 +7,7 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gtg": "run-p format:check 'spa lint:check' 'spa type-check'",
+    "gtg": "run-p format:check 'spa lint:check' 'spa check'",
     "spa": "node scripts/spa.ts",
     "sqlfluff": "node scripts/sqlfluff.ts",
     "update-database-docs": "node scripts/update-database-docs.ts"
