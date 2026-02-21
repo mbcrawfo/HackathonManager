@@ -10,55 +10,40 @@ on:
 
 permissions:
   checks: write
+  pull-requests: write
 
 jobs:
-  backend-check-formatting:
-    runs-on: "ubuntu-latest"
+  backend-ci:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
+      # Checkout
       - name: Clone the repo
         uses: actions/checkout@v6
 
-      - uses: ./.github/actions/dotnet-setup
+      # Inlined dotnet-setup
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/packages.lock.json"
 
+      - name: Restore NuGet packages
+        run: dotnet restore --locked-mode
+
+      # Formatting
       - name: Restore tools
         run: dotnet tool restore
 
-      - name: Run CSharpier
+      - name: Check formatting with CSharpier
         run: dotnet csharpier check .
 
-  backend-sql-lint:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: "npm"
-
-      - name: Run SqlFluff
-        run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
-
-      - name: Annotate Pull Request
-        if: github.workflow.event.name == 'pull_request'
-        uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5  # v0.5.0
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          title: SQL Lint Results
-          input: ./sql-lint.json
-
-  backend-build-test:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
-
-      - uses: ./.github/actions/dotnet-setup
-
+      # Build & Test
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --no-restore
 
       - name: Preload docker images for tests
         run: docker pull postgres:18.2
@@ -78,6 +63,27 @@ jobs:
           --results-directory test-results
           --collect "XPlat Code Coverage" -- RunConfiguration.CollectSourceInformation=true
 
+      # Coverage reporting
+      - name: Generate Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e  # 5.5.1
+        with:
+          reports: "test-results/**/*.cobertura.xml"
+          targetdir: coverage-report
+          reporttypes: "HtmlSummary;Cobertura;MarkdownSummary;MarkdownSummaryGithub"
+          verbosity: "Info"
+          title: "Code Coverage"
+          tag: "${{ github.run_number }}_${{ github.run_id }}"
+
+      - name: Add Coverage to Step Summary
+        run: cat coverage-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment Coverage on PR
+        if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file coverage-report/SummaryGithub.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Artifacts
       - name: Upload test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6
@@ -106,6 +112,29 @@ jobs:
         with:
           name: dotnet-build-artifacts
           path: ./artifacts/**
+
+  backend-sql-lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
+      - name: Run SqlFluff
+        run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
+
+      - name: Annotate Pull Request
+        if: github.workflow.event.name == 'pull_request'
+        uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5  # v0.5.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          title: SQL Lint Results
+          input: ./sql-lint.json
 
   frontend-check-formatting:
     runs-on: "ubuntu-latest"
