@@ -65,7 +65,7 @@ jobs:
 
       # Coverage reporting
       - name: Generate Coverage Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e  # 5.5.1
+        uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e # 5.5.1
         with:
           reports: "test-results/**/*.cobertura.xml"
           targetdir: coverage-report
@@ -79,7 +79,7 @@ jobs:
 
       - name: Comment Coverage on PR
         if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728  # v2.9.1
+        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728 # v2.9.1
         with:
           header: dotnet-coverage
           path: coverage-report/SummaryGithub.md
@@ -134,83 +134,66 @@ jobs:
 
       - name: Annotate Pull Request
         if: github.event_name == 'pull_request'
-        uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5  # v0.5.0
+        uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5 # v0.5.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: SQL Lint Results
           input: ./sql-lint.json
 
-  frontend-check-formatting:
-    runs-on: "ubuntu-latest"
-    defaults:
-      run:
-        working-directory: ./src/hackathon-spa
+  frontend-ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Clone the repo
         uses: actions/checkout@v6
 
-      - name: Run prettier
-        uses: ./.github/actions/hackathon-spa-task
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          task: format:check
+          node-version-file: .nvmrc
+          cache: "npm"
 
-  frontend-lint:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Run ESLint
-        uses: ./.github/actions/hackathon-spa-task
-        with:
-          task: lint:check
+      - name: Check formatting
+        run: npm run format:check
 
-  frontend-type-check:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
+      - name: Lint
+        run: npm run spa lint:check
 
-      - name: Run type checking
-        uses: ./.github/actions/hackathon-spa-task
-        with:
-          task: type-check
+      - name: Type check
+        run: npm run spa check
 
-  frontend-build:
-    needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
+      - name: Build
+        run: npm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
 
-      - name: Build the frontend
-        uses: ./.github/actions/hackathon-spa-task
-        with:
-          task: build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: spa-build-artifacts
-          path: ./artifacts/**
-
-  frontend-unit-tests:
-    needs: [frontend-check-formatting, frontend-lint, frontend-type-check]
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
-
-      - name: Run unit tests
-        uses: ./.github/actions/hackathon-spa-task
-        with:
-          task: test:unit -- --coverage
+      - name: Run tests with coverage
+        run: npm run spa test:coverage
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
         with:
           name: spa-test-results
           path: |
             ./src/hackathon-spa/test-results/
             ./src/hackathon-spa/coverage/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: spa-build-artifacts
+          path: ./artifacts/**
+
+      - name: Report coverage
+        if: github.event_name == 'pull_request' && always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: "SPA Coverage"
+          vite-config-path: src/hackathon-spa/vite.config.ts
+          json-summary-path: src/hackathon-spa/coverage/coverage-summary.json
+          json-final-path: src/hackathon-spa/coverage/coverage-final.json
+          file-coverage-mode: "changes"

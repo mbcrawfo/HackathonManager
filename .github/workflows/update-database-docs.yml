@@ -23,7 +23,7 @@ jobs:
 
       - name: Get changed files
         id: check-file-changes
-        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62  # v47
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
         with:
           files: |
             **/*.sql
@@ -45,7 +45,7 @@ jobs:
       - name: Commit and push changes
         id: commit-changes
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9  # v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
         with:
           commit_message: "[Generated] Update database docs"
           file_pattern: "docs/database/**"

@@ -8,8 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
-    "type-check": "vue-tsc --build",
+    "check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "lint:check": "eslint ."
   },

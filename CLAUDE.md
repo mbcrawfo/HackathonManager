@@ -106,6 +106,6 @@ After modifying code in the hackathon-spa project:
 - Use ESLint to check linting.
   - `npm run spa lint`: run ESLint and automatically apply fixes
   - `npm run spa lint:check`: run ESLint to check linting
-- Run `npm run spa type-check` to run the Typescript compiler and validate type usage.
+- Run `npm run spa check` to run the Typescript compiler and validate type usage.
 
 
