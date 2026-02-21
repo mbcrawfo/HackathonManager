@@ -30,11 +30,10 @@ jobs:
       - name: SPA Test Results
         uses: dorny/test-reporter@bdab7eb6dfb6be17ac3d72352f67e559a72c8db1  # v2
         with:
-          artifact: spa-test-results
           name: SPA Unit Tests
           report-title: SPA Unit Tests
           badge-title: SPA Unit Tests
-          path: "test-results/*.xml"
+          path: "src/hackathon-spa/test-results/*.xml"
           reporter: jest-junit
 
       - name: Report SPA Coverage
@@ -42,7 +41,7 @@ jobs:
         with:
           name: "SPA Coverage"
           vite-config-path: src/hackathon-spa/vite.config.ts
-          json-summary-path: spa-test-results/coverage/coverage-summary.json
-          json-final-path: spa-test-results/coverage/coverage-final.json
+          json-summary-path: src/hackathon-spa/coverage/coverage-summary.json
+          json-final-path: src/hackathon-spa/coverage/coverage-final.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pr-number: ${{ github.event.workflow_run.pull_requests[0].number }}

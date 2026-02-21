@@ -79,9 +79,10 @@ jobs:
 
       - name: Comment Coverage on PR
         if: github.event_name == 'pull_request'
-        run: gh pr comment ${{ github.event.pull_request.number }} --body-file coverage-report/SummaryGithub.md
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728  # v2.9.1
+        with:
+          header: dotnet-coverage
+          path: coverage-report/SummaryGithub.md
 
       # Artifacts
       - name: Upload test results
@@ -125,11 +126,14 @@ jobs:
           node-version-file: .nvmrc
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run SqlFluff
         run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
 
       - name: Annotate Pull Request
-        if: github.workflow.event.name == 'pull_request'
+        if: github.event_name == 'pull_request'
         uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5  # v0.5.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
