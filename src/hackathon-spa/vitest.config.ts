@@ -18,16 +18,16 @@ const vitestConfig = (env: ConfigEnv) => {
         viteConfig(env),
         defineConfig({
             test: {
-                environment: "jsdom",
-                exclude: [...configDefaults.exclude, "e2e/**"],
-                root: fileURLToPath(new URL("./", import.meta.url)),
-                setupFiles: ["./src/setup-tests.ts"],
-                reporters,
-                outputFile: "test-results/unit-tests.xml",
                 coverage: {
                     reporter: coverageReporters,
                     reportOnFailure: true,
                 },
+                environment: "jsdom",
+                exclude: [...configDefaults.exclude, "e2e/**"],
+                outputFile: "test-results/unit-tests.xml",
+                reporters,
+                root: fileURLToPath(new URL("./", import.meta.url)),
+                setupFiles: ["./src/setup-tests.ts"],
             },
         }),
     );

@@ -31,7 +31,7 @@ export default defineConfig(({ command, mode }) => {
         throw new Error(`Invalid VITE_API_PORT: ${process.env.VITE_API_PORT}`);
     }
 
-    const commonOptions: Pick<ServerOptions, "port" | "https" | "proxy"> = {
+    const commonOptions: Pick<ServerOptions, "https" | "port" | "proxy"> = {
         port,
         proxy: {
             "/api": `http://localhost:${apiPort}`,
@@ -40,7 +40,7 @@ export default defineConfig(({ command, mode }) => {
 
     return {
         ...baseConfig,
-        server: { ...commonOptions },
         preview: { ...commonOptions },
+        server: { ...commonOptions },
     };
 });

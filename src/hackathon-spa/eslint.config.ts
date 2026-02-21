@@ -4,6 +4,7 @@ import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
 import importX from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import perfectionist from "eslint-plugin-perfectionist";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactRefresh from "eslint-plugin-react-refresh";
 import testingLibrary from "eslint-plugin-testing-library";
@@ -13,8 +14,8 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        name: "app/files-to-lint",
         files: ["**/*.{ts,tsx}"],
+        name: "app/files-to-lint",
     },
 
     globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
@@ -35,12 +36,15 @@ export default tseslint.config(
     {
         rules: {
             "unicorn/filename-case": ["error", { cases: { camelCase: true, kebabCase: true, pascalCase: true } }],
-            "unicorn/no-null": "off",
             "unicorn/no-array-for-each": "off",
             "unicorn/no-array-reduce": "off",
+            "unicorn/no-null": "off",
             "unicorn/prevent-abbreviations": "off",
         },
     },
+
+    perfectionist.configs["recommended-natural"],
+    { rules: { "perfectionist/sort-imports": "off" } },
 
     {
         plugins: { "react-refresh": reactRefresh },
