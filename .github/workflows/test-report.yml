@@ -20,10 +20,10 @@ jobs:
 
     steps:
       - name: Clone the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
 
@@ -45,7 +45,7 @@ jobs:
           reporter: dotnet-trx
 
       - name: .Net Coverage Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.7
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.1
         with:
           reports: "dotnet-test-results/**/*.cobertura.xml"
           targetdir: dotnet-report
