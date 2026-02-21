@@ -1,7 +1,6 @@
 import { fileURLToPath, URL } from "node:url";
-import vue from "@vitejs/plugin-vue";
+import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, ServerOptions, UserConfig } from "vite";
-import vueDevTools from "vite-plugin-vue-devtools";
 
 const isValidPort = (port: number) => !isNaN(port) && port > 0 && port <= 65535;
 
@@ -10,7 +9,7 @@ export default defineConfig(({ command, mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     const baseConfig: UserConfig = {
-        plugins: [vue(), vueDevTools()],
+        plugins: [react()],
         resolve: {
             alias: {
                 "@": fileURLToPath(new URL("./src", import.meta.url)),

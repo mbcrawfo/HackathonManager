@@ -1,26 +1,31 @@
 import pluginVitest from "@vitest/eslint-plugin";
-import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
-import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
+import prettierConfig from "eslint-config-prettier";
 import pluginPlaywright from "eslint-plugin-playwright";
-import pluginVue from "eslint-plugin-vue";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 import { globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint";
 
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
-
-export default defineConfigWithVueTs(
+export default tseslint.config(
     {
         name: "app/files-to-lint",
-        files: ["**/*.{ts,mts,tsx,vue}"],
+        files: ["**/*.{ts,tsx}"],
     },
 
-    // @ts-expect-error library type mismatch
     globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
 
-    pluginVue.configs["flat/essential"],
-    vueTsConfigs.recommended,
+    ...tseslint.configs.recommended,
+
+    {
+        plugins: {
+            "react-hooks": reactHooks,
+            "react-refresh": reactRefresh,
+        },
+        rules: {
+            ...reactHooks.configs.recommended.rules,
+            "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+        },
+    },
 
     {
         ...pluginVitest.configs.recommended,
@@ -31,5 +36,6 @@ export default defineConfigWithVueTs(
         ...pluginPlaywright.configs["flat/recommended"],
         files: ["e2e/**/*.{test,spec}.{js,ts,jsx,tsx}"],
     },
-    skipFormatting,
+
+    prettierConfig,
 );

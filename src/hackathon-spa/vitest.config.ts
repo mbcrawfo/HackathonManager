@@ -21,6 +21,7 @@ export default (env: ConfigEnv) => {
                 environment: "jsdom",
                 exclude: [...configDefaults.exclude, "e2e/**"],
                 root: fileURLToPath(new URL("./", import.meta.url)),
+                setupFiles: ["./src/setup-tests.ts"],
                 reporters,
                 outputFile: "test-results/unit-tests.xml",
                 coverage: {

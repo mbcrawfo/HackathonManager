@@ -12,7 +12,7 @@ This project is a web application that organizations can use to manage hackathon
         /database -  Database schema documentation.  It is automatically generated, do not modify.
     /scripts -  Helper scripts for developer workflows and CI usage.
     /src
-        /hackathon-spa -  The front end Vue SPA application.
+        /hackathon-spa -  The front end React SPA application.
         /HackathonManager -  The back end .Net REST API.
         /HackathonManager.Migrator -  Database migration application.
     /tests
@@ -57,7 +57,7 @@ Unit tests for the API can be found in the folder `tests/HackathonManager.Tests/
 
 ### Front End SPA
 
-The SPA application is built using Vue 3 and Typescript.
+The SPA application is built using React and Typescript.
 
 Details coming soon.
 
@@ -91,14 +91,14 @@ After modifying sql files, always run use sqlfluff to lint the changes.
 
 Sqlfluff runs inside of a docker container with the project root folder mapped to the `/sql` folder in the container.  Any paths provided as arguments must be prefixed with `/sql`, for example `path/to/file.sql` would become `/sql/path/to/file.sql`.
 
-### Typescript/Vue
+### Typescript/React
 
 Coding standards:
 - Always use types.  If you must use `any`, you must include a comment explaining why it is used.
 - Always prefer using arrow functions.
 - Always prefer using async/await instead of chaining promises with `.then(...)`.
 
-Always run Prettier after modifying ts or vue files.
+Always run Prettier after modifying ts or tsx files.
   - `npm run format`: reformat files with prettier
   - `npm run format:check`: use prettier to check formatting
 
