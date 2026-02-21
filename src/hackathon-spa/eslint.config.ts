@@ -7,6 +7,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import perfectionist from "eslint-plugin-perfectionist";
 import pluginPlaywright from "eslint-plugin-playwright";
 import reactRefresh from "eslint-plugin-react-refresh";
+import regexp from "eslint-plugin-regexp";
 import testingLibrary from "eslint-plugin-testing-library";
 import unicorn from "eslint-plugin-unicorn";
 import { globalIgnores } from "eslint/config";
@@ -45,6 +46,8 @@ export default tseslint.config(
 
     perfectionist.configs["recommended-natural"],
     { rules: { "perfectionist/sort-imports": "off" } },
+
+    regexp.configs["flat/recommended"],
 
     {
         plugins: { "react-refresh": reactRefresh },
