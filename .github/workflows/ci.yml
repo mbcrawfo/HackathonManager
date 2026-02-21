@@ -167,9 +167,6 @@ jobs:
       - name: Type check
         run: npm run spa check
 
-      - name: Build
-        run: npm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
-
       - name: Run tests with coverage
         run: npm run spa test:coverage
 
@@ -182,6 +179,9 @@ jobs:
             ./src/hackathon-spa/test-results/
             ./src/hackathon-spa/coverage/
 
+      - name: Build
+        run: npm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
@@ -189,8 +189,8 @@ jobs:
           path: ./artifacts/**
 
       - name: Report coverage
-        if: github.event_name == 'pull_request' && always()
-        uses: davelosert/vitest-coverage-report-action@v2
+        if: always() && github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@15b5b41bb7d36796d89f4bf482b09529c53f3446 # v2
         with:
           name: "SPA Coverage"
           vite-config-path: src/hackathon-spa/vite.config.ts
