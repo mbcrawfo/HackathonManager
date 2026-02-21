@@ -1,7 +1,7 @@
+import eslintReact from "@eslint-react/eslint-plugin";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
 import pluginPlaywright from "eslint-plugin-playwright";
-import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
@@ -16,13 +16,11 @@ export default tseslint.config(
 
     ...tseslint.configs.recommended,
 
+    eslintReact.configs["recommended-typescript"],
+
     {
-        plugins: {
-            "react-hooks": reactHooks,
-            "react-refresh": reactRefresh,
-        },
+        plugins: { "react-refresh": reactRefresh },
         rules: {
-            ...reactHooks.configs.recommended.rules,
             "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
         },
     },
