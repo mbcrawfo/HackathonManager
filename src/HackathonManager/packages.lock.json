@@ -201,12 +201,6 @@
         "resolved": "10.0.3",
         "contentHash": "lVABgJTyTUNE7Bi0bSu4dWHiCHIXEGzTh/kLh0N07IgU/tIKwTeBPp8tgV4x2iKj4h7iPLo8oXzyHmLDGtAE1g=="
       },
-      "Microsoft.Extensions.Diagnostics.HealthChecks": {
-        "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "PRqTKCjP5RVko1DdD5SJHaakVO5mljJUTIwQtDusIWlokvFFigxKOejc+vvcp+jJQgzkNJClXbgYhJCpncW60w=="
-      },
       "Newtonsoft.Json": {
         "type": "Direct",
         "requested": "[13.0.4, )",
