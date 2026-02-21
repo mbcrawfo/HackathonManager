@@ -3,7 +3,7 @@ import { configDefaults, ConfigEnv, defineConfig, mergeConfig } from "vitest/con
 
 import viteConfig from "./vite.config";
 
-export default (env: ConfigEnv) => {
+const vitestConfig = (env: ConfigEnv) => {
     const reporters = ["default", "junit"];
     if (process.env.GITHUB_ACTIONS) {
         reporters.push("github-actions");
@@ -32,3 +32,5 @@ export default (env: ConfigEnv) => {
         }),
     );
 };
+
+export default vitestConfig;
