@@ -1,3 +1,4 @@
+import { recommended as eslintCommentsRecommended } from "@eslint-community/eslint-plugin-eslint-comments/configs";
 import eslintReact from "@eslint-react/eslint-plugin";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
@@ -26,6 +27,8 @@ export default tseslint.config(
     importX.flatConfigs.recommended,
     importX.flatConfigs.typescript,
     { rules: { "import-x/order": "off" } },
+
+    eslintCommentsRecommended,
 
     {
         plugins: { "react-refresh": reactRefresh },
