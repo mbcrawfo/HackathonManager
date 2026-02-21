@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "include": [
+    "eslint-typings.d.ts",
     "vite.config.*",
     "vitest.config.*",
     "cypress.config.*",
