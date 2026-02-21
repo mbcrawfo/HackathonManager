@@ -19,7 +19,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.53.0",
+    "@playwright/test": "1.58.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@tsconfig/node24": "24.0.4",
