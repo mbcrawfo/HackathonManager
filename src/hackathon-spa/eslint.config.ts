@@ -61,12 +61,12 @@ export default tseslintConfig(
 
     {
         ...pluginVitest.configs.recommended,
-        files: ["src/**/__tests__/*"],
+        files: ["src/**/__tests__/*", "src/**/*.test.{ts,tsx}"],
     },
 
     {
         ...testingLibrary.configs["flat/react"],
-        files: ["src/**/__tests__/*"],
+        files: ["src/**/__tests__/*", "src/**/*.test.{ts,tsx}"],
     },
 
     {
