@@ -12,9 +12,9 @@ import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import testingLibrary from "eslint-plugin-testing-library";
 import unicorn from "eslint-plugin-unicorn";
 import { globalIgnores } from "eslint/config";
-import tseslint from "typescript-eslint";
+import { config as tseslintConfig, configs as tseslintConfigs } from "typescript-eslint";
 
-export default tseslint.config(
+export default tseslintConfig(
     {
         files: ["**/*.{ts,tsx}"],
         name: "app/files-to-lint",
@@ -22,7 +22,7 @@ export default tseslint.config(
 
     globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
 
-    ...tseslint.configs.recommended,
+    ...tseslintConfigs.recommended,
 
     eslintReact.configs["recommended-typescript"],
 
