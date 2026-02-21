@@ -13,8 +13,7 @@ namespace HackathonManager.Tests.TestInfrastructure.Database;
 /// </summary>
 public sealed class DatabaseFixture : IDatabaseFixture
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage("postgres:18beta1")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:18beta1")
         .WithDatabase("hackathon")
         .Build();
 
