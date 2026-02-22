@@ -15,6 +15,15 @@ if (process.env.CI) {
     dockerArgs = ["--interactive", "--tty", ...dockerArgs];
 }
 
-spawn("docker", ["run", ...dockerArgs, ...slqfluffArgs], {
+const dockerProcess = spawn("docker", ["run", ...dockerArgs, ...slqfluffArgs], {
     stdio: "inherit",
+});
+
+dockerProcess.on("error", (error) => {
+    console.error("Failed to start process:", error.message);
+    process.exit(1);
+});
+
+dockerProcess.on("close", (exitCode) => {
+    process.exit(exitCode ?? 1);
 });
