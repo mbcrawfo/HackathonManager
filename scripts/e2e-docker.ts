@@ -7,7 +7,8 @@ import { sleep } from "./utilities.ts";
 // Manages the Docker Compose lifecycle for running E2E tests against the full application stack.
 // Starts the compose stack, waits for services to be healthy, runs Playwright, then tears down.
 
-const composeFile = path.join(process.cwd(), "tests", "e2e", "compose.yml");
+const composeDir = path.join(process.cwd(), "tests", "e2e");
+const composeFile = path.join(composeDir, "compose.yml");
 const webPort = process.env.WEB_PORT ?? "5100";
 const baseUrl = `http://localhost:${webPort}`;
 const healthUrl = `${baseUrl}/health`;
@@ -15,6 +16,7 @@ const healthUrl = `${baseUrl}/health`;
 const run = (command: string, args: string[], env?: NodeJS.ProcessEnv): number => {
     const result = spawnSync(command, args, {
         stdio: "inherit",
+        shell: true,
         env: env ?? process.env,
     });
 
@@ -26,7 +28,7 @@ const run = (command: string, args: string[], env?: NodeJS.ProcessEnv): number =
 };
 
 const compose = (...args: string[]): void => {
-    const exitCode = run("docker", ["compose", "--file", composeFile, ...args]);
+    const exitCode = run("docker", ["compose", "--file", composeFile, "--env-file", "/dev/null", ...args]);
     if (exitCode !== 0) {
         throw new Error(`docker compose ${args[0]} failed with exit code ${exitCode}`);
     }
@@ -77,6 +79,8 @@ const main = async (): Promise<void> => {
         const upArgs = ["up", "--detach", "--wait"];
         if (process.env.CI) {
             upArgs.push("--no-build");
+        } else {
+            upArgs.push("--build");
         }
         console.log("Starting E2E Docker stack...");
         compose(...upArgs);
