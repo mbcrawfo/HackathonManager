@@ -78,7 +78,7 @@ const main = async (): Promise<void> => {
 
         // Start the stack
         const upArgs = ["up", "--detach", "--wait"];
-        if (process.env.CI) {
+        if (process.env.E2E_IMAGE) {
             upArgs.push("--no-build");
         } else {
             upArgs.push("--build");
