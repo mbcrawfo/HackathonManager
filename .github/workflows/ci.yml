@@ -130,15 +130,7 @@ jobs:
         run: npm ci
 
       - name: Run SqlFluff
-        run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
-
-      - name: Annotate Pull Request
-        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
-        uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5 # v0.5.0
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          title: SQL Lint Results
-          input: ./sql-lint.json
+        run: npm run sqlfluff lint -- --format github-annotation-native
 
   frontend-ci:
     runs-on: ubuntu-latest
