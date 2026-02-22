@@ -18,7 +18,7 @@ if (!command) {
 
 let commandArgs: string[] = [];
 if (process.argv.length > 4) {
-    commandArgs = process.argv.slice(3);
+    commandArgs = process.argv.slice(4);
 }
 
 let scripts: Record<string, string>;
