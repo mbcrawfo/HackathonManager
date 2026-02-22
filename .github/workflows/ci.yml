@@ -124,15 +124,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Run SqlFluff
         run: npm run sqlfluff lint -- --format github-annotation-native
 
-  frontend-ci:
+  node-ci:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -150,16 +146,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Type check
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
       - name: Check formatting
         run: npm run format:check
 
-      - name: Lint
-        run: npm run spa lint:check
-
-      - name: Type check
-        run: npm run spa check
-
-      - name: Run tests with coverage
+      - name: Run unit tests with coverage
         run: npm run spa test:coverage
 
       - name: Upload test results

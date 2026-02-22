@@ -15,7 +15,7 @@ Prerequisites: .Net 9 SDK, Node.js v24, and Docker (or a compatible tool such as
 
 1. From root of the repository, run `dotnet tool restore && dotnet restore && npm ci` to restore all tools and packages used by the project.
 2. Run `dotnet build` to build the back end and `dotnet test` to ensure that its tests pass.
-3. Run `npm run spa test:unit` to ensure that the front end tests pass.
+3. Run `npm run spa test` to ensure that the front end tests pass.
 4. Run `docker compose -f dependencies.yml up -d` to start the database and other dependencies required by the app.  By default the back end will automatically update the database when it starts.
 5. TODO: E2E tests
 
