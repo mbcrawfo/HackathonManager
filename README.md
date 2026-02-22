@@ -17,7 +17,7 @@ Prerequisites: .Net 9 SDK, Node.js v24, and Docker (or a compatible tool such as
 2. Run `dotnet build` to build the back end and `dotnet test` to ensure that its tests pass.
 3. Run `npm run spa test` to ensure that the front end tests pass.
 4. Run `docker compose -f dependencies.yml up -d` to start the database and other dependencies required by the app.  By default the back end will automatically update the database when it starts.
-5. TODO: E2E tests
+5. Run `npm run e2e:docker` to run the E2E tests. This uses a self-contained Docker Compose stack (separate from the root `compose.yml`) that starts the integrated app image and a Postgres database, runs Playwright tests against it, then tears everything down. Extra Playwright CLI args can be forwarded, e.g. `npm run e2e:docker -- --project=chromium`.
 
 By default the back end writes debug logs to the console.  It is highly recommend that you set up [OpenTelemetry Logging](#opentelemetry-logging).  You can also examine the [appsettings.example file](./src/HackathonManager/appsettings.example.json5) to see what other settings are available (such as file logs).  You may customize the settings for your local dev environment by using [.Net User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-9.0) or by creating a `.env.local` file in the [HackathonManager project](./src/HackathonManager).
 
