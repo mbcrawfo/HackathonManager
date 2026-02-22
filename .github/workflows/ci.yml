@@ -187,6 +187,7 @@ jobs:
         run: npm run sqlfluff lint -- --format github-annotation-native
 
   container-build:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     needs: [dotnet-ci, node-ci, sql-lint]
     strategy:
       fail-fast: false
@@ -247,6 +248,7 @@ jobs:
           path: ${{ runner.temp }}/digests/*
 
   container-merge:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     needs: [container-build]
     permissions:
@@ -282,18 +284,22 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
-    needs: [container-merge]
-    timeout-minutes: 30
+    needs: [dotnet-ci, node-ci, sql-lint, container-merge]
+    if: ${{ !(failure() || cancelled()) }}
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: read
-    env:
-      E2E_IMAGE: ghcr.io/${{ github.repository_owner }}/hackathon-integrated:${{ github.sha }}
     steps:
       - name: Clone the repo
         uses: actions/checkout@v6
 
+      - name: Set E2E_IMAGE
+        if: needs.container-merge.result == 'success'
+        run: echo "E2E_IMAGE=ghcr.io/${{ github.repository_owner }}/hackathon-integrated:${{ github.sha }}" >> "$GITHUB_ENV"
+
       - name: Login to GHCR
+        if: needs.container-merge.result == 'success'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -301,6 +307,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull integrated image
+        if: needs.container-merge.result == 'success'
         run: docker pull ${{ env.E2E_IMAGE }}
 
       - name: Setup Node.js
