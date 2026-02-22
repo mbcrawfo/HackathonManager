@@ -10,7 +10,7 @@ if (process.argv.length > 2) {
 let dockerArgs: string[] = ["--rm", "--volume", `${process.cwd()}:/sql:rw`, "sqlfluff/sqlfluff:4.0.4"];
 
 if (process.env.CI) {
-    dockerArgs = ["--user", "root", "--tty", ...dockerArgs];
+    dockerArgs = ["--user", "root", ...dockerArgs];
 } else {
     dockerArgs = ["--interactive", "--tty", ...dockerArgs];
 }
