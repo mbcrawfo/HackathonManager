@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "e2e": "node scripts/workspace-command.ts tests/e2e",
+    "e2e:docker": "node scripts/e2e-docker.ts",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "spa": "node scripts/workspace-command.ts src/hackathon-spa",
