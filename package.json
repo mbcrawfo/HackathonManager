@@ -8,9 +8,9 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "e2e": "node scripts/e2e.ts",
+    "e2e": "node scripts/workspace-command.ts tests/e2e",
     "gtg": "run-p format:check 'spa lint:check' 'spa check' 'e2e lint:check' 'e2e check'",
-    "spa": "node scripts/spa.ts",
+    "spa": "node scripts/workspace-command.ts src/hackathon-spa",
     "sqlfluff": "node scripts/sqlfluff.ts",
     "update-database-docs": "node scripts/update-database-docs.ts"
   },
