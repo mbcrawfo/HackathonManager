@@ -2,12 +2,6 @@ import process from "node:process";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
@@ -73,7 +67,7 @@ export default defineConfig({
     reporter: "html",
     /* Retry on CI only */
     retries: process.env.CI ? 2 : 0,
-    testDir: "./e2e",
+    testDir: "./specs",
     /* Maximum time one test can run for. */
     timeout: 30 * 1000,
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -97,7 +91,10 @@ export default defineConfig({
          * Use the preview server on CI for more realistic testing.
          * Playwright will re-use the local server if there is already a dev-server running.
          */
-        command: process.env.CI ? "npm run preview" : "npm run dev",
+        command: process.env.CI
+            ? "npm run --workspace src/hackathon-spa preview"
+            : "npm run --workspace src/hackathon-spa dev",
+        cwd: "../../",
         port: process.env.CI ? 4173 : 5173,
         reuseExistingServer: !process.env.CI,
     },

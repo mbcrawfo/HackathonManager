@@ -5,7 +5,6 @@ import prettierConfig from "eslint-config-prettier";
 import { flatConfigs as importXConfigs } from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import { configs as perfectionistConfigs } from "eslint-plugin-perfectionist";
-import pluginPlaywright from "eslint-plugin-playwright";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefreshPlugin from "eslint-plugin-react-refresh";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
@@ -67,11 +66,6 @@ export default tseslintConfig(
     {
         ...testingLibrary.configs["flat/react"],
         files: ["src/**/__tests__/*", "src/**/*.test.{ts,tsx}"],
-    },
-
-    {
-        ...pluginPlaywright.configs["flat/recommended"],
-        files: ["e2e/**/*.{test,spec}.{js,ts,jsx,tsx}"],
     },
 
     prettierConfig,
