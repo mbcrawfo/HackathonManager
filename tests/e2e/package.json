@@ -1,0 +1,22 @@
+{
+  "name": "hackathon-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "check": "tsc --noEmit",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint ."
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@tsconfig/node24": "24.0.4",
+    "@types/node": "24.10.13",
+    "eslint": "9.39.3",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-playwright": "2.7.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.0"
+  }
+}

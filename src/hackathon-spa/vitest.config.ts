@@ -23,7 +23,7 @@ const vitestConfig = (env: ConfigEnv) => {
                     reportOnFailure: true,
                 },
                 environment: "jsdom",
-                exclude: [...configDefaults.exclude, "e2e/**"],
+                exclude: configDefaults.exclude,
                 outputFile: "test-results/unit-tests.xml",
                 reporters,
                 root: fileURLToPath(new URL("./", import.meta.url)),
