@@ -13,7 +13,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  backend-ci:
+  dotnet-ci:
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -114,20 +114,6 @@ jobs:
           name: dotnet-build-artifacts
           path: ./artifacts/**
 
-  backend-sql-lint:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Clone the repo
-        uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-
-      - name: Run SqlFluff
-        run: npm run sqlfluff lint -- --format github-annotation-native
-
   node-ci:
     runs-on: ubuntu-latest
     permissions:
@@ -185,3 +171,17 @@ jobs:
           json-summary-path: src/hackathon-spa/coverage/coverage-summary.json
           json-final-path: src/hackathon-spa/coverage/coverage-final.json
           file-coverage-mode: "changes"
+
+  sql-lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run SqlFluff
+        run: npm run sqlfluff lint -- --format github-annotation-native
