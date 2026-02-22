@@ -38,6 +38,7 @@ const npmArgs = scripts[command]
 
 const npmProcess = spawn("npm", npmArgs, {
     stdio: "inherit",
+    shell: true,
 });
 
 npmProcess.on("error", (error) => {

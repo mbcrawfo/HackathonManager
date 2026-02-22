@@ -17,6 +17,7 @@ if (process.env.CI) {
 
 const dockerProcess = spawn("docker", ["run", ...dockerArgs, ...slqfluffArgs], {
     stdio: "inherit",
+    shell: true,
 });
 
 dockerProcess.on("error", (error) => {
