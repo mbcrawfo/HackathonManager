@@ -30,7 +30,7 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGUSER=postgres", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       start_period: 2s
       start_interval: 1s
       timeout: 5s

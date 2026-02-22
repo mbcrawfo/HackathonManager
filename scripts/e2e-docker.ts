@@ -1,6 +1,4 @@
-import type { SpawnSyncReturns } from "child_process";
-
-import { execSync } from "child_process";
+import { spawnSync } from "child_process";
 import path from "path";
 import process from "process";
 
@@ -14,10 +12,24 @@ const webPort = process.env.WEB_PORT ?? "5100";
 const baseUrl = `http://localhost:${webPort}`;
 const healthUrl = `${baseUrl}/health`;
 
-const compose = (...args: string[]): void => {
-    execSync(["docker", "compose", "--file", composeFile, ...args].join(" "), {
+const run = (command: string, args: string[], env?: NodeJS.ProcessEnv): number => {
+    const result = spawnSync(command, args, {
         stdio: "inherit",
+        env: env ?? process.env,
     });
+
+    if (result.error) {
+        throw result.error;
+    }
+
+    return result.status ?? 1;
+};
+
+const compose = (...args: string[]): void => {
+    const exitCode = run("docker", ["compose", "--file", composeFile, ...args]);
+    if (exitCode !== 0) {
+        throw new Error(`docker compose ${args[0]} failed with exit code ${exitCode}`);
+    }
 };
 
 const cleanup = (): void => {
@@ -77,22 +89,13 @@ const main = async (): Promise<void> => {
 
         // Run Playwright, forwarding extra CLI args
         const playwrightArgs = process.argv.slice(2);
-        const playwrightCommand = ["npx", "--workspace", "tests/e2e", "playwright", "test", ...playwrightArgs].join(
-            " ",
-        );
+        const args = ["--workspace", "tests/e2e", "playwright", "test", ...playwrightArgs];
 
-        console.log(`Running: ${playwrightCommand}`);
-        try {
-            execSync(playwrightCommand, {
-                stdio: "inherit",
-                env: {
-                    ...process.env,
-                    BASE_URL: baseUrl,
-                },
-            });
-        } catch (err) {
-            exitCode = (err as SpawnSyncReturns<string>).status ?? 1;
-        }
+        console.log(`Running: npx ${args.join(" ")}`);
+        exitCode = run("npx", args, {
+            ...process.env,
+            BASE_URL: baseUrl,
+        });
     } catch (err) {
         console.error("Error:", (err as Error).message);
         exitCode = 1;
