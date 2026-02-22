@@ -16,6 +16,7 @@ This project is a web application that organizations can use to manage hackathon
         /HackathonManager -  The back end .Net REST API.
         /HackathonManager.Migrator -  Database migration application.
     /tests
+        /e2e -  Playwright E2E tests (npm workspace).  Has its own compose.yml for running against the full Dockerized stack.
         /HackathonManager.Tests -  .Net test project for the back end including database tests, unit tests, and integration tests.
 ```
 
@@ -54,6 +55,15 @@ Core libraries:
  - Npgsql
 
 Unit tests for the API can be found in the folder `tests/HackathonManager.Tests/UnitTests`.  Integration tests of the API are found in the folder `tests/HackathonManager.Tests/IntegrationTests`.
+
+### E2E Tests
+
+End-to-end tests live in `tests/e2e` and use Playwright to test the full application stack. The e2e directory is a separate npm workspace with its own `compose.yml` that is independent from the root `compose.yml` — it runs on different ports (5100 for web, 5433 for Postgres) and uses separate container names to avoid collisions.
+
+- `npm run e2e:docker`: Start the Docker stack, run all Playwright tests, then tear down. Locally this builds the integrated Docker image; in CI it uses a pre-built image from GHCR. Extra args are forwarded to Playwright (e.g. `npm run e2e:docker -- --project=chromium`).
+- `npm run e2e <command>`: Run workspace commands in the e2e project (e.g. `npm run e2e lint`, `npm run e2e check`).
+- Test specs are in `tests/e2e/specs/`.
+- Playwright config is in `tests/e2e/playwright.config.ts`.
 
 ### Front End SPA
 
