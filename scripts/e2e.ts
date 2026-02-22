@@ -1,8 +1,8 @@
 // Helper script to run commands in the e2e test workspace.
 
-import { spawn } from "child_process";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const e2ePath = "tests/e2e";
 
@@ -29,12 +29,18 @@ try {
 
 const workspace = ["--workspace", e2ePath];
 
-if (scripts[command]) {
-    spawn("npm", ["run", ...workspace, command, "--", ...args], {
-        stdio: "inherit",
-    });
-} else {
-    spawn("npm", [command, ...args, ...workspace], {
-        stdio: "inherit",
-    });
-}
+const child = scripts[command]
+    ? spawn("npm", ["run", ...workspace, command, "--", ...args], {
+          stdio: "inherit",
+      })
+    : spawn("npm", [command, ...args, ...workspace], {
+          stdio: "inherit",
+      });
+
+child.on("error", (err) => {
+    console.error("Failed to start process:", err.message);
+    process.exit(1);
+});
+child.on("close", (code) => {
+    process.exit(code ?? 1);
+});
