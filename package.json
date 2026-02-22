@@ -6,13 +6,18 @@
     "tests/e2e"
   ],
   "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "check": "npm run check --workspaces",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "e2e": "node scripts/workspace-command.ts tests/e2e",
-    "gtg": "run-p format:check 'spa lint:check' 'spa check' 'e2e lint:check' 'e2e check'",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
     "spa": "node scripts/workspace-command.ts src/hackathon-spa",
     "sqlfluff": "node scripts/sqlfluff.ts",
-    "update-database-docs": "node scripts/update-database-docs.ts"
+    "update-database-docs": "node scripts/update-database-docs.ts",
+    "verify": "npm run build && npm run check && npm run lint && npm run spa test && npm run format:check"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
