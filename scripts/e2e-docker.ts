@@ -28,7 +28,8 @@ const run = (command: string, args: string[], env?: NodeJS.ProcessEnv): number =
 };
 
 const compose = (...args: string[]): void => {
-    const exitCode = run("docker", ["compose", "--file", composeFile, "--env-file", "/dev/null", ...args]);
+    const nullDevice = process.platform === "win32" ? "NUL" : "/dev/null";
+    const exitCode = run("docker", ["compose", "--file", composeFile, "--env-file", nullDevice, ...args]);
     if (exitCode !== 0) {
         throw new Error(`docker compose ${args[0]} failed with exit code ${exitCode}`);
     }
