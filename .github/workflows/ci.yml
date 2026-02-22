@@ -133,7 +133,7 @@ jobs:
         run: npm run sqlfluff lint -- --format github-annotation --write-output /sql/sql-lint.json
 
       - name: Annotate Pull Request
-        if: github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: yuzutech/annotations-action@d6062d2ca2402a84f058b9485eee8b59d58a98d5 # v0.5.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
@@ -189,7 +189,7 @@ jobs:
           path: ./artifacts/**
 
       - name: Report coverage
-        if: always() && github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: davelosert/vitest-coverage-report-action@15b5b41bb7d36796d89f4bf482b09529c53f3446 # v2
         with:
           name: "SPA Coverage"
