@@ -1,5 +1,6 @@
-import { Button, Container, Stack, Text, Title } from "@mantine/core";
+import { Button, Container, NumberInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { useForm } from "@tanstack/react-form";
 import { format } from "date-fns";
 import * as z from "zod";
 
@@ -9,30 +10,82 @@ const userSchema = z.object({
     name: z.string().min(1),
 });
 
-const validUser = userSchema.safeParse({ age: 30, email: "alice@example.com", name: "Alice" });
-const invalidUser = userSchema.safeParse({ age: -1, email: "not-an-email", name: "" });
-
 const App = () => {
     const today = format(new Date(), "PPPP");
+
+    const form = useForm({
+        defaultValues: {
+            age: 0,
+            email: "",
+            name: "",
+        },
+        onSubmit: ({ value }) => {
+            notifications.show({
+                message: `Name: ${value.name}, Email: ${value.email}, Age: ${value.age}`,
+                title: "Form Submitted",
+            });
+        },
+        validators: {
+            onSubmit: userSchema,
+        },
+    });
 
     return (
         <Container py="xl" size="sm">
             <Stack>
                 <Title order={1}>Hello World</Title>
                 <Text>Today is {today}</Text>
-                <Title order={2}>Zod Validation</Title>
-                <Text>Valid user: {validUser.success ? "passed" : "failed"}</Text>
-                <Text>Invalid user: {invalidUser.success ? "passed" : "failed"}</Text>
-                <Button
-                    onClick={() => {
-                        notifications.show({
-                            message: "This is a Mantine notification!",
-                            title: "Hello",
-                        });
+                <Title order={2}>User Form</Title>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.handleSubmit();
                     }}
                 >
-                    Show Notification
-                </Button>
+                    <Stack>
+                        <form.Field name="name">
+                            {(field) => (
+                                <TextInput
+                                    error={field.state.meta.errors.map((e) => e?.message).join(", ")}
+                                    label="Name"
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => {
+                                        field.handleChange(e.currentTarget.value);
+                                    }}
+                                    value={field.state.value}
+                                />
+                            )}
+                        </form.Field>
+                        <form.Field name="email">
+                            {(field) => (
+                                <TextInput
+                                    error={field.state.meta.errors.map((e) => e?.message).join(", ")}
+                                    label="Email"
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => {
+                                        field.handleChange(e.currentTarget.value);
+                                    }}
+                                    value={field.state.value}
+                                />
+                            )}
+                        </form.Field>
+                        <form.Field name="age">
+                            {(field) => (
+                                <NumberInput
+                                    error={field.state.meta.errors.map((e) => e?.message).join(", ")}
+                                    label="Age"
+                                    onBlur={field.handleBlur}
+                                    onChange={(value) => {
+                                        field.handleChange(typeof value === "number" ? value : 0);
+                                    }}
+                                    value={field.state.value}
+                                />
+                            )}
+                        </form.Field>
+                        <Button type="submit">Submit</Button>
+                    </Stack>
+                </form>
             </Stack>
         </Container>
     );
