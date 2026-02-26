@@ -10,6 +10,7 @@ import reactRefreshPlugin from "eslint-plugin-react-refresh";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import testingLibrary from "eslint-plugin-testing-library";
 import unicorn from "eslint-plugin-unicorn";
+import zodPlugin from "eslint-plugin-zod";
 import { globalIgnores } from "eslint/config";
 import { config as tseslintConfig, configs as tseslintConfigs } from "typescript-eslint";
 
@@ -67,6 +68,8 @@ export default tseslintConfig(
         ...testingLibrary.configs["flat/react"],
         files: ["src/**/__tests__/*", "src/**/*.test.{ts,tsx}"],
     },
+
+    zodPlugin.configs.recommended,
 
     prettierConfig,
 );
