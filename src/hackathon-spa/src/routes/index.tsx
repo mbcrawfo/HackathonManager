@@ -1,9 +1,11 @@
 import { Button, Container, Loader, NumberInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@tanstack/react-form";
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
+import { useState } from "react";
 import * as z from "zod";
 
 const userSchema = z.object({
@@ -14,6 +16,8 @@ const userSchema = z.object({
 
 const IndexPage = () => {
     const today = format(new Date(), "PPPP");
+    const [searchInput, setSearchInput] = useState("");
+    const [debouncedSearch] = useDebouncedValue(searchInput, { wait: 300 });
 
     const demoQuery = useQuery({
         queryFn: async () => {
@@ -49,6 +53,18 @@ const IndexPage = () => {
                 <Text>Today is {today}</Text>
                 <Title order={2}>Query Demo</Title>
                 {demoQuery.isPending ? <Loader size="sm" /> : <Text>{demoQuery.data?.message}</Text>}
+                <Title order={2}>Debounce Demo</Title>
+                <TextInput
+                    label="Search (debounced)"
+                    onChange={(e) => {
+                        setSearchInput(e.currentTarget.value);
+                    }}
+                    placeholder="Type to see debounce..."
+                    value={searchInput}
+                />
+                <Text size="sm">
+                    Instant: {searchInput} | Debounced: {debouncedSearch}
+                </Text>
                 <Title order={2}>User Form</Title>
                 <form
                     onSubmit={(e) => {
