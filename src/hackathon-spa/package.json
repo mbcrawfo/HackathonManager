@@ -18,7 +18,8 @@
   "dependencies": {
     "date-fns": "4.1.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.6.0",
@@ -44,6 +45,7 @@
     "eslint-plugin-regexp": "3.0.0",
     "eslint-plugin-testing-library": "7.16.0",
     "eslint-plugin-unicorn": "63.0.0",
+    "eslint-plugin-zod": "3.2.0",
     "jiti": "2.6.1",
     "jsdom": "28.1.0",
     "typescript": "5.9.3",
