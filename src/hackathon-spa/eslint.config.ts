@@ -1,5 +1,6 @@
 import { recommended as eslintCommentsRecommended } from "@eslint-community/eslint-plugin-eslint-comments/configs";
 import eslintReact from "@eslint-react/eslint-plugin";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginVitest from "@vitest/eslint-plugin";
 import prettierConfig from "eslint-config-prettier";
 import { flatConfigs as importXConfigs } from "eslint-plugin-import-x";
@@ -70,6 +71,8 @@ export default tseslintConfig(
     },
 
     zodPlugin.configs.recommended,
+
+    ...pluginQuery.configs["flat/recommended"],
 
     prettierConfig,
 );
