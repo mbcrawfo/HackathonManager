@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, ServerOptions, UserConfig } from "vite";
 
@@ -9,7 +10,7 @@ export default defineConfig(({ command, mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     const baseConfig: UserConfig = {
-        plugins: [react()],
+        plugins: [tanstackRouter(), react()],
         resolve: {
             alias: {
                 "@": fileURLToPath(new URL("src", import.meta.url)),

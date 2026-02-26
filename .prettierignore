@@ -1,9 +1,3 @@
-.claude
-.config
-coverage
-dist
-src/HackathonManager
-src/HackathonManager.Migrator
-tests/HackathonManager.Tests
-
-*.md
+src/hackathon-spa/src/routeTree.gen.ts
+src/hackathon-spa/dist
+src/hackathon-spa/coverage

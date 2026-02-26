@@ -2,6 +2,7 @@ import { Button, Container, Loader, NumberInput, Stack, Text, TextInput, Title }
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import * as z from "zod";
 
@@ -11,7 +12,7 @@ const userSchema = z.object({
     name: z.string().min(1),
 });
 
-const App = () => {
+const IndexPage = () => {
     const today = format(new Date(), "PPPP");
 
     const demoQuery = useQuery({
@@ -104,4 +105,6 @@ const App = () => {
     );
 };
 
-export default App;
+export const Route = createFileRoute("/")({
+    component: IndexPage,
+});
