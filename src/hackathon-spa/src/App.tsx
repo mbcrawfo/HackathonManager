@@ -1,6 +1,7 @@
-import { Button, Container, NumberInput, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Container, Loader, NumberInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useForm } from "@tanstack/react-form";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import * as z from "zod";
 
@@ -12,6 +13,16 @@ const userSchema = z.object({
 
 const App = () => {
     const today = format(new Date(), "PPPP");
+
+    const demoQuery = useQuery({
+        queryFn: async () => {
+            await new Promise((resolve) => {
+                setTimeout(resolve, 500);
+            });
+            return { message: "Data fetched successfully!" };
+        },
+        queryKey: ["demo"],
+    });
 
     const form = useForm({
         defaultValues: {
@@ -35,6 +46,8 @@ const App = () => {
             <Stack>
                 <Title order={1}>Hello World</Title>
                 <Text>Today is {today}</Text>
+                <Title order={2}>Query Demo</Title>
+                {demoQuery.isPending ? <Loader size="sm" /> : <Text>{demoQuery.data?.message}</Text>}
                 <Title order={2}>User Form</Title>
                 <form
                     onSubmit={(e) => {
