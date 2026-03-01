@@ -1,0 +1,25 @@
+name: hackathon-codegen
+
+services:
+  api:
+    container_name: hackathon-codegen-api
+    image: ${API_IMAGE}
+    environment:
+      CONNECTIONSTRINGS__HACKATHONDB: "Host=database;Port=5432;Username=postgres;Password=postgres;Database=hackathon"
+      ENABLESTARTUPMIGRATION: "true"
+      CONSOLELOG__TYPE: Text
+      CONSOLELOG__LEVEL: Information
+    ports:
+      - "${API_PORT:-5200}:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    extends:
+      file: dependencies.yml
+      service: database
+
+volumes:
+  database:
+    driver: local

@@ -332,3 +332,152 @@ jobs:
           name: playwright-report
           path: tests/e2e/playwright-report/
           retention-days: 30
+
+  update-database-docs:
+    if: >-
+      github.event_name == 'pull_request'
+      && github.actor != 'dependabot[bot]'
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Get changed files
+        id: check-file-changes
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+        with:
+          files: |
+            **/*.sql
+
+      - name: Set up .NET
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/packages.lock.json"
+
+      - name: Restore NuGet packages
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: dotnet restore --locked-mode
+
+      - name: Set up Node.js
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
+      - name: Update Database Docs
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: npm run update-database-docs
+
+      - name: Commit and push changes
+        id: commit-changes
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
+        with:
+          commit_message: "[Generated] Update database docs"
+          file_pattern: "docs/database/**"
+
+      - name: Comment on PR
+        if: steps.commit-changes.outputs.changes_detected == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Database documentation has been updated.'
+            });
+
+  update-api-client:
+    needs: [container-merge, update-database-docs]
+    if: >-
+      github.event_name == 'pull_request'
+      && !(failure() || cancelled())
+      && needs.container-merge.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+      pull-requests: write
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Pull latest changes
+        run: git pull --rebase
+
+      - name: Get changed files
+        id: check-file-changes
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+        with:
+          files: |
+            src/HackathonManager/**
+
+      - name: Login to GHCR
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull API image
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: docker pull ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
+
+      - name: Setup Node.js
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: npm ci
+
+      - name: Start API
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: >-
+          API_IMAGE=ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
+          docker compose -f compose-codegen.yml up --detach --wait --wait-timeout 60
+
+      - name: Generate API client
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: npm run api-codegen http://localhost:5200
+
+      - name: Stop API
+        if: steps.check-file-changes.outputs.any_changed == 'true' && !cancelled()
+        run: docker compose -f compose-codegen.yml down --volumes
+
+      - name: Commit and push changes
+        id: commit-changes
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
+        with:
+          commit_message: "[Generated] Update API client"
+          file_pattern: "src/hackathon-spa/src/api/schema.gen.ts"
+
+      - name: Comment on PR
+        if: steps.commit-changes.outputs.changes_detected == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ API client has been updated.'
+            });
