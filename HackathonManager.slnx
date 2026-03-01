@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".csharpierignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/HackathonManager.Migrator/HackathonManager.Migrator.csproj" />
+    <Project Path="src/HackathonManager/HackathonManager.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HackathonManager.Tests/HackathonManager.Tests.csproj" />
+  </Folder>
+</Solution>
