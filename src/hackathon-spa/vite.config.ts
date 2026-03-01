@@ -36,6 +36,7 @@ export default defineConfig(({ command, mode }) => {
         port,
         proxy: {
             "/api": `http://localhost:${apiPort}`,
+            "/swagger": `http://localhost:${apiPort}`,
         },
     };
 

@@ -16,6 +16,7 @@
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "spa": "node scripts/workspace-command.ts src/hackathon-spa",
+    "api-codegen": "node scripts/api-codegen.ts",
     "sqlfluff": "node scripts/sqlfluff.ts",
     "update-database-docs": "node scripts/update-database-docs.ts",
     "verify": "npm run build && npm run check && npm run lint && npm run spa test && npm run format:check"
@@ -24,6 +25,7 @@
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@types/node": "24.10.13",
     "npm-run-all2": "8.0.4",
+    "openapi-typescript": "7.13.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3"
   }
