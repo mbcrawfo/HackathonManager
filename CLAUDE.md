@@ -118,4 +118,4 @@ After modifying code in the hackathon-spa project:
   - `npm run spa lint:fix`: run ESLint and automatically apply fixes
 - Run `npm run spa check` to run the Typescript compiler and validate type usage.
 
-
+After completing any changes to Typescript code, always run `npm run verify` as a final validation step. This runs the full suite: build, type-check, lint, tests, and formatting.

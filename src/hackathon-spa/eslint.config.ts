@@ -22,7 +22,7 @@ export default tseslintConfig(
         name: "app/files-to-lint",
     },
 
-    globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**", "**/routeTree.gen.ts"]),
+    globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**", "**/*.gen.ts"]),
 
     ...tseslintConfigs.recommended,
 
