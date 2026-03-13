@@ -411,6 +411,8 @@ jobs:
       && !(failure() || cancelled())
       && needs.container-merge.result == 'success'
     runs-on: ubuntu-latest
+    env:
+      API_IMAGE: ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
     permissions:
       contents: write
       packages: read
@@ -441,7 +443,7 @@ jobs:
 
       - name: Pull API image
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: docker pull ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
+        run: docker pull ${{ env.API_IMAGE }}
 
       - name: Setup Node.js
         if: steps.check-file-changes.outputs.any_changed == 'true'
@@ -456,9 +458,7 @@ jobs:
 
       - name: Start API
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: >-
-          API_IMAGE=ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
-          docker compose -f compose-codegen.yml up --detach --wait --wait-timeout 60
+        run: docker compose -f compose-codegen.yml up --detach --wait --wait-timeout 60
 
       - name: Generate API client
         if: steps.check-file-changes.outputs.any_changed == 'true'
