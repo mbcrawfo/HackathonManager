@@ -374,6 +374,10 @@ jobs:
           node-version-file: .nvmrc
           cache: "npm"
 
+      - name: Install dependencies
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        run: npm ci
+
       - name: Update Database Docs
         if: steps.check-file-changes.outputs.any_changed == 'true'
         run: npm run update-database-docs
@@ -402,6 +406,8 @@ jobs:
     needs: [container-merge, update-database-docs]
     if: >-
       github.event_name == 'pull_request'
+      && github.actor != 'dependabot[bot]'
+      && github.event.pull_request.head.repo.full_name == github.repository
       && !(failure() || cancelled())
       && needs.container-merge.result == 'success'
     runs-on: ubuntu-latest
