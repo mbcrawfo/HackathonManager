@@ -422,7 +422,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Pull latest changes
-        run: git pull --rebase
+        run: git pull --rebase origin ${{ github.head_ref }}
 
       - name: Get changed files
         id: check-file-changes
