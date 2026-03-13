@@ -465,7 +465,7 @@ jobs:
         run: npm run api-codegen http://localhost:5200
 
       - name: Stop API
-        if: steps.check-file-changes.outputs.any_changed == 'true' && !cancelled()
+        if: always() && steps.check-file-changes.outputs.any_changed == 'true' && !cancelled()
         run: docker compose -f compose-codegen.yml down --volumes
 
       - name: Commit and push changes
