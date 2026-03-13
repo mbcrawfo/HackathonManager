@@ -6,9 +6,9 @@ const baseUrl = process.argv[2] ?? "http://localhost:5000";
 const swaggerUrl = `${baseUrl}/swagger/v1/swagger.json`;
 const outputPath = "src/hackathon-spa/src/api/schema.gen.ts";
 
-const child = spawn("npx", ["openapi-typescript", swaggerUrl, "--output", outputPath], {
+const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
+const child = spawn(npxCommand, ["openapi-typescript", swaggerUrl, "--output", outputPath], {
     stdio: "inherit",
-    shell: true,
 });
 
 child.on("error", (error) => {
