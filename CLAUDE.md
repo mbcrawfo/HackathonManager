@@ -103,6 +103,9 @@ Sqlfluff runs inside of a docker container with the project root folder mapped t
 
 ### Typescript/React
 
+Dependency notes:
+- `@types/node` must stay in sync with the project's Node.js major version (currently v24).
+
 Coding standards:
 - Always use types.  If you must use `any`, you must include a comment explaining why it is used.
 - Always prefer using arrow functions.

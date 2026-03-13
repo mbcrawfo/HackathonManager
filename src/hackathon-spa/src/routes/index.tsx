@@ -11,7 +11,7 @@ import * as z from "zod";
 const userSchema = z.object({
     age: z.number().min(0).max(150),
     email: z.email(),
-    name: z.string().min(1),
+    name: z.string().trim().min(1),
 });
 
 const IndexPage = () => {
