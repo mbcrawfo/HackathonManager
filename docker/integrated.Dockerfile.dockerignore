@@ -3,8 +3,8 @@
 
 # Docker files
 docker
-compose-standalone.yml
 compose.yml
+compose-codegen.yml
 dependencies.yml
 
 # All markdown files

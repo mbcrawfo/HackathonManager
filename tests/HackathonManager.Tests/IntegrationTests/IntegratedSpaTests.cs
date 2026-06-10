@@ -1,4 +1,3 @@
-using System.Net;
 using System.Threading.Tasks;
 using HackathonManager.Tests.TestInfrastructure;
 using Shouldly;
@@ -13,27 +12,10 @@ public class IntegratedSpaTests : IntegrationTestWithReset
         : base(fixture) { }
 
     [Fact]
-    public async Task ShouldNotServeStaticFiles_WhenIntegratedSpaIsDisabled()
+    public async Task ShouldServeStaticFiles()
     {
         // arrange
-        using var client = App.WithWebHostBuilder(b => b.UseSetting(ConfigurationKeys.EnableIntegratedSpaKey, "false"))
-            .CreateClient();
-
-        // act
-        // assert
-        foreach (var url in new[] { "/", "/index.html", "/test.js" })
-        {
-            var response = await client.GetAsync(url, CancellationToken);
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        }
-    }
-
-    [Fact]
-    public async Task ShouldServeStaticFiles_WhenIntegratedSpaIsEnabled()
-    {
-        // arrange
-        var client = App.WithWebHostBuilder(b => b.UseSetting(ConfigurationKeys.EnableIntegratedSpaKey, "true"))
-            .CreateClient();
+        var client = App.CreateClient();
 
         // act
         var indexResponse = await client.GetStringAsync("/index.html", CancellationToken);
@@ -48,11 +30,10 @@ public class IntegratedSpaTests : IntegrationTestWithReset
     [InlineData("/")]
     [InlineData("/path/to/page")]
     [InlineData("/path?queryParams=true")]
-    public async Task ShouldUseFallbackRoute_WhenIntegratedSpaIsEnabled(string route)
+    public async Task ShouldUseFallbackRoute(string route)
     {
         // arrange
-        var client = App.WithWebHostBuilder(b => b.UseSetting(ConfigurationKeys.EnableIntegratedSpaKey, "true"))
-            .CreateClient();
+        var client = App.CreateClient();
 
         // act
         var response = await client.GetStringAsync(route, CancellationToken);

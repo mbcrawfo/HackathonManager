@@ -199,10 +199,6 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - name: hackathon-api
-            dockerfile: docker/api.Dockerfile
-          - name: hackathon-spa
-            dockerfile: docker/spa.Dockerfile
           - name: hackathon-integrated
             dockerfile: docker/integrated.Dockerfile
         runner:
@@ -262,7 +258,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        image: [hackathon-api, hackathon-spa, hackathon-integrated]
+        image: [hackathon-integrated]
     steps:
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -425,7 +421,7 @@ jobs:
       && needs.container-merge.result == 'success'
     runs-on: ubuntu-latest
     env:
-      API_IMAGE: ghcr.io/${{ github.repository_owner }}/hackathon-api:${{ github.sha }}
+      API_IMAGE: ghcr.io/${{ github.repository_owner }}/hackathon-integrated:${{ github.sha }}
     permissions:
       contents: write
       packages: read
