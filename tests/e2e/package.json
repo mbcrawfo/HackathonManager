@@ -11,14 +11,14 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.60.0",
     "@tsconfig/node24": "24.0.4",
-    "@types/node": "24.10.13",
-    "eslint": "9.39.3",
+    "@types/node": "24.13.1",
+    "eslint": "9.39.4",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-playwright": "2.9.0",
-    "jiti": "2.6.1",
+    "eslint-plugin-playwright": "2.10.4",
+    "jiti": "2.7.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.57.0"
+    "typescript-eslint": "8.61.0"
   }
 }
