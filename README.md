@@ -13,17 +13,17 @@ This [default configuration](./compose.yml) uses the .Net web application to ser
 Prerequisites: .Net 9 SDK, Node.js v24, and Docker (or a compatible tool such as Orbstack).
 
 
-1. From root of the repository, run `dotnet tool restore && dotnet restore && npm ci` to restore all tools and packages used by the project.
+1. From root of the repository, run `dotnet tool restore && dotnet restore && pnpm install` to restore all tools and packages used by the project.
 2. Run `dotnet build` to build the back end and `dotnet test` to ensure that its tests pass.
-3. Run `npm run spa test` to ensure that the front end tests pass.
+3. Run `pnpm run spa test` to ensure that the front end tests pass.
 4. Run `docker compose -f dependencies.yml up -d` to start the database and other dependencies required by the app.  By default the back end will automatically update the database when it starts.
-5. Run `npm run e2e:docker` to run the E2E tests. This uses a self-contained Docker Compose stack (separate from the root `compose.yml`) that starts the integrated app image and a Postgres database, runs Playwright tests against it, then tears everything down. Extra Playwright CLI args can be forwarded, e.g. `npm run e2e:docker -- --project=chromium`.
+5. Run `pnpm run e2e:docker` to run the E2E tests. This uses a self-contained Docker Compose stack (separate from the root `compose.yml`) that starts the integrated app image and a Postgres database, runs Playwright tests against it, then tears everything down. Extra Playwright CLI args can be forwarded, e.g. `pnpm run e2e:docker --project=chromium`.
 
 By default the back end writes debug logs to the console.  It is highly recommend that you set up [OpenTelemetry Logging](#opentelemetry-logging).  You can also examine the [appsettings.example file](./src/HackathonManager/appsettings.example.json5) to see what other settings are available (such as file logs).  You may customize the settings for your local dev environment by using [.Net User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-9.0) or by creating a `.env.local` file in the [HackathonManager project](./src/HackathonManager).
 
 Once you make any configuration changes, run the back end using `dotnet run`, Visual Studio, Jetbrains Rider, etc.  You can access its Swagger UI at http://localhost:5001/swagger.
 
-Run the Vite dev server for the SPA app using `npm run spa dev`.  It is available at http://localhost:5000, and by default the Vite dev server is used to proxy requests to the back end API.
+Run the Vite dev server for the SPA app using `pnpm run spa dev`.  It is available at http://localhost:5000, and by default the Vite dev server is used to proxy requests to the back end API.
 
 ### OpenTelemetry Logging
 

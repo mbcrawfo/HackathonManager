@@ -1,33 +1,27 @@
 {
   "name": "hackathon-app",
   "type": "module",
-  "workspaces": [
-    "src/hackathon-spa",
-    "tests/e2e"
-  ],
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present",
-    "check": "npm run check --workspaces",
+    "build": "pnpm -r run build",
+    "clean": "pnpm -r run clean",
+    "check": "pnpm -r run check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "e2e": "node scripts/workspace-command.ts tests/e2e",
     "e2e:docker": "node scripts/e2e-docker.ts",
-    "lint": "npm run lint --workspaces",
-    "lint:fix": "npm run lint:fix --workspaces",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
     "spa": "node scripts/workspace-command.ts src/hackathon-spa",
     "api-codegen": "node scripts/api-codegen.ts",
     "sqlfluff": "node scripts/sqlfluff.ts",
     "update-database-docs": "node scripts/update-database-docs.ts",
-    "verify": "npm run build && npm run check && npm run lint && npm run spa test && npm run format:check"
-  },
-  "overrides": {
-    "tinyexec": "1.0.2"
+    "verify": "pnpm run build && pnpm run check && pnpm run lint && pnpm run spa test && pnpm run format:check"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@types/node": "24.10.13",
-    "npm-run-all2": "8.0.4",
+    "jiti": "2.6.1",
     "openapi-typescript": "7.13.0",
     "prettier": "3.8.1",
     "tinyexec": "1.0.2",

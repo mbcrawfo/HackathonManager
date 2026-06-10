@@ -13,29 +13,29 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 ## Project Setup
 
 ```sh
-npm install
+pnpm install
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+pnpm run dev
 ```
 
 ### Type-Check, Compile and Minify for Production
 
 ```sh
-npm run build
+pnpm run build
 ```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
-npm run test
+pnpm run test
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-npm run lint
+pnpm run lint
 ```

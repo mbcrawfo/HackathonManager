@@ -1,0 +1,10 @@
+packages:
+  - src/hackathon-spa
+  - tests/e2e
+
+overrides:
+  tinyexec: 1.0.2
+
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true

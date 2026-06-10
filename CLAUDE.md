@@ -22,7 +22,7 @@ This project is a web application that organizations can use to manage hackathon
 
 The .Net projects make use of `Directory.Build.props` for standardized settings, global package management in `Directory.Packages.props`, and lock files to produce frozen dependency trees.
 
-A node.js package.json is configured at the root of the project so that scripts and tools can be used throughout the repo.  Specific applications using node, such as hackathon-spa, are configured as workspaces.
+A root `package.json` configures pnpm so that scripts and tools can be used throughout the repo.  Specific applications using node, such as hackathon-spa, are configured as pnpm workspaces in `pnpm-workspace.yaml`.
 
 ## Project Architecture
 
@@ -58,10 +58,10 @@ Unit tests for the API can be found in the folder `tests/HackathonManager.Tests/
 
 ### E2E Tests
 
-End-to-end tests live in `tests/e2e` and use Playwright to test the full application stack. The e2e directory is a separate npm workspace with its own `compose.yml` that is independent from the root `compose.yml` — it runs on different ports (5100 for web, 5433 for Postgres) and uses separate container names to avoid collisions.
+End-to-end tests live in `tests/e2e` and use Playwright to test the full application stack. The e2e directory is a separate pnpm workspace with its own `compose.yml` that is independent from the root `compose.yml` — it runs on different ports (5100 for web, 5433 for Postgres) and uses separate container names to avoid collisions.
 
-- `npm run e2e:docker`: Start the Docker stack, run all Playwright tests, then tear down. Locally this builds the integrated Docker image; in CI it uses a pre-built image from GHCR. Extra args are forwarded to Playwright (e.g. `npm run e2e:docker -- --project=chromium`).
-- `npm run e2e <command>`: Run workspace commands in the e2e project (e.g. `npm run e2e lint`, `npm run e2e check`).
+- `pnpm run e2e:docker`: Start the Docker stack, run all Playwright tests, then tear down. Locally this builds the integrated Docker image; in CI it uses a pre-built image from GHCR. Extra args are forwarded to Playwright (e.g. `pnpm run e2e:docker --project=chromium`).
+- `pnpm run e2e <command>`: Run workspace commands in the e2e project (e.g. `pnpm run e2e lint`, `pnpm run e2e check`).
 - Test specs are in `tests/e2e/specs/`.
 - Playwright config is in `tests/e2e/playwright.config.ts`.
 
@@ -96,8 +96,8 @@ Tools:
 ### SQL:
 
 After modifying sql files, always run use sqlfluff to lint the changes.
-- `npm run sqlfluff lint <paths...>`: lint the provided files
-- `npm run sqlfluff format <paths...>`: apply automatic formatting to the provided files
+- `pnpm run sqlfluff lint <paths...>`: lint the provided files
+- `pnpm run sqlfluff format <paths...>`: apply automatic formatting to the provided files
 
 Sqlfluff runs inside of a docker container with the project root folder mapped to the `/sql` folder in the container.  Any paths provided as arguments must be prefixed with `/sql`, for example `path/to/file.sql` would become `/sql/path/to/file.sql`.
 
@@ -112,13 +112,13 @@ Coding standards:
 - Always prefer using async/await instead of chaining promises with `.then(...)`.
 
 Always run Prettier after modifying ts or tsx files.
-  - `npm run format`: reformat files with prettier
-  - `npm run format:check`: use prettier to check formatting
+  - `pnpm run format`: reformat files with prettier
+  - `pnpm run format:check`: use prettier to check formatting
 
 After modifying code in the hackathon-spa project:
 - Use ESLint to check linting.
-  - `npm run spa lint`: run ESLint to check linting
-  - `npm run spa lint:fix`: run ESLint and automatically apply fixes
-- Run `npm run spa check` to run the Typescript compiler and validate type usage.
+  - `pnpm run spa lint`: run ESLint to check linting
+  - `pnpm run spa lint:fix`: run ESLint and automatically apply fixes
+- Run `pnpm run spa check` to run the Typescript compiler and validate type usage.
 
-After completing any changes to Typescript code, always run `npm run verify` as a final validation step. This runs the full suite: build, type-check, lint, tests, and formatting.
+After completing any changes to Typescript code, always run `pnpm run verify` as a final validation step. This runs the full suite: build, type-check, lint, tests, and formatting.

@@ -21,5 +21,7 @@ dependencies.yml
 # Top level directories
 scripts
 tests
+# ...but the e2e manifest is needed so pnpm sees the full workspace during install
+!tests/e2e/package.json
 HackathonManager.sln*
 LICENSE

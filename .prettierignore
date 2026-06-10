@@ -2,6 +2,7 @@
 .config
 coverage
 dist
+pnpm-lock.yaml
 src/HackathonManager
 src/HackathonManager.Migrator
 tests/HackathonManager.Tests

@@ -1,4 +1,4 @@
-// Helper script to run commands in project workspaces.
+// Helper script to run commands in project workspaces via pnpm.
 
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -21,31 +21,40 @@ if (process.argv.length > 4) {
     commandArgs = process.argv.slice(4);
 }
 
+let packageName: string | undefined;
 let scripts: Record<string, string>;
 try {
     const path = join(process.cwd(), workspace, "package.json");
-    const packageJson = readFileSync(path, "utf8");
-    scripts = JSON.parse(packageJson)?.scripts ?? {};
+    const packageJson = JSON.parse(readFileSync(path, "utf8"));
+    packageName = packageJson?.name;
+    scripts = packageJson?.scripts ?? {};
+    if (!packageName) {
+        throw new Error(`package.json in ${workspace} is missing a "name" field`);
+    }
 } catch (error) {
     console.error(`Failed to load package.json from ${workspace}:`, (error as Error).message);
     process.exit(1);
 }
 
-const workspaceArgs = ["--workspace", workspace];
-const npmArgs = scripts[command]
-    ? ["run", ...workspaceArgs, command, "--", ...commandArgs]
-    : [command, ...commandArgs, ...workspaceArgs];
+// When the command matches a script, run it via `pnpm --filter <name> run <command> <args>`.
+// Otherwise pass the command straight through to pnpm scoped to the workspace,
+// e.g. `pnpm --filter <name> <command> <args>` (mirrors the old `npm <command> --workspace`).
+// Note: no `--` separator is used. Unlike npm, pnpm forwards a literal `--` to the script,
+// which downstream tools (e.g. vite) would treat as an end-of-options marker.
+const pnpmArgs = scripts[command]
+    ? ["--filter", packageName, "run", command, ...commandArgs]
+    : ["--filter", packageName, command, ...commandArgs];
 
-const npmProcess = spawn("npm", npmArgs, {
+const pnpmProcess = spawn("pnpm", pnpmArgs, {
     stdio: "inherit",
     shell: true,
 });
 
-npmProcess.on("error", (error) => {
+pnpmProcess.on("error", (error) => {
     console.error("Failed to start process:", error.message);
     process.exit(1);
 });
 
-npmProcess.on("close", (exitCode) => {
+pnpmProcess.on("close", (exitCode) => {
     process.exit(exitCode ?? 1);
 });
