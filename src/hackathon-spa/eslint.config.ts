@@ -48,6 +48,11 @@ export default tseslintConfig(
             "unicorn/prevent-abbreviations": "off",
         },
     },
+    {
+        // The conventional __tests__ directory name fails unicorn's directory-name casing check.
+        files: ["src/**/__tests__/*", "src/**/*.test.{ts,tsx}"],
+        rules: { "unicorn/filename-case": "off" },
+    },
 
     perfectionistConfigs["recommended-natural"],
     { rules: { "perfectionist/sort-imports": "off" } },

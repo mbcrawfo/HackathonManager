@@ -15,7 +15,7 @@ const userSchema = z.object({
 });
 
 const IndexPage = () => {
-    const today = format(new Date(), "PPPP");
+    const [today] = useState(() => format(new Date(), "PPPP"));
     const [searchInput, setSearchInput] = useState("");
     const [debouncedSearch] = useDebouncedValue(searchInput, { wait: 300 });
 
