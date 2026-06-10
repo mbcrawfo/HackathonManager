@@ -250,15 +250,9 @@ void AddOpenTelemetryServices()
 
 void ConfigurePipeline(WebApplication app)
 {
-    var enableIntegratedSpa = app.Configuration.GetValue<bool>(ConfigurationKeys.EnableIntegratedSpaKey);
-    logger.Information("{SettingKey}={SettingValue}", ConfigurationKeys.EnableIntegratedSpaKey, enableIntegratedSpa);
-
     app.UseForwardedHeaders();
 
-    if (enableIntegratedSpa)
-    {
-        app.UseStaticFiles();
-    }
+    app.UseStaticFiles();
 
     app.UseHealthChecks("/health");
 
@@ -280,10 +274,7 @@ void ConfigurePipeline(WebApplication app)
 
     app.UseSwaggerGen();
 
-    if (enableIntegratedSpa)
-    {
-        app.MapFallbackToFile("index.html");
-    }
+    app.MapFallbackToFile("index.html");
 }
 
 // Expose the Program class for integration testing.

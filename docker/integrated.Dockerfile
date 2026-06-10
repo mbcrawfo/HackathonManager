@@ -36,8 +36,6 @@ WORKDIR /app
 COPY --from=build-dotnet /app/publish .
 COPY --from=build-spa /app/publish ./wwwroot
 
-ENV ENABLEINTEGRATEDSPA=true
-
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2s --start-interval=1s --retries=30 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
