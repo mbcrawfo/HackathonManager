@@ -94,10 +94,10 @@ const main = async (): Promise<void> => {
 
         // Run Playwright, forwarding extra CLI args
         const playwrightArgs = process.argv.slice(2);
-        const args = ["--workspace", "tests/e2e", "playwright", "test", ...playwrightArgs];
+        const args = ["--filter", "hackathon-e2e", "exec", "playwright", "test", ...playwrightArgs];
 
-        console.log(`Running: npx ${args.join(" ")}`);
-        exitCode = run("npx", args, {
+        console.log(`Running: pnpm ${args.join(" ")}`);
+        exitCode = run("pnpm", args, {
             ...process.env,
             BASE_URL: baseUrl,
         });

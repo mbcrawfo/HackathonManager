@@ -123,26 +123,29 @@ jobs:
       - name: Clone the repo
         uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: npm run check
+        run: pnpm run check
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Check formatting
-        run: npm run format:check
+        run: pnpm run format:check
 
       - name: Run unit tests with coverage
-        run: npm run spa test:coverage
+        run: pnpm run spa test:coverage
 
       - name: Upload test results
         if: ${{ !cancelled() }}
@@ -154,7 +157,7 @@ jobs:
             ./src/hackathon-spa/coverage/
 
       - name: Build
-        run: npm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
+        run: pnpm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
@@ -178,13 +181,16 @@ jobs:
       - name: Clone the repo
         uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
 
       - name: Run SqlFluff
-        run: npm run sqlfluff lint -- --format github-annotation-native
+        run: pnpm run sqlfluff lint -- --format github-annotation-native
 
   container-build:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -310,20 +316,23 @@ jobs:
         if: needs.container-merge.result == 'success'
         run: docker pull ${{ env.E2E_IMAGE }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx --workspace tests/e2e playwright install --with-deps
+        run: pnpm --filter hackathon-e2e exec playwright install --with-deps
 
       - name: Run E2E tests
-        run: npm run e2e:docker
+        run: pnpm run e2e:docker
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
@@ -367,20 +376,24 @@ jobs:
         if: steps.check-file-changes.outputs.any_changed == 'true'
         run: dotnet restore --locked-mode
 
+      - name: Setup pnpm
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node.js
         if: steps.check-file-changes.outputs.any_changed == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Update Database Docs
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: npm run update-database-docs
+        run: pnpm run update-database-docs
 
       - name: Commit and push changes
         id: commit-changes
@@ -445,16 +458,20 @@ jobs:
         if: steps.check-file-changes.outputs.any_changed == 'true'
         run: docker pull ${{ env.API_IMAGE }}
 
+      - name: Setup pnpm
+        if: steps.check-file-changes.outputs.any_changed == 'true'
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         if: steps.check-file-changes.outputs.any_changed == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Start API
         if: steps.check-file-changes.outputs.any_changed == 'true'
@@ -462,7 +479,7 @@ jobs:
 
       - name: Generate API client
         if: steps.check-file-changes.outputs.any_changed == 'true'
-        run: npm run api-codegen http://localhost:5200
+        run: pnpm run api-codegen http://localhost:5200
 
       - name: Stop API
         if: always() && steps.check-file-changes.outputs.any_changed == 'true' && !cancelled()
