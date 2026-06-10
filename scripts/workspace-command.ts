@@ -36,11 +36,13 @@ try {
     process.exit(1);
 }
 
-// When the command matches a script, run it via `pnpm --filter <name> run <command> -- <args>`.
+// When the command matches a script, run it via `pnpm --filter <name> run <command> <args>`.
 // Otherwise pass the command straight through to pnpm scoped to the workspace,
 // e.g. `pnpm --filter <name> <command> <args>` (mirrors the old `npm <command> --workspace`).
+// Note: no `--` separator is used. Unlike npm, pnpm forwards a literal `--` to the script,
+// which downstream tools (e.g. vite) would treat as an end-of-options marker.
 const pnpmArgs = scripts[command]
-    ? ["--filter", packageName, "run", command, ...(commandArgs.length > 0 ? ["--", ...commandArgs] : [])]
+    ? ["--filter", packageName, "run", command, ...commandArgs]
     : ["--filter", packageName, command, ...commandArgs];
 
 const pnpmProcess = spawn("pnpm", pnpmArgs, {

@@ -60,7 +60,7 @@ Unit tests for the API can be found in the folder `tests/HackathonManager.Tests/
 
 End-to-end tests live in `tests/e2e` and use Playwright to test the full application stack. The e2e directory is a separate pnpm workspace with its own `compose.yml` that is independent from the root `compose.yml` — it runs on different ports (5100 for web, 5433 for Postgres) and uses separate container names to avoid collisions.
 
-- `pnpm run e2e:docker`: Start the Docker stack, run all Playwright tests, then tear down. Locally this builds the integrated Docker image; in CI it uses a pre-built image from GHCR. Extra args are forwarded to Playwright (e.g. `pnpm run e2e:docker -- --project=chromium`).
+- `pnpm run e2e:docker`: Start the Docker stack, run all Playwright tests, then tear down. Locally this builds the integrated Docker image; in CI it uses a pre-built image from GHCR. Extra args are forwarded to Playwright (e.g. `pnpm run e2e:docker --project=chromium`).
 - `pnpm run e2e <command>`: Run workspace commands in the e2e project (e.g. `pnpm run e2e lint`, `pnpm run e2e check`).
 - Test specs are in `tests/e2e/specs/`.
 - Playwright config is in `tests/e2e/playwright.config.ts`.

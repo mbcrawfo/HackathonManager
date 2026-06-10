@@ -28,7 +28,7 @@ COPY tests/e2e/package.json ./tests/e2e/
 RUN pnpm install --frozen-lockfile --filter hackathon-spa...
 
 COPY src/hackathon-spa ./src/hackathon-spa
-RUN pnpm --filter hackathon-spa run build -- --outDir /app/publish
+RUN pnpm --filter hackathon-spa run build --outDir /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
 

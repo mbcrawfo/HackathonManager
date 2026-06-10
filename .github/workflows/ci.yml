@@ -157,7 +157,7 @@ jobs:
             ./src/hackathon-spa/coverage/
 
       - name: Build
-        run: pnpm run spa build -- --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
+        run: pnpm run spa build --outDir="${{ github.workspace }}/artifacts/hackathon-spa"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
@@ -190,7 +190,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Run SqlFluff
-        run: pnpm run sqlfluff lint -- --format github-annotation-native
+        run: pnpm run sqlfluff lint --format github-annotation-native
 
   container-build:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
