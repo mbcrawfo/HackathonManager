@@ -1,15 +1,1 @@
-{
-  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
-  "importOrderTypeScriptVersion": "5.9.3",
-  "importOrder": [
-    "<TYPES>^(node:)",
-    "<TYPES>",
-    "<TYPES>^[.]",
-    "",
-    "<BUILTIN_MODULES>",
-    "<THIRD_PARTY_MODULES>",
-    "",
-    "^@/(.*)$",
-    "^[./]"
-  ]
-}
+{}

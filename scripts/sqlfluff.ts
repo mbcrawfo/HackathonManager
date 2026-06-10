@@ -1,6 +1,6 @@
 // Helper script to run SQLFluff in a Docker container.
 
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 
 let slqfluffArgs: string[] = [];
 if (process.argv.length > 2) {
@@ -9,15 +9,11 @@ if (process.argv.length > 2) {
 
 let dockerArgs: string[] = ["--rm", "--volume", `${process.cwd()}:/sql:rw`, "sqlfluff/sqlfluff:4.0.4"];
 
-if (process.env.CI) {
-    dockerArgs = ["--user", "root", ...dockerArgs];
-} else {
-    dockerArgs = ["--interactive", "--tty", ...dockerArgs];
-}
+dockerArgs = process.env.CI ? ["--user", "root", ...dockerArgs] : ["--interactive", "--tty", ...dockerArgs];
 
 const dockerProcess = spawn("docker", ["run", ...dockerArgs, ...slqfluffArgs], {
-    stdio: "inherit",
     shell: true,
+    stdio: "inherit",
 });
 
 dockerProcess.on("error", (error) => {

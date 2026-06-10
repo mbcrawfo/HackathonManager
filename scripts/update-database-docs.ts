@@ -1,9 +1,9 @@
 // Automates the generation of database documentation by applying migrations to a temporary Postgres container, then
 // using tbls running in a Docker container to generate the documentation.
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path, { join } from "path";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 
 import { cleanupContainer, findAvailablePort, sleep } from "./utilities.ts";
 
@@ -18,7 +18,7 @@ if (!fs.existsSync(databaseDocsPath)) {
 
 const main = async (): Promise<void> => {
     let error = false;
-    let containerId: string | null = null;
+    let containerId: null | string = null;
 
     try {
         const port = await findAvailablePort();
@@ -64,8 +64,8 @@ const main = async (): Promise<void> => {
 
         console.log("Running database migrations...");
         execSync(dotnetRunCommand.join(" "), {
+            cwd: path.join(process.cwd(), "src", "HackathonManager.Migrator"),
             stdio: "inherit",
-            cwd: join(process.cwd(), "src", "HackathonManager.Migrator"),
         });
 
         const tblsRunCommand = [
@@ -88,9 +88,9 @@ const main = async (): Promise<void> => {
         execSync(tblsRunCommand.join(" "), { stdio: "inherit" });
 
         console.log("Database documentation generated successfully!");
-    } catch (err) {
+    } catch (error_) {
         error = true;
-        console.error("Error:", (err as Error).message);
+        console.error("Error:", (error_ as Error).message);
     } finally {
         if (containerId) {
             cleanupContainer(containerId);
@@ -102,4 +102,4 @@ const main = async (): Promise<void> => {
     }
 };
 
-main().catch(console.error);
+await main();

@@ -2,7 +2,7 @@
 
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 const workspace: string | undefined = process.argv[2];
 if (!workspace) {
@@ -24,8 +24,8 @@ if (process.argv.length > 4) {
 let packageName: string | undefined;
 let scripts: Record<string, string>;
 try {
-    const path = join(process.cwd(), workspace, "package.json");
-    const packageJson = JSON.parse(readFileSync(path, "utf8"));
+    const packageJsonPath = path.join(process.cwd(), workspace, "package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
     packageName = packageJson?.name;
     scripts = packageJson?.scripts ?? {};
     if (!packageName) {
@@ -46,8 +46,8 @@ const pnpmArgs = scripts[command]
     : ["--filter", packageName, command, ...commandArgs];
 
 const pnpmProcess = spawn("pnpm", pnpmArgs, {
-    stdio: "inherit",
     shell: true,
+    stdio: "inherit",
 });
 
 pnpmProcess.on("error", (error) => {

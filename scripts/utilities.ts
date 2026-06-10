@@ -1,5 +1,5 @@
-import { execSync } from "child_process";
-import net from "net";
+import { execSync } from "node:child_process";
+import net from "node:net";
 
 export const findAvailablePort = (): Promise<number> => {
     return new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ export const cleanupContainer = (containerId: string): void => {
         console.log(`Cleaning up container ${containerId}...`);
         execSync(`docker stop ${containerId}`, { stdio: "ignore" });
         execSync(`docker rm ${containerId}`, { stdio: "ignore" });
-    } catch (error) {
+    } catch {
         console.error(`Error: Failed to cleanup container ${containerId}`);
     }
 };

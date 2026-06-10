@@ -1,14 +1,14 @@
 // Generates TypeScript types from the backend OpenAPI spec using openapi-typescript.
 
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 
 const baseUrl = process.argv[2] ?? "http://localhost:5000";
 const swaggerUrl = `${baseUrl}/swagger/v1/swagger.json`;
 const outputPath = "src/hackathon-spa/src/api/schema.gen.ts";
 
 const child = spawn("pnpm", ["exec", "openapi-typescript", swaggerUrl, "--output", outputPath], {
-    stdio: "inherit",
     shell: true,
+    stdio: "inherit",
 });
 
 child.on("error", (error) => {
