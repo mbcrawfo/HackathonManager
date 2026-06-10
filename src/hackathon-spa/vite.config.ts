@@ -1,6 +1,6 @@
-import { fileURLToPath, URL } from "node:url";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv, ServerOptions, UserConfig } from "vite";
 
 const isValidPort = (port: number) => !Number.isNaN(port) && port > 0 && port <= 65_535;

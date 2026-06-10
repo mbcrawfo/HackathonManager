@@ -111,14 +111,18 @@ Coding standards:
 - Always prefer using arrow functions.
 - Always prefer using async/await instead of chaining promises with `.then(...)`.
 
-Always run Prettier after modifying ts or tsx files.
-  - `pnpm run format`: reformat files with prettier
-  - `pnpm run format:check`: use prettier to check formatting
+All TypeScript in the repo (the `hackathon-spa` SPA, the `scripts/` tooling, and the `tests/e2e` tests) is linted and type-checked under the same standards. A single ESLint flat config at the repo root (`eslint.config.ts`) applies a shared base to every file, with React-specific rules layered on only for the SPA.
 
-After modifying code in the hackathon-spa project:
-- Use ESLint to check linting.
-  - `pnpm run spa lint`: run ESLint to check linting
-  - `pnpm run spa lint:fix`: run ESLint and automatically apply fixes
-- Run `pnpm run spa check` to run the Typescript compiler and validate type usage.
+- Lint (whole repo):
+  - `pnpm run lint`: run ESLint to check linting
+  - `pnpm run lint:fix`: run ESLint and automatically apply fixes
+- Type check:
+  - `pnpm run check`: type-check the SPA, the e2e tests, and the scripts
+  - `pnpm run spa check`: type-check only the SPA
+- Format:
+  - `pnpm run format`: reformat files with Prettier
+  - `pnpm run format:check`: check formatting with Prettier
+
+Import order is sorted by ESLint (the `perfectionist` plugin), not by Prettier. Run `pnpm run lint:fix` to sort imports and apply other autofixes, and `pnpm run format` to apply Prettier formatting.
 
 After completing any changes to Typescript code, always run `pnpm run verify` as a final validation step. This runs the full suite: build, type-check, lint, tests, and formatting.

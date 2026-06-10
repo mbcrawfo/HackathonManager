@@ -1,6 +1,6 @@
-import { spawnSync } from "child_process";
-import path from "path";
-import process from "process";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import process from "node:process";
 
 import { sleep } from "./utilities.ts";
 
@@ -15,9 +15,9 @@ const healthUrl = `${baseUrl}/health`;
 
 const run = (command: string, args: string[], env?: NodeJS.ProcessEnv): number => {
     const result = spawnSync(command, args, {
-        stdio: "inherit",
-        shell: true,
         env: env ?? process.env,
+        shell: true,
+        stdio: "inherit",
     });
 
     if (result.error) {
@@ -101,8 +101,8 @@ const main = async (): Promise<void> => {
             ...process.env,
             BASE_URL: baseUrl,
         });
-    } catch (err) {
-        console.error("Error:", (err as Error).message);
+    } catch (error) {
+        console.error("Error:", (error as Error).message);
         exitCode = 1;
     } finally {
         cleanup();
@@ -111,4 +111,4 @@ const main = async (): Promise<void> => {
     process.exit(exitCode);
 };
 
-main().catch(console.error);
+await main();
